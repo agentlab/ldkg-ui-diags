@@ -1,10 +1,12 @@
 import React from "react";
-import { Graph, Markup } from "@antv/x6";
+import { Graph, Markup, Node } from "@antv/x6";
 // import '../index.less'
 import { test_data } from "./example-data";
+import { ReactShape } from "@antv/x6-react-shape";
 import "@antv/x6-react-shape";
 
 import { NodeShape } from "./NodeShape";
+import { Compartment } from "./Compartment";
 import { NodeField } from "./NodeField";
 import { nodeCenter } from "@antv/x6/lib/registry/node-anchor/main";
 
@@ -18,8 +20,84 @@ const randPos = () => {
   };
 };
 
-const group_resize = ({ node, options }) => {
-  if (options.skipParentHandler) {
+const resize_from_children = (cell) => {
+  const node: Node = cell;
+  let x = node.getPosition().x;
+  let y = node.getPosition().y;
+  let cornerX = x + node.getSize().width;
+  let cornerY = y + node.getSize().height;
+  let hasChange = false;
+  const children = node.getChildren();
+  if (children) {
+    children.forEach((child) => {
+      const bbox = child.getBBox();
+      const corner = bbox.getCorner();
+      // console.log(child);
+
+      if (bbox.x < x) {
+        x = bbox.x;
+        hasChange = true;
+      }
+
+      if (bbox.y < y) {
+        y = bbox.y;
+        hasChange = true;
+      }
+
+      if (corner.x > cornerX) {
+        cornerX = corner.x;
+        hasChange = true;
+      }
+
+      if (corner.y > cornerY) {
+        cornerY = corner.y;
+        hasChange = true;
+      }
+    });
+  }
+  console.log(hasChange);
+  if (hasChange) {
+    node.prop(
+      {
+        position: { x, y },
+        size: { width: cornerX - x, height: cornerY - y },
+      }
+      // Note that we also pass a flag so that we know we shouldn't
+      // adjust the `originPosition` and `originSize` in our handlers.
+      // { skipParentHandler: true }
+    );
+  }
+  const parent = node.getParent();
+  if (parent && parent.isNode()) {
+    resize_from_children(parent);
+  }
+};
+
+const children_width = (node: Node, direction) => {
+  const children = node.getChildren();
+  if (!children) {
+    return;
+  }
+  for (const child of children) {
+    if (child.isNode()) {
+      (child as Node).resize(node.size().width, child.size().height, {
+        direction: direction,
+      });
+      children_width(child, direction);
+    }
+  }
+};
+
+const e_children_width = (e) => {
+  console.log("children_width", e);
+  children_width(e.cell, e.options.direction);
+};
+
+const group_move_resize = (e) => {
+  console.log("Move", e);
+  const options = e.options;
+  const node = e.cell;
+  if (options && options.skipParentHandler) {
     return;
   }
 
@@ -90,6 +168,38 @@ const group_resize = ({ node, options }) => {
   }
 };
 
+const group_resize = (e) => {
+  const node: Node = e.node;
+  if (node.shape !== "group") {
+    return;
+  }
+  if (e.options.skipParentHandler) {
+    return;
+  }
+  if (
+    0.001 > Math.abs(e.current.x - e.previous.x) &&
+    0.001 > Math.abs(e.current.y - e.previous.y)
+  ) {
+    return;
+  }
+
+  console.log("resize", e);
+  const children = node.getChildren();
+  if (!children) {
+    return;
+  }
+  for (const child of children) {
+    child.prop({
+      size: { width: node.size().width },
+    });
+  }
+};
+
+const update_size = (e) => {
+  console.log("update size", e);
+  resize_from_children(e.cell);
+};
+
 export default class Example extends React.Component {
   private container: HTMLDivElement;
 
@@ -99,16 +209,24 @@ export default class Example extends React.Component {
       width: graphWidth,
       height: graphHeight,
       grid: 10,
+      resizing: {
+        enabled: true,
+      },
     });
-    graph.on("node:change:position", group_resize);
-    graph.on("node:added", group_resize);
+    Graph.registerNode("group", {
+      inherit: ReactShape,
+    });
+    // graph.on("node:change:position", group_move_resize);
+    // graph.on("node:resized", update_size);
+    // graph.on("node:added", group_move_resize);
+    // graph.on("node:change:size", group_resize);
 
     for (const prop of test_data.properties) {
       graph.addNode({
         id: prop["@id"],
         size: { width: 140, height: 40 },
         position: randPos(),
-        shape: "react-shape",
+        shape: "group",
         component: <NodeShape text={prop["@id"]} />,
       });
     }
@@ -117,34 +235,75 @@ export default class Example extends React.Component {
         id: shape["@id"],
         size: { width: 140, height: 40 },
         position: randPos(),
-        shape: "react-shape",
+        shape: "group",
         component: <NodeShape text={shape["@id"]} />,
       });
+      shape_node.on("change:size", e_children_width);
+      shape_node.on("resized", e_children_width);
 
-      const props = Object.entries(shape).filter(
-        ([name]) => name != "@id" && name != "property"
-      );
       let offset_pos = shape_node.position();
-      offset_pos.y += shape_node.size().height;
-      for (const [name, val] of props) {
-        const prop_node = graph.createNode({
+      const props = Object.entries(shape).filter(
+        ([name]) => name !== "@id" && name !== "property"
+      );
+      if (props) {
+        const prop_compartment = graph.createNode({
           position: offset_pos,
           size: { width: 200, height: 30 },
-          shape: "react-shape",
-          component: <NodeField text={`${name}:    ${val}`} />,
+          shape: "group",
+          component: <Compartment text="General" />,
         });
-        prop_node.addTo(shape_node);
+        prop_compartment.addTo(shape_node);
+        // prop_compartment.on("change:size", e => console.log(e));
+        offset_pos.y += prop_compartment.size().height;
 
-        offset_pos.y += prop_node.size().height;
+        for (const [name, val] of props) {
+          const prop_node = graph.createNode({
+            position: offset_pos,
+            size: { width: 200, height: 30 },
+            shape: "react-shape",
+            component: <NodeField text={`${name}:    ${val}`} />,
+          });
+          prop_node.addTo(prop_compartment);
+          offset_pos.y += prop_node.size().height;
+        }
+        prop_compartment.fit({
+          padding: { top: prop_compartment.size().height },
+        });
       }
 
-      for (const prop of shape.property) {
-        graph.addEdge({
-          source: shape["@id"],
-          target: prop["@id"],
-          label: "sh:property",
+      if (shape.property && shape.property.length !== 0) {
+        const prop_compartment = graph.createNode({
+          position: offset_pos,
+          size: { width: 200, height: 30 },
+          shape: "group",
+          component: <Compartment text="Properties" />,
         });
+        prop_compartment.addTo(shape_node);
+        offset_pos.y += prop_compartment.size().height;
+
+        for (const prop of shape.property) {
+          const prop_node = graph.createNode({
+            position: offset_pos,
+            size: { width: 200, height: 30 },
+            shape: "react-shape",
+            component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
+          });
+          prop_node.addTo(prop_compartment);
+          offset_pos.y += prop_node.size().height;
+        }
+        prop_compartment.fit({
+          padding: { top: prop_compartment.size().height },
+        });
+
+        for (const prop of shape.property) {
+          graph.addEdge({
+            source: shape["@id"],
+            target: prop["@id"],
+            label: "sh:property",
+          });
+        }
       }
+      shape_node.fit({ padding: { top: shape_node.size().height } });
     }
 
     for (const prop of test_data.properties) {

@@ -2,7 +2,7 @@ import React from "react";
 import { ReactShape } from "@antv/x6-react-shape";
 import { Shape } from "@antv/x6";
 
-class NodeField extends React.Component<{
+class Compartment extends React.Component<{
   node?: ReactShape;
   text: string;
 }> {
@@ -20,7 +20,7 @@ class NodeField extends React.Component<{
     return (
       <div
         style={{
-          backgroundColor: "lightgray",
+          backgroundColor: "lightblue",
           border: "2px solid black",
           boxSizing: "border-box",
           width: "100%",
@@ -37,4 +37,4 @@ class NodeField extends React.Component<{
   }
 }
 
-export { NodeField };
+export { Compartment };

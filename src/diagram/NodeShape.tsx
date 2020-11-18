@@ -28,6 +28,7 @@ class NodeShape extends React.Component<{
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
+          padding: 4,
         }}
       >
         {this.props.text}
