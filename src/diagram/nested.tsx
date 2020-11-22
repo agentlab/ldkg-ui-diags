@@ -1,5 +1,5 @@
 import React from "react";
-import { Graph, Markup, Node } from "@antv/x6";
+import { Graph, Markup, Node, CellView, Cell } from "@antv/x6";
 // import '../index.less'
 import { test_data } from "./example-data";
 import { ReactShape } from "@antv/x6-react-shape";
@@ -210,10 +210,24 @@ export default class Example extends React.Component {
       height: graphHeight,
       grid: 10,
       resizing: {
-        enabled: true,
+        enabled: false,
       },
+      interacting: function (cellView: CellView) {
+        const cell: Cell = cellView.cell;
+        if (cell.shape == "compartment" || cell.shape == "field") {
+          return { nodeMovable: false };
+        }
+        return true;
+      },
+      selecting: true,
     });
     Graph.registerNode("group", {
+      inherit: ReactShape,
+    });
+    Graph.registerNode("compartment", {
+      inherit: ReactShape,
+    });
+    Graph.registerNode("field", {
       inherit: ReactShape,
     });
     // graph.on("node:change:position", group_move_resize);
@@ -249,7 +263,7 @@ export default class Example extends React.Component {
         const prop_compartment = graph.createNode({
           position: offset_pos,
           size: { width: 200, height: 30 },
-          shape: "group",
+          shape: "compartment",
           component: <Compartment text="General" />,
         });
         prop_compartment.addTo(shape_node);
@@ -260,7 +274,7 @@ export default class Example extends React.Component {
           const prop_node = graph.createNode({
             position: offset_pos,
             size: { width: 200, height: 30 },
-            shape: "react-shape",
+            shape: "field",
             component: <NodeField text={`${name}:    ${val}`} />,
           });
           prop_node.addTo(prop_compartment);
@@ -275,7 +289,7 @@ export default class Example extends React.Component {
         const prop_compartment = graph.createNode({
           position: offset_pos,
           size: { width: 200, height: 30 },
-          shape: "group",
+          shape: "compartment",
           component: <Compartment text="Properties" />,
         });
         prop_compartment.addTo(shape_node);
@@ -285,7 +299,7 @@ export default class Example extends React.Component {
           const prop_node = graph.createNode({
             position: offset_pos,
             size: { width: 200, height: 30 },
-            shape: "react-shape",
+            shape: "field",
             component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
           });
           prop_node.addTo(prop_compartment);
