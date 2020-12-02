@@ -9,6 +9,7 @@ import { NodeShape } from "./NodeShape";
 import { Compartment } from "./Compartment";
 import { NodeField } from "./NodeField";
 import { nodeCenter } from "@antv/x6/lib/registry/node-anchor/main";
+import { e_height, e_width, parent_height } from "./callbacks";
 
 const graphWidth = 1200;
 const graphHeight = 600;
@@ -71,26 +72,6 @@ const resize_from_children = (cell) => {
   if (parent && parent.isNode()) {
     resize_from_children(parent);
   }
-};
-
-const children_width = (node: Node, direction) => {
-  const children = node.getChildren();
-  if (!children) {
-    return;
-  }
-  for (const child of children) {
-    if (child.isNode()) {
-      (child as Node).resize(node.size().width, child.size().height, {
-        direction: direction,
-      });
-      children_width(child, direction);
-    }
-  }
-};
-
-const e_children_width = (e) => {
-  console.log("children_width", e);
-  children_width(e.cell, e.options.direction);
 };
 
 const group_move_resize = (e) => {
@@ -210,15 +191,15 @@ export default class Example extends React.Component {
       height: graphHeight,
       grid: 10,
       resizing: {
-        enabled: false,
+        enabled: true,
       },
-      interacting: function (cellView: CellView) {
-        const cell: Cell = cellView.cell;
-        if (cell.shape == "compartment" || cell.shape == "field") {
-          return { nodeMovable: false };
-        }
-        return true;
-      },
+      //   interacting: function (cellView: CellView) {
+      //     const cell: Cell = cellView.cell;
+      //     if (cell.shape == "compartment" || cell.shape == "field") {
+      //       return { nodeMovable: false };
+      //     }
+      //     return true;
+      //   },
       selecting: true,
     });
     Graph.registerNode("group", {
@@ -231,7 +212,10 @@ export default class Example extends React.Component {
       inherit: ReactShape,
     });
     // graph.on("node:change:position", group_move_resize);
-    // graph.on("node:resized", update_size);
+    graph.on("node:resized", (e) => {
+      e_width(e);
+      e_height(e);
+    });
     // graph.on("node:added", group_move_resize);
     // graph.on("node:change:size", group_resize);
 
@@ -252,62 +236,48 @@ export default class Example extends React.Component {
         shape: "group",
         component: <NodeShape text={shape["@id"]} />,
       });
-      shape_node.on("change:size", e_children_width);
-      shape_node.on("resized", e_children_width);
 
-      let offset_pos = shape_node.position();
       const props = Object.entries(shape).filter(
         ([name]) => name !== "@id" && name !== "property"
       );
       if (props) {
         const prop_compartment = graph.createNode({
-          position: offset_pos,
           size: { width: 200, height: 30 },
           shape: "compartment",
           component: <Compartment text="General" />,
         });
         prop_compartment.addTo(shape_node);
-        // prop_compartment.on("change:size", e => console.log(e));
-        offset_pos.y += prop_compartment.size().height;
+        parent_height(prop_compartment);
 
         for (const [name, val] of props) {
           const prop_node = graph.createNode({
-            position: offset_pos,
             size: { width: 200, height: 30 },
             shape: "field",
             component: <NodeField text={`${name}:    ${val}`} />,
           });
           prop_node.addTo(prop_compartment);
-          offset_pos.y += prop_node.size().height;
+          parent_height(prop_node);
         }
-        prop_compartment.fit({
-          padding: { top: prop_compartment.size().height },
-        });
       }
 
       if (shape.property && shape.property.length !== 0) {
         const prop_compartment = graph.createNode({
-          position: offset_pos,
           size: { width: 200, height: 30 },
           shape: "compartment",
           component: <Compartment text="Properties" />,
         });
         prop_compartment.addTo(shape_node);
-        offset_pos.y += prop_compartment.size().height;
+        parent_height(prop_compartment);
 
         for (const prop of shape.property) {
           const prop_node = graph.createNode({
-            position: offset_pos,
             size: { width: 200, height: 30 },
             shape: "field",
             component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
           });
           prop_node.addTo(prop_compartment);
-          offset_pos.y += prop_node.size().height;
+          parent_height(prop_node);
         }
-        prop_compartment.fit({
-          padding: { top: prop_compartment.size().height },
-        });
 
         for (const prop of shape.property) {
           graph.addEdge({
@@ -317,7 +287,6 @@ export default class Example extends React.Component {
           });
         }
       }
-      shape_node.fit({ padding: { top: shape_node.size().height } });
     }
 
     for (const prop of test_data.properties) {
