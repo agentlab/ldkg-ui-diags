@@ -36,11 +36,7 @@ const parent_width = (node: Node, src: any = undefined) => {
       // decreased
       match_width(parentNode, node);
     } else {
-      parentNode.resize(node.size().width, parentNode.size().height);
-      parentNode.setPosition({
-        x: node.position().x,
-        y: parentNode.position().y,
-      });
+      match_width(node, parentNode);
       parent_width(parentNode, node);
     }
     children_width(parentNode, node);
@@ -55,8 +51,29 @@ const e_width = (e) => {
 
 const header_size = 30;
 
+const node_height = (node: Node) => {
+  if (node.shape === "compartment" || node.shape === "group") {
+    node.fit({ padding: { top: header_size } });
+  }
+  let offset = node.position().y + header_size;
+  const children = node.getChildren();
+  if (!children) {
+    return;
+  }
+
+  for (const child of children) {
+    if (child.isNode()) {
+      const childNode: Node = child;
+      childNode.position(childNode.position().x, offset, { deep: true });
+      offset += childNode.size().height;
+    }
+  }
+  node.fit({ padding: { top: header_size } });
+  parent_height(node);
+};
+
 const parent_height = (node: Node) => {
-  if (node.shape == "compartment" || node.shape == "group") {
+  if (node.shape === "compartment" || node.shape === "group") {
     node.fit({ padding: { top: header_size } });
   }
   const parent = node.getParent();
@@ -65,16 +82,17 @@ const parent_height = (node: Node) => {
   }
   if (parent.isNode()) {
     const parentNode: Node = parent;
-    let offset = parent.position().y + header_size;
-    const children = parent.getChildren();
+    let offset = parentNode.position().y + header_size;
+    const children = parentNode.getChildren();
     if (!children) {
       return;
     }
+
     for (const child of children) {
       if (child.isNode()) {
         const childNode: Node = child;
-        child.position(child.position().x, offset, { deep: true });
-        offset += child.size().height;
+        childNode.position(childNode.position().x, offset, { deep: true });
+        offset += childNode.size().height;
       }
     }
     parent.fit({ padding: { top: header_size } });
@@ -87,4 +105,49 @@ const e_height = (e) => {
   parent_height(e.cell);
 };
 
-export { e_width, e_height, parent_height };
+const e_children = (e) => {
+  let node = e.cell as Node;
+  console.log("changed children", e);
+  if (e.current === undefined || e.previous === undefined) {
+    return;
+  }
+  const curr: any = e.current;
+  const prev: any = e.previous;
+  if (curr.length > prev.length) {
+    // added
+    const intersection = curr.filter((x) => !prev.includes(x));
+    const updated = intersection[0]; // only 0 for now
+    const updatedChild = node
+      .getChildren()
+      ?.filter((c) => c.id === updated)[0] as Node;
+    updatedChild.position(node.position().x, updatedChild.position().y, {
+      deep: true,
+    });
+    parent_height(updatedChild);
+    parent_width(updatedChild);
+    children_width(updatedChild);
+  } else {
+    // removed
+    node_height(node);
+  }
+};
+
+const e_moved = (e) => {
+  console.log("moved", e);
+  const node: Node = e.cell;
+  const parent = node.getParent();
+  if (!parent) {
+    return;
+  }
+  const parentNode = parent as Node;
+  if (!parentNode.getBBox().containsPoint(node.getBBox().center)) {
+    // moved outside
+    return; // node:change:children will handle this move
+  }
+  node.position(parentNode.position().x, node.position().y); // undo move
+  parent_width(node);
+  children_width(node);
+  parent_height(node);
+};
+
+export { e_width, e_height, parent_height, e_children, e_moved };
