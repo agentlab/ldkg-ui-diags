@@ -23,12 +23,19 @@ class Compartment extends React.Component<{
           backgroundColor: "lightblue",
           border: "2px solid black",
           boxSizing: "border-box",
-          width: "100%",
-          height: "100%",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
           padding: 4,
+          marginLeft: 5,
+          marginRight: 5,
+          // marginTop: 3,
+          marginBottom: 3,
+          position: "absolute",
+          bottom: 0,
+          top: 0,
+          left: 0,
+          right: 0,
         }}
       >
         {this.props.text}

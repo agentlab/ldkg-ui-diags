@@ -101,7 +101,7 @@ export default class Example extends React.Component {
 
         for (const [name, val] of props) {
           const prop_node = graph.createNode({
-            size: { width: 200, height: 30 },
+            size: { width: 200, height: 50 },
             zIndex: 2,
             shape: "field",
             component: <NodeField text={`${name}:    ${val}`} />,
@@ -123,7 +123,7 @@ export default class Example extends React.Component {
 
         for (const prop of shape.property) {
           const prop_node = graph.createNode({
-            size: { width: 200, height: 30 },
+            size: { width: 200, height: 50 },
             zIndex: 2,
             shape: "field",
             component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
