@@ -29,8 +29,10 @@ const randPos = () => {
 
 export default class Example extends React.Component {
   private container: HTMLDivElement;
+  private editing: boolean;
 
   componentDidMount() {
+    this.editing = false;
     const graph = new Graph({
       container: this.container,
       width: graphWidth,
@@ -44,7 +46,21 @@ export default class Example extends React.Component {
         findParent: "center",
       },
       selecting: true,
+      connecting: {
+        dangling: false,
+        router: "metro",
+        connector: {
+          name: "jumpover",
+          args: {
+            type: "gap",
+          },
+        },
+      },
+      keyboard: {
+        enabled: true,
+      },
     });
+
     Graph.registerNode("group", {
       inherit: ReactShape,
     });
@@ -54,6 +70,7 @@ export default class Example extends React.Component {
     Graph.registerNode("field", {
       inherit: ReactShape,
     });
+
     graph.on("node:resized", (e) => {
       e_width(e);
       e_height(e);
@@ -61,9 +78,16 @@ export default class Example extends React.Component {
     graph.on("node:moved", (e) => {
       e_moved(e);
     });
-
     graph.on("node:change:children", (e) => {
       e_children(e);
+    });
+    graph.bindKey("ctrl", () => {
+      console.log("editor toggle");
+
+      this.editing = !this.editing;
+      graph.getNodes().forEach((n) => {
+        n.attr("fo/magnet", this.editing);
+      });
     });
 
     for (const prop of test_data.properties) {
