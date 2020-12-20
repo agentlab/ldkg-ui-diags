@@ -108,9 +108,16 @@ const e_height = (e) => {
 const e_children = (e) => {
   let node = e.cell as Node;
   console.log("changed children", e);
-  if (e.current === undefined || e.previous === undefined) {
+  if (e.current === undefined) {
     return;
   }
+  if (e.previous === undefined) {
+    parent_height(node);
+    parent_width(node);
+    children_width(node);
+    return;
+  }
+
   const curr: any = e.current;
   const prev: any = e.previous;
   if (curr.length > prev.length) {
