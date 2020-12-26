@@ -157,4 +157,12 @@ const e_moved = (e) => {
   parent_height(node);
 };
 
-export { e_width, e_height, parent_height, e_children, e_moved };
+export {
+  e_width,
+  e_height,
+  parent_height,
+  parent_width,
+  node_height,
+  e_children,
+  e_moved,
+};

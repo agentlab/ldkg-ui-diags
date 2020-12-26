@@ -1,0 +1,58 @@
+
+@prefix dash: <http://datashapes.org/dash#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix jsld: <http://agentlab.ru/jsld_test#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+jsld:PersonShape
+    a sh:NodeShape ;
+    sh:targetClass jsld:Person ;
+    sh:property jsld:GivenNamePropertyShape ;
+    sh:property jsld:BirthDatePropertyShape ;
+    sh:property jsld:GenderPropertyShape ;
+    sh:property jsld:AddressPropertyShape
+.
+
+jsld:GivenNamePropertyShape
+	a sh:PropertyShape ;
+	sh:path jsld:givenName ;
+	sh:datatype xsd:string ;
+	sh:name "given name"
+.
+
+jsld:BirthDatePropertyShape
+	a sh:PropertyShape ;
+	sh:path jsld:birthDate ;
+	sh:lessThan jsld:deathDate ;
+	sh:maxCount 1
+.
+
+jsld:GenderPropertyShape
+	a sh:PropertyShape ;
+	sh:path jsld:gender ;
+	sh:in ( "female" "male" )
+.
+
+jsld:AddressPropertyShape
+	a sh:PropertyShape ;
+	sh:path jsld:address ;
+	sh:node jsld:AddressShape
+.
+
+jsld:AddressShape
+    a sh:NodeShape ;
+    sh:closed true ;
+	sh:targetClass jsld:Address ;
+    sh:property [
+        sh:path jsld:streetAddress ;
+        sh:datatype xsd:string ;
+    ] ;
+    sh:property [
+        sh:path jsld:postalCode ;
+        sh:or ( [ sh:datatype xsd:string ] [ sh:datatype xsd:integer ] ) ;
+        sh:minInclusive 10000 ;
+        sh:maxInclusive 99999 ;
+    ]
+.

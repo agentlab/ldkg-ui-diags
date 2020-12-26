@@ -2,6 +2,7 @@ import React from "react";
 import { Graph, Addon, Markup, Node, CellView, Cell } from "@antv/x6";
 // import '../index.less'
 import { test_data } from "./example-data";
+import { get_data } from "./get_data";
 import { ReactShape } from "@antv/x6-react-shape";
 import "@antv/x6-react-shape";
 
@@ -13,13 +14,15 @@ import {
   e_height,
   e_width,
   parent_height,
+  parent_width,
+  node_height,
   e_children,
   e_moved,
 } from "./callbacks";
 
 const { Stencil } = Addon;
 
-const graphWidth = 1200;
+const graphWidth = 800;
 const graphHeight = 600;
 
 const randPos = () => {
@@ -29,15 +32,38 @@ const randPos = () => {
   };
 };
 
-export default class Example extends React.Component {
+type MyState = { data: any };
+export class Example extends React.Component<{}, MyState> {
+  constructor(props) {
+    super(props);
+    this.state = { data: { properties: [], shapes: [] } };
+  }
+  componentDidMount() {
+    get_data().then((data) => {
+      console.log(data);
+      this.setState({ data: data });
+    });
+  }
+  render() {
+    return <G data={this.state.data} />;
+  }
+}
+
+type MyProps = { data: any };
+export class G extends React.Component<MyProps, {}> {
   private container: HTMLDivElement;
   private stencilContainer: HTMLDivElement;
 
   private editing: boolean;
+  private graph: any;
+
+  constructor(props) {
+    super(props);
+    this.editing = false;
+  }
 
   componentDidMount() {
-    this.editing = false;
-    const graph = new Graph({
+    this.graph = new Graph({
       container: this.container,
       width: graphWidth,
       height: graphHeight,
@@ -75,17 +101,17 @@ export default class Example extends React.Component {
       inherit: ReactShape,
     });
 
-    graph.bindKey("ctrl", () => {
+    this.graph.bindKey("ctrl", () => {
       console.log("editor toggle");
       this.editing = !this.editing;
-      graph.getNodes().forEach((n) => {
+      this.graph.getNodes().forEach((n) => {
         n.attr("fo/magnet", this.editing);
       });
     });
 
     const stencil = new Stencil({
       title: "Components",
-      target: graph,
+      target: this.graph,
       collapsable: true,
       stencilGraphWidth: 300,
       stencilGraphHeight: 180,
@@ -116,26 +142,59 @@ export default class Example extends React.Component {
     });
     stencil.load([nodeShape, nodeField], "group1");
 
+    console.log(this.container);
+    this.parse_data(this.graph);
+    this.graph.on("node:resized", (e) => {
+      if (e.options && e.options.ignore) {
+        return;
+      }
+      e_width(e);
+      e_height(e);
+    });
+    this.graph.on("node:moved", (e) => {
+      if (e.options && e.options.ignore) {
+        return;
+      }
+      e_moved(e);
+    });
+    this.graph.on("node:change:children", (e) => {
+      if (e.options && e.options.ignore) {
+        return;
+      }
+      e_children(e);
+    });
+  }
+  componentDidUpdate() {
+    this.parse_data(this.graph);
+  }
+
+  parse_data = (graph) => {
+    const test_data = this.props.data;
     for (const prop of test_data.properties) {
-      graph.addNode({
-        id: prop["@id"],
-        size: { width: 140, height: 40 },
-        zIndex: 0,
-        position: randPos(),
-        shape: "group",
-        component: <NodeShape text={prop["@id"]} />,
-      });
+      graph.addNode(
+        {
+          id: prop["@id"],
+          size: { width: 140, height: 40 },
+          zIndex: 0,
+          position: randPos(),
+          shape: "group",
+          component: <NodeShape text={prop["@id"]} />,
+        },
+        { ignore: true }
+      );
     }
     for (const shape of test_data.shapes) {
-      const shape_node = graph.addNode({
-        id: shape["@id"],
-        size: { width: 140, height: 40 },
-        zIndex: 0,
-        position: randPos(),
-        shape: "group",
-        component: <NodeShape text={shape["@id"]} />,
-      });
-
+      const shape_node = graph.addNode(
+        {
+          id: shape["@id"],
+          size: { width: 140, height: 40 },
+          zIndex: 0,
+          position: randPos(),
+          shape: "group",
+          component: <NodeShape text={shape["@id"]} />,
+        },
+        { ignore: true }
+      );
       const props = Object.entries(shape).filter(
         ([name]) => name !== "@id" && name !== "property"
       );
@@ -146,7 +205,7 @@ export default class Example extends React.Component {
           shape: "compartment",
           component: <Compartment text="General" />,
         });
-        prop_compartment.addTo(shape_node);
+        prop_compartment.addTo(shape_node, { ignore: true });
         parent_height(prop_compartment);
 
         for (const [name, val] of props) {
@@ -156,7 +215,7 @@ export default class Example extends React.Component {
             shape: "field",
             component: <NodeField text={`${name}:    ${val}`} />,
           });
-          prop_node.addTo(prop_compartment);
+          prop_node.addTo(prop_compartment, { ignore: true });
           parent_height(prop_node);
         }
       }
@@ -168,7 +227,7 @@ export default class Example extends React.Component {
           shape: "compartment",
           component: <Compartment text="Properties" />,
         });
-        prop_compartment.addTo(shape_node);
+        prop_compartment.addTo(shape_node, { ignore: true });
         parent_height(prop_compartment);
 
         for (const prop of shape.property) {
@@ -178,7 +237,7 @@ export default class Example extends React.Component {
             shape: "field",
             component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
           });
-          prop_node.addTo(prop_compartment);
+          prop_node.addTo(prop_compartment, { ignore: true });
           parent_height(prop_node);
         }
 
@@ -201,17 +260,7 @@ export default class Example extends React.Component {
         });
       }
     }
-    graph.on("node:resized", (e) => {
-      e_width(e);
-      e_height(e);
-    });
-    graph.on("node:moved", (e) => {
-      e_moved(e);
-    });
-    graph.on("node:change:children", (e) => {
-      e_children(e);
-    });
-  }
+  };
 
   refContainer = (container: HTMLDivElement) => {
     this.container = container;
