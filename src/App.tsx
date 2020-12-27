@@ -5,7 +5,7 @@ import "./App.css";
 import { Example } from "./diagram/nested";
 
 function App() {
-  return <Example />;
+	return <Example />;
 }
 
 export default App;

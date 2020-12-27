@@ -3,6 +3,6 @@
 //declare module '*.less';
 
 declare module "*.module.less" {
-  const classes: { [className: string]: string };
-  export default classes;
+	const classes: { [className: string]: string };
+	export default classes;
 }
