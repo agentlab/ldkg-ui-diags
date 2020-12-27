@@ -22,8 +22,8 @@ const graphHeight = 600;
 
 const randPos = () => {
   return {
-    x: Math.random() * (graphWidth - 100),
-    y: Math.random() * (graphHeight - 100),
+    x: Math.random() * (graphWidth / 3 - 100),
+    y: Math.random() * (graphHeight / 2 - 100),
   };
 };
 
@@ -141,9 +141,15 @@ export class G extends React.Component<MyProps, {}> {
     this.parse_data(this.graph);
 
     this.graph.on("node:resized", (e) => {
+      if (e.options && e.options.ignore) {
+        return;
+      }
       this.size_calc(e, "resize");
     });
     this.graph.on("node:moved", (e) => {
+      if (e.options && e.options.ignore) {
+        return;
+      }
       this.size_calc(e, "move");
     });
     this.graph.on("node:change:children", (e) => {
@@ -182,7 +188,7 @@ export class G extends React.Component<MyProps, {}> {
         ([name]) => name !== "@id" && name !== "property"
       );
       if (props) {
-        const prop_compartment = graph.createNode({
+        const prop_compartment = graph.addNode({
           size: { width: 200, height: 30 },
           zIndex: 1,
           shape: "compartment",
@@ -191,7 +197,7 @@ export class G extends React.Component<MyProps, {}> {
         prop_compartment.addTo(shape_node);
 
         for (const [name, val] of props) {
-          const prop_node = graph.createNode({
+          const prop_node = graph.addNode({
             size: { width: 200, height: 50 },
             zIndex: 2,
             shape: "field",
@@ -202,7 +208,7 @@ export class G extends React.Component<MyProps, {}> {
       }
 
       if (shape.property && shape.property.length !== 0) {
-        const prop_compartment = graph.createNode({
+        const prop_compartment = graph.addNode({
           size: { width: 200, height: 30 },
           zIndex: 1,
           shape: "compartment",
@@ -211,7 +217,7 @@ export class G extends React.Component<MyProps, {}> {
         prop_compartment.addTo(shape_node);
 
         for (const prop of shape.property) {
-          const prop_node = graph.createNode({
+          const prop_node = graph.addNode({
             size: { width: 200, height: 50 },
             zIndex: 2,
             shape: "field",
@@ -241,57 +247,85 @@ export class G extends React.Component<MyProps, {}> {
     }
   };
 
-  get_path(id: string) {
-    console.log(id, this.graph.getCell(id));
-    const node: Node = this.graph.getCell(id);
+  add_node(node) {
+    const { solver, data } = this.size_tree;
+    if (!data[node.id]) {
+      data[node.id] = {
+        children: { data: {}, constraint: null },
+        parent: null,
+        top: new kiwi.Variable(),
+        left: new kiwi.Variable(),
+        width: new kiwi.Variable(),
+        height: new kiwi.Variable(),
+        constraints: [],
+      };
+      const n = data[node.id];
+      n.constraints = [
+        new kiwi.Constraint(
+          n.width,
+          kiwi.Operator.Ge,
+          100,
+          kiwi.Strength.required
+        ),
+        new kiwi.Constraint(
+          n.height,
+          kiwi.Operator.Ge,
+          50,
+          kiwi.Strength.required
+        ),
+      ];
+      if (node.shape === "field") {
+        solver.addEditVariable(data[node.id].top, kiwi.Strength.weak);
+        solver.addEditVariable(data[node.id].left, kiwi.Strength.weak);
+        solver.addEditVariable(data[node.id].width, kiwi.Strength.weak);
+        solver.addEditVariable(data[node.id].height, kiwi.Strength.strong);
+      } else if (node.shape === "compartment") {
+        solver.addEditVariable(n.top, kiwi.Strength.medium);
+        solver.addEditVariable(n.left, kiwi.Strength.medium);
+        solver.addEditVariable(n.width, kiwi.Strength.weak);
+        solver.addEditVariable(n.height, kiwi.Strength.weak);
+      } else {
+        solver.addEditVariable(n.top, kiwi.Strength.strong);
+        solver.addEditVariable(n.left, kiwi.Strength.strong);
+        solver.addEditVariable(n.width, kiwi.Strength.strong);
+        solver.addEditVariable(n.height, kiwi.Strength.weak);
+      }
+      solver.suggestValue(n.left, node.position().x);
+      solver.suggestValue(n.top, node.position().y);
+      for (const constraint of n.constraints) {
+        solver.addConstraint(constraint);
+      }
+    }
+  }
+
+  propogade_update(id) {
+    const { data } = this.size_tree;
+    const node = this.graph.getCell(id);
     const ancestors = node.getAncestors();
-    console.log("ancestors :", ancestors);
+    let root: any = null;
+    if (ancestors.length === 0) {
+      root = node;
+    } else {
+      root = ancestors[ancestors.length - 1];
+    }
+    const descendants = root.getDescendants();
+    let descendants_ids = new Set();
+    descendants_ids.add(root.id);
+    for (const desc of descendants) {
+      descendants_ids.add(desc.id);
+    }
+    return descendants_ids;
   }
 
   size_calc = (e, type) => {
     console.log(type, e);
     const node: Node = e.node;
     const { solver, data } = this.size_tree;
+    let changed: any = new Set();
     if (type == "add") {
-      if (!data[node.id]) {
-        data[node.id] = {
-          children: { data: {}, constraint: null },
-          parent: null,
-          top: new kiwi.Variable(),
-          left: new kiwi.Variable(),
-          width: new kiwi.Variable(),
-          height: new kiwi.Variable(),
-          constraints: [],
-        };
-        const n = data[node.id];
-        n.constraints = [
-          new kiwi.Constraint(
-            n.width,
-            kiwi.Operator.Ge,
-            100,
-            kiwi.Strength.required
-          ),
-          new kiwi.Constraint(
-            n.height,
-            kiwi.Operator.Ge,
-            50,
-            kiwi.Strength.required
-          ),
-        ];
-        solver.addEditVariable(n.top, kiwi.Strength.medium);
-        solver.addEditVariable(n.left, kiwi.Strength.strong);
-        solver.addEditVariable(n.width, kiwi.Strength.medium);
-        solver.addEditVariable(n.height, kiwi.Strength.weak);
-        solver.suggestValue(n.top, 200);
-        solver.suggestValue(n.left, 200);
-        for (const constraint of n.constraints) {
-          solver.addConstraint(constraint);
-        }
-      }
-      if (node.shape === "field") {
-        solver.removeEditVariable(data[node.id].height);
-        solver.addEditVariable(data[node.id].height, kiwi.Strength.medium);
-      }
+      this.add_node(node);
+
+      changed.add(node.id);
     } else if (type == "embed") {
       const curr = e.current;
       let prev = e.previous;
@@ -304,67 +338,77 @@ export class G extends React.Component<MyProps, {}> {
         const intersection = curr.filter((x) => !prev.includes(x));
         const updated = intersection[0]; // only 0 for now
 
-        if (!this.graph.getCell(updated)) {
-          // embed occured before add
-          data[updated] = {
-            children: { data: {}, constraint: null },
-            parent: {
-              id: node.id,
-              constraints: [],
-            },
-            top: new kiwi.Variable(),
-            left: new kiwi.Variable(),
-            width: new kiwi.Variable(),
-            height: new kiwi.Variable(),
-            constraints: [],
-          };
-          const u = data[updated];
-          const parent = data[node.id];
-          parent.children.data[updated] = null;
-          u.constraints = [
-            new kiwi.Constraint(
-              u.width,
-              kiwi.Operator.Ge,
-              100,
-              kiwi.Strength.required
-            ),
-            new kiwi.Constraint(
-              u.height,
-              kiwi.Operator.Ge,
-              50,
-              kiwi.Strength.required
-            ),
-          ];
-          solver.addEditVariable(u.top, kiwi.Strength.weak);
-          solver.addEditVariable(u.left, kiwi.Strength.weak);
-          solver.addEditVariable(u.width, kiwi.Strength.weak);
-          solver.addEditVariable(u.height, kiwi.Strength.weak);
-          solver.suggestValue(u.top, 200);
+        this.add_node(this.graph.getCell(updated));
 
-          for (const constraint of u.constraints) {
-            solver.addConstraint(constraint);
-          }
-          u.parent.constraints = [
-            new kiwi.Constraint(
-              u.width,
-              kiwi.Operator.Eq,
-              parent.width,
-              kiwi.Strength.medium
-            ),
-            new kiwi.Constraint(
-              u.left,
-              kiwi.Operator.Eq,
-              parent.left,
-              kiwi.Strength.medium
-            ),
-          ];
-          for (const constraint of u.parent.constraints) {
-            solver.addConstraint(constraint);
-          }
+        const u = data[updated];
+        u.parent = {
+          id: node.id,
+          constraints: [],
+        };
 
-          if (parent.children.constraint) {
-            solver.removeConstraint(parent.children.constraint);
+        const parent = data[node.id];
+        parent.children.data[updated] = null;
+
+        u.parent.constraints = [
+          new kiwi.Constraint(
+            u.width,
+            kiwi.Operator.Eq,
+            parent.width,
+            kiwi.Strength.required
+          ),
+          new kiwi.Constraint(
+            u.left,
+            kiwi.Operator.Eq,
+            parent.left,
+            kiwi.Strength.required
+          ),
+        ];
+        for (const constraint of u.parent.constraints) {
+          solver.addConstraint(constraint);
+        }
+
+        let parent_size = new kiwi.Expression();
+        let offset = new kiwi.Expression(parent.top, 20);
+        for (const child_id in parent.children.data) {
+          const child = data[child_id];
+          if (parent.children.data[child_id]) {
+            solver.removeConstraint(parent.children.data[child_id]);
           }
+          const child_offset = new kiwi.Constraint(
+            child.top,
+            kiwi.Operator.Eq,
+            offset,
+            kiwi.Strength.required
+          );
+          parent.children.data[child_id] = child_offset;
+          solver.addConstraint(child_offset);
+          offset = new kiwi.Expression(child.top, child.height);
+          parent_size = parent_size.plus(child.height);
+        }
+        if (parent.children.constraint) {
+          solver.removeConstraint(parent.children.constraint);
+        }
+        parent.children.constraint = new kiwi.Constraint(
+          parent_size,
+          kiwi.Operator.Eq,
+          parent.height,
+          kiwi.Strength.required
+        );
+        solver.addConstraint(parent.children.constraint);
+
+        changed = new Set([...changed, ...this.propogade_update(updated)]);
+      } else {
+        console.log("removed");
+        const intersection = prev.filter((x) => !curr.includes(x));
+        const updated = intersection[0]; // only 0 for now
+
+        const parent = data[node.id];
+        solver.removeConstraint(parent.children.data[updated]);
+        delete parent.children.data[updated];
+        if (parent.children.constraint) {
+          solver.removeConstraint(parent.children.constraint);
+        }
+        if (Object.keys(parent.children.data).length !== 0) {
           let parent_size = new kiwi.Expression();
           let offset = new kiwi.Expression(parent.top, 20);
           for (const child_id in parent.children.data) {
@@ -391,26 +435,45 @@ export class G extends React.Component<MyProps, {}> {
           );
           solver.addConstraint(parent.children.constraint);
         }
-      } else {
-        // removed
-        console.log("removed");
+
+        const u = data[updated];
+        for (const constraint of u.parent.constraints) {
+          solver.removeConstraint(constraint);
+        }
+        u.parent = null;
+
+        changed = new Set([...changed, ...this.propogade_update(node.id)]); // only node.id !!!
+
+        console.log(u.left.value(), u.top.value());
       }
     } else if (type == "move") {
+      console.log(node.position());
       solver.suggestValue(data[node.id].left, node.position().x);
       solver.suggestValue(data[node.id].top, node.position().y);
+      changed.add(node.id);
     } else if (type == "resize") {
       solver.suggestValue(data[node.id].width, node.size().width);
       solver.suggestValue(data[node.id].height, node.size().height);
+      solver.suggestValue(data[node.id].left, node.position().x);
+      solver.suggestValue(data[node.id].top, node.position().y);
+      changed = new Set([...changed, ...this.propogade_update(node.id)]);
     }
 
     solver.updateVariables();
-    for (const id in data) {
+    console.log(changed);
+    for (const id of changed) {
+      // TODO: update only changed nodes
       const node: Node = this.graph.getCell(id);
       if (node) {
-        node.resize(data[id].width.value(), data[id].height.value());
-        node.setPosition(data[id].left.value(), data[id].top.value());
+        node.resize(data[id].width.value(), data[id].height.value(), {
+          ignore: true,
+        });
+        node.setPosition(data[id].left.value(), data[id].top.value(), {
+          ignore: true,
+        });
       }
     }
+    console.log(data);
   };
 
   refContainer = (container: HTMLDivElement) => {
