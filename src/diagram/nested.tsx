@@ -325,6 +325,7 @@ export class G extends React.Component<MyProps, {}> {
 
 		if (parent.children.constraint) {
 			solver.removeConstraint(parent.children.constraint);
+			parent.children.constraint = null;
 		}
 		if (Object.keys(parent.children.data).length !== 0) {
 			let parent_size = new kiwi.Expression(parent.padding.top);
