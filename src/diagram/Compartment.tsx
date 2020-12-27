@@ -20,25 +20,36 @@ class Compartment extends React.Component<{
 		return (
 			<div
 				style={{
-					backgroundColor: "lightblue",
-					border: "2px solid black",
+					width: "100%",
+					height: "100%",
 					boxSizing: "border-box",
-					whiteSpace: "nowrap",
-					overflow: "hidden",
-					textOverflow: "ellipsis",
-					// padding: 4,
-					// marginLeft: 5,
-					// marginRight: 5,
-					// marginTop: 3,
-					// marginBottom: 3,
-					position: "absolute",
-					bottom: 0,
-					top: 0,
-					left: 0,
-					right: 0,
+
+					backgroundColor: 'white',
 				}}
 			>
-				{this.props.text}
+				<div
+					style={{
+						backgroundColor: '#ab80ff',
+						padding: 4,
+						// border: "2px solid black",
+						height: 20,
+
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
+				>
+					{this.props.text}
+				</div>
+				<div
+					style={{
+
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
+				>
+				</div>
 			</div>
 		);
 	}

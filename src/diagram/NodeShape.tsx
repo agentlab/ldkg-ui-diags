@@ -20,18 +20,36 @@ class NodeShape extends React.Component<{
 		return (
 			<div
 				style={{
-					backgroundColor: "white",
-					border: "2px solid black",
-					boxSizing: "border-box",
 					width: "100%",
 					height: "100%",
-					whiteSpace: "nowrap",
-					overflow: "hidden",
-					textOverflow: "ellipsis",
-					padding: 4,
+					boxSizing: "border-box",
+					border: "2px solid black",
+					backgroundColor: 'white'
 				}}
 			>
-				{this.props.text}
+				<div
+					style={{
+						backgroundColor: '#5c00b3',
+						color: 'white',
+						padding: 4,
+						height: 25,
+
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
+				>
+					{this.props.text}
+				</div>
+				<div
+					style={{
+
+						whiteSpace: "nowrap",
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					}}
+				>
+				</div>
 			</div>
 		);
 	}

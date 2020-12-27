@@ -58,7 +58,18 @@ export class G extends React.Component<MyProps, {}> {
 			container: this.container,
 			width: graphWidth,
 			height: graphHeight,
-			grid: 10,
+			grid: {
+				size: 10,
+				visible: true,
+				type: 'dot',
+				args: {
+					color: '#a0a0a0',
+					thickness: 2,
+				},
+			},
+			background: {
+				color:'#ededed',
+			},
 			resizing: {
 				enabled: true,
 			},
@@ -69,7 +80,7 @@ export class G extends React.Component<MyProps, {}> {
 			selecting: true,
 			connecting: {
 				dangling: false,
-				router: "metro",
+				router: "manhattan",
 				connector: {
 					name: "jumpover",
 					args: {
@@ -259,7 +270,7 @@ export class G extends React.Component<MyProps, {}> {
 
 			n.constraints = [
 				new kiwi.Constraint(n.width, kiwi.Operator.Ge, 200, kiwi.Strength.required),
-				new kiwi.Constraint(n.height, kiwi.Operator.Ge, 40, kiwi.Strength.required)
+				new kiwi.Constraint(n.height, kiwi.Operator.Ge, 35, kiwi.Strength.required)
 			];
 
 			if (node.shape === "field") {
@@ -273,13 +284,13 @@ export class G extends React.Component<MyProps, {}> {
 				solver.addEditVariable(n.left, kiwi.Strength.medium);
 				solver.addEditVariable(n.width, kiwi.Strength.weak);
 				solver.addEditVariable(n.height, kiwi.Strength.weak);
-				n.padding = { top: 30, bottom: 10, left: 5, right: 5 };
+				n.padding = { top: 30, bottom: 5, left: 5, right: 5 };
 			} else {
 				solver.addEditVariable(n.top, kiwi.Strength.strong);
 				solver.addEditVariable(n.left, kiwi.Strength.strong);
 				solver.addEditVariable(n.width, kiwi.Strength.strong);
 				solver.addEditVariable(n.height, kiwi.Strength.weak);
-				n.padding = { top: 30, bottom: 10, left: 5, right: 5 };
+				n.padding = { top: 40, bottom: 5, left: 5, right: 5 };
 			}
 
 			solver.suggestValue(n.left, node.position().x);
