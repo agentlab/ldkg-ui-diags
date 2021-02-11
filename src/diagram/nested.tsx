@@ -2,7 +2,6 @@ import React from "react";
 import { Graph, Addon, Markup, Node, CellView, Cell } from "@antv/x6";
 import * as kiwi from "kiwi.js";
 
-import { get_data } from "./get_data";
 import { ReactShape } from "@antv/x6-react-shape";
 import "@antv/x6-react-shape";
 
@@ -22,7 +21,7 @@ const randPos = () => {
 	};
 };
 
-type MyState = { data: any };
+/*type MyState = { data: any };
 export class Example extends React.Component<{}, MyState> {
 	constructor(props) {
 		super(props);
@@ -34,9 +33,9 @@ export class Example extends React.Component<{}, MyState> {
 		});
 	}
 	render() {
-		return <G data={this.state.data} />;
+		return <G data={this.props.data} />;
 	}
-}
+}*/
 
 type MyProps = { data: any };
 export class G extends React.Component<MyProps, {}> {
@@ -213,7 +212,7 @@ export class G extends React.Component<MyProps, {}> {
 				}
 			}
 
-			if (shape.property && shape.property.length !== 0) {
+			if (shape.property && Array.isArray(shape.property) && shape.property.length !== 0) {
 				const prop_compartment = graph.addNode({
 					size: { width: 200, height: 30 },
 					zIndex: 1,
@@ -223,21 +222,29 @@ export class G extends React.Component<MyProps, {}> {
 				prop_compartment.addTo(shape_node);
 
 				for (const prop of shape.property) {
-					const prop_node = graph.addNode({
-						size: { width: 200, height: 50 },
-						zIndex: 2,
-						shape: "field",
-						component: <NodeField text={`sh:property:    ${prop["@id"]}`} />,
-					});
-					prop_node.addTo(prop_compartment);
+					const prop_id = prop["@id"];
+					// filter blank nodes (embedded shapes)
+					if (prop_id && !prop_id.startsWith('_:')) {
+						const prop_node = graph.addNode({
+							size: { width: 200, height: 50 },
+							zIndex: 2,
+							shape: "field",
+							component: <NodeField text={`sh:property:    ${prop_id}`} />,
+						});
+						prop_node.addTo(prop_compartment);
+					}
 				}
 
 				for (const prop of shape.property) {
-					graph.addEdge({
-						source: shape["@id"],
-						target: prop["@id"],
-						label: "sh:property",
-					});
+					const prop_id = prop["@id"];
+					// filter blank nodes (embedded shapes)
+					if (prop_id && !prop_id.startsWith('_:')) {
+						graph.addEdge({
+							source: shape["@id"],
+							target: prop_id,
+							label: "sh:property",
+						});
+					}
 				}
 			}
 		}
