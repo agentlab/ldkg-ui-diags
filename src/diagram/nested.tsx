@@ -1,5 +1,5 @@
 import React from "react";
-import { Graph, Addon, Markup, Node, CellView, Cell } from "@antv/x6";
+import { Graph, Addon, Node } from "@antv/x6";
 import * as kiwi from "kiwi.js";
 
 import { ReactShape } from "@antv/x6-react-shape";

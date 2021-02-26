@@ -1,6 +1,5 @@
 import React from "react";
 import { ReactShape } from "@antv/x6-react-shape";
-import { Shape } from "@antv/x6";
 
 class NodeShape extends React.Component<{
 	node?: ReactShape;
