@@ -16,7 +16,9 @@
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "types": ["jest"],
+    "types": [
+      "jest"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -27,7 +29,7 @@
         "name": "typescript-plugin-css-modules"
       }
     ],
-    "jsx": "react"
+    "jsx": "react-jsx"
   },
   "include": [
     "src"
