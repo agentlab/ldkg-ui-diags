@@ -26,8 +26,8 @@ const App = observer(() => {
 			shapes = view.colls.get('rm:NodeShapes_CollConstr')?.data;
 			properties = view.colls.get('rm:PropertyShapes_CollConstr')?.data;
 			if (shapes && properties) {
-				shapes = getSnapshot(shapes);
-				properties = getSnapshot(properties);
+				shapes = (getSnapshot(shapes) as []).slice(8, 10);
+				properties = (getSnapshot(properties) as []).slice(8, 18);
 			} else {
 				shapes = [];
 				properties = [];

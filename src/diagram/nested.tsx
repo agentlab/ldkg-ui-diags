@@ -1,5 +1,6 @@
 import React from "react";
-import { Graph, Addon, Markup, Node, CellView, Cell } from "@antv/x6";
+import { Graph, Addon, Node, Model } from "@antv/x6";
+import { Layout } from '@antv/layout'
 import * as kiwi from "kiwi.js";
 
 import { ReactShape } from "@antv/x6-react-shape";
@@ -21,11 +22,31 @@ const randPos = () => {
 	};
 };
 
-
-const parse_data = (data: any, graph: any) => {
+const parse_data = (data: any, graph: any, size_data: any, solver: any) => {
+	console.log("Parsing");
 	const test_data = data;
+	const model = new Model();
+	model.on("node:resized", (e: any) => {
+		if (e.options && e.options.ignore) {
+			return;
+		}
+		size_calc(e, "resize", model, size_data, solver);
+	});
+	model.on("node:moved", (e: any) => {
+		if (e.options && e.options.ignore) {
+			return;
+		}
+		size_calc(e, "move", model, size_data, solver);
+	});
+	model.on("node:change:children", (e) => {
+		size_calc(e, "embed", model, size_data, solver);
+	});
+	model.on("node:added", (e) => {
+		size_calc(e, "add", model, size_data, solver);
+	});
+
 	for (const prop of test_data.properties) {
-		graph.addNode({
+		model.addNode({
 			id: prop["@id"],
 			size: { width: 140, height: 40 },
 			zIndex: 0,
@@ -35,7 +56,7 @@ const parse_data = (data: any, graph: any) => {
 		});
 	}
 	for (const shape of test_data.shapes) {
-		const shape_node = graph.addNode({
+		const shape_node = model.addNode({
 			id: shape["@id"],
 			size: { width: 140, height: 40 },
 			zIndex: 0,
@@ -47,7 +68,7 @@ const parse_data = (data: any, graph: any) => {
 			([name]) => name !== "@id" && name !== "property"
 		);
 		if (props) {
-			const prop_compartment = graph.addNode({
+			const prop_compartment = model.addNode({
 				size: { width: 200, height: 30 },
 				zIndex: 1,
 				shape: "compartment",
@@ -56,7 +77,7 @@ const parse_data = (data: any, graph: any) => {
 			prop_compartment.addTo(shape_node);
 
 			for (const [name, val] of props) {
-				const prop_node = graph.addNode({
+				const prop_node = model.addNode({
 					size: { width: 200, height: 50 },
 					zIndex: 2,
 					shape: "field",
@@ -67,7 +88,7 @@ const parse_data = (data: any, graph: any) => {
 		}
 
 		if (shape.property && Array.isArray(shape.property) && shape.property.length !== 0) {
-			const prop_compartment = graph.addNode({
+			const prop_compartment = model.addNode({
 				size: { width: 200, height: 30 },
 				zIndex: 1,
 				shape: "compartment",
@@ -79,7 +100,7 @@ const parse_data = (data: any, graph: any) => {
 				const prop_id = prop["@id"];
 				// filter blank nodes (embedded shapes)
 				if (prop_id && !prop_id.startsWith('_:')) {
-					const prop_node = graph.addNode({
+					const prop_node = model.addNode({
 						size: { width: 200, height: 50 },
 						zIndex: 2,
 						shape: "field",
@@ -93,7 +114,7 @@ const parse_data = (data: any, graph: any) => {
 				const prop_id = prop["@id"];
 				// filter blank nodes (embedded shapes)
 				if (prop_id && !prop_id.startsWith('_:')) {
-					graph.addEdge({
+					model.addEdge({
 						source: shape["@id"],
 						target: prop_id,
 						label: "sh:property",
@@ -105,13 +126,23 @@ const parse_data = (data: any, graph: any) => {
 
 	for (const prop of test_data.properties) {
 		if (prop.node) {
-			graph.addEdge({
+			model.addEdge({
 				target: prop["node"],
 				source: prop["@id"],
 				label: "sh:node",
 			});
 		}
 	}
+	// const circularLayout = new Layout({
+	// 	type: 'circular',
+	// 	width: 600,
+	// 	height: 400,
+	// 	center: [300, 200],
+	// 	radius: 50,
+	// });
+	// const newModel = circularLayout.layout({nodes: model.getNodes()});
+	// console.log(newModel);
+	(graph as Graph).fromJSON(model.toJSON(), {silent: false});
 };
 
 const add_node = (node: Node, size_data: any, solver: any) => {
@@ -288,7 +319,6 @@ const size_calc = (e: any, type: string, graph: any, size_data: any, solver: any
 	solver.updateVariables();
 	// console.log(changed);
 	for (const id of changed) {
-		// TODO: update only changed nodes
 		const node: Node = graph.getCell(id);
 		if (node) {
 			node.resize(size_data[id].width.value(), size_data[id].height.value(), {
@@ -306,9 +336,9 @@ export const G = (props: any) => {
 	const [container, setContainer] = React.useState<HTMLDivElement>();
 	const [stencilContainer, setStencilContainer] = React.useState<HTMLDivElement>();
 	const [editing, setEditing] = React.useState<boolean>(false);
-	const [graph, setGraph] = React.useState<any>();
+	const [graph, setGraph] = React.useState<Graph>();
 	const [size_data, setSizeData] = React.useState<any>({});
-	const [solver,] = React.useState<any>(new kiwi.Solver());
+	const [solver,] = React.useState<kiwi.Solver>(new kiwi.Solver());
 
 	const graphRef = React.useRef(graph);
 	const sizeDataRef = React.useRef(size_data);
@@ -446,9 +476,9 @@ export const G = (props: any) => {
 		console.log(props);
 		console.log(graph);
 		if (graph) {
-			parse_data(props.data, graph);
+			parse_data(props.data, graph, size_data, solver);
 		}
-	}, [props.data, graph]);
+	}, [props.data, graph, size_data, solver]);
 
 	const refContainer = (container: HTMLDivElement) => {
 		setContainer(container);
