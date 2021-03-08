@@ -399,9 +399,16 @@ const VericalBox = observer((props: any) => {
 
 	const generalFields = Object.entries(data)
 		.filter(([key, val]) => (key !== 'property' && key !== '@id'));
-	const propertyFields = data['property']
-		? data['property'].map((prop) => ['sh:property', prop['@id']])
-		: [];
+
+	let propertyFields = [] as any;
+	if (data['property']) {
+		if (Array.isArray(data['property'])) {
+			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
+		}
+		else {
+			propertyFields = [ [ 'sh:property', data['property']['@id'] ] ];
+		}
+	}
 
 	return (
 		<NodeBox node={node} edges={propertyFields} parent_id={parent_id}>
@@ -417,7 +424,6 @@ const VericalBox = observer((props: any) => {
 
 const WrapBox = observer((props: any) => {
 	const { parent_id, header, data } = props;
-
 	const node = {
 		id: uuidv4(),
 		size: { width: 200, height: 30 },
