@@ -22,18 +22,10 @@ const randPos = () => {
 	};
 };
 
-export const layoutContext = React.createContext<any>(null);
-export const LayoutProvider = ({ children }) => {
-	const store = useLocalObservable(() => ({
-		solver: new kiwi.Solver(),
-		size: {}
-	}));
-	return <layoutContext.Provider value={store}>{children}</layoutContext.Provider>;
-};
+const layoutContext = React.createContext<any>(null);
+const graphContext = React.createContext<any>(null);
 
-export const graphContext = React.createContext<any>(null);
-
-export const Canvas = ({ children }) => {
+const Canvas = ({ children }) => {
 	const refContainer = React.useRef<any>();
 
 	const graphStore = useLocalObservable(() => ({
@@ -124,26 +116,201 @@ export const Canvas = ({ children }) => {
 
 	}, []);
 
+	const layoutStore = useLocalObservable(() => ({
+		solver: new kiwi.Solver(),
+		size_data: {},
+		computed_size: {},
+		size_calc(e: any, type: string) {
+			console.log(type, e);
+			const node: Node = e.node;
+
+			if (type === "add") {
+				layoutStore.add_node(node);
+			} else if (type === "embed") {
+
+				// remove from old parent
+				if (e.previous) {
+					const parent_id = e.previous;
+
+					const parent = layoutStore.size_data[parent_id];
+					layoutStore.solver.removeConstraint(parent.children.data[node.id]);
+					delete parent.children.data[node.id];
+
+					layoutStore.update_parent(parent);
+
+					const updated = layoutStore.size_data[node.id];
+					for (const constraint of updated.parent.constraints) {
+						layoutStore.solver.removeConstraint(constraint);
+					}
+					updated.parent = null;
+				}
+
+				// add to new parent
+				if (e.current) {
+					const parent_id = e.current;
+
+					layoutStore.add_node(node);
+
+					const updated = layoutStore.size_data[node.id];
+					updated.parent = {
+						id: parent_id,
+						constraints: [],
+					};
+
+					const parent = layoutStore.size_data[parent_id];
+					parent.children.data[node.id] = null;
+
+					updated.parent.constraints = [
+						new kiwi.Constraint(updated.width, kiwi.Operator.Eq,
+							new kiwi.Expression(parent.width, -parent.padding.right, -parent.padding.left),
+							kiwi.Strength.required),
+						new kiwi.Constraint(updated.left, kiwi.Operator.Eq,
+							new kiwi.Expression(parent.left, parent.padding.left), kiwi.Strength.required),
+					];
+					for (const constraint of updated.parent.constraints) {
+						layoutStore.solver.addConstraint(constraint);
+					}
+
+					layoutStore.update_parent(parent_id);
+				}
+
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
+
+			} else if (type === "move") {
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
+			} else if (type === "resize") {
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].width, node.size().width);
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].height, node.size().height);
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
+				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
+			}
+
+			layoutStore.solver.updateVariables();
+			for (const [id, sizes] of Object.entries(layoutStore.size_data) as any) {
+				layoutStore.computed_size[id] = {
+					width: sizes.width.value(),
+					height: sizes.height.value(),
+					top: sizes.top.value(),
+					left: sizes.left.value()
+				};
+			}
+		},
+		add_node(node: Node) {
+			if (!layoutStore.size_data[node.id]) {
+				layoutStore.size_data[node.id] = {
+					children: { data: {}, constraint: null },
+					parent: null,
+					top: new kiwi.Variable(),
+					left: new kiwi.Variable(),
+					width: new kiwi.Variable(),
+					height: new kiwi.Variable(),
+					padding: null,
+					constraints: [],
+				};
+				const n = layoutStore.size_data[node.id];
+
+				n.constraints = [
+					new kiwi.Constraint(n.width, kiwi.Operator.Ge, 200, kiwi.Strength.required),
+					new kiwi.Constraint(n.height, kiwi.Operator.Ge, 35, kiwi.Strength.required)
+				];
+
+				if (node.shape === "field") {
+					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.weak);
+					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.weak);
+					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.weak);
+					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.strong);
+					n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
+				} else if (node.shape === "compartment") {
+					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.medium);
+					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.medium);
+					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.weak);
+					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
+					n.padding = { top: 30, bottom: 5, left: 5, right: 5 };
+				} else {
+					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
+					n.padding = { top: 40, bottom: 5, left: 5, right: 5 };
+				}
+
+				layoutStore.solver.suggestValue(n.left, node.position().x);
+				layoutStore.solver.suggestValue(n.top, node.position().y);
+				for (const constraint of n.constraints) {
+					layoutStore.solver.addConstraint(constraint);
+				}
+			}
+
+		},
+		update_parent(parent_id: string) {
+			const parent = layoutStore.size_data[parent_id]
+			if (parent.children.constraint) {
+				layoutStore.solver.removeConstraint(parent.children.constraint);
+				parent.children.constraint = null;
+			}
+			if (Object.keys(parent.children.data).length !== 0) {
+				let parent_size = new kiwi.Expression(parent.padding.top);
+				let offset = new kiwi.Expression(parent.top, parent.padding.top);
+				for (const child_id in parent.children.data) {
+					const child = layoutStore.size_data[child_id];
+					if (parent.children.data[child_id]) {
+						layoutStore.solver.removeConstraint(parent.children.data[child_id]);
+					}
+					const child_offset = new kiwi.Constraint(child.top, kiwi.Operator.Eq, offset, kiwi.Strength.required);
+					parent.children.data[child_id] = child_offset;
+					layoutStore.solver.addConstraint(child_offset);
+					offset = new kiwi.Expression(child.top, child.height);
+					parent_size = parent_size.plus(child.height);
+				}
+				parent.children.constraint = new kiwi.Constraint(parent_size.plus(parent.padding.bottom), kiwi.Operator.Eq, parent.height, kiwi.Strength.required);
+				layoutStore.solver.addConstraint(parent.children.constraint);
+			}
+		}
+	}));
+
+	React.useEffect(() => {
+		if (graphStore.graph) {
+			graphStore.graph.on("node:resized", (e: any) => {
+				if (e.options && e.options.ignore) {
+					return;
+				}
+				layoutStore.size_calc(e, "resize");
+			});
+			graphStore.graph.on("node:moved", (e: any) => {
+				if (e.options && e.options.ignore) {
+					return;
+				}
+				layoutStore.size_calc(e, "move");
+			});
+			graphStore.graph.on("node:added", (e) => {
+				layoutStore.size_calc(e, "add");
+			});
+			graphStore.graph.on("node:change:parent", (e) => {
+				layoutStore.size_calc(e, "embed");
+			});
+		}
+	}, [graphStore.graph, layoutStore]);
 
 	return (
 		<div className="app-wrap">
 			<div ref={refContainer} className="app-content" />
 			<graphContext.Provider value={graphStore}>
-				<LayoutProvider>
+				<layoutContext.Provider value={layoutStore}>
 					{children}
-				</LayoutProvider>
+				</layoutContext.Provider>
 			</graphContext.Provider>
 		</div>
 	);
 }
 
-export const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
+const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
 	const graphStore = React.useContext(graphContext);
-	console.log(`${parent_id} -> ${node.id}`);
+	const layoutStore = React.useContext(layoutContext);
 	const [rendered, setRendered] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
-		console.log("1");
 		if (!graphStore.graph) {
 			return;
 		}
@@ -152,14 +319,11 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 		}
 		if (parent_id === null) { // no parent, render to canvas
 			const res = graphStore.graph.addNode(node);
-			console.log("RES:", node);
 		}
 		else {
-			console.log('parent:', parent_id);
 			const parent: Cell = (graphStore.graph as Graph).getCell(parent_id);
 			const child = (graphStore.graph as Graph).addNode(node);
 			parent.addChild(child);
-			console.log(parent.getChildren());
 		}
 		setRendered(true);
 
@@ -176,7 +340,6 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	}, [node, parent_id, graphStore.graph]);
 
 	React.useEffect(() => {
-		console.log("2");
 		if (!graphStore.graph) {
 			return;
 		}
@@ -194,6 +357,23 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 		}
 	}, [edges, node.id, graphStore.graph]);
 
+	React.useEffect(() => {
+		if (layoutStore.computed_size[node.id]) {
+			console.log("RERUN", layoutStore.computed_size[node.id].width,  layoutStore.computed_size[node.id].height);
+			const n: Node = (graphStore.graph as Graph).getCell(node.id);
+			n.resize(
+				layoutStore.computed_size[node.id].width,
+				layoutStore.computed_size[node.id].height, {
+				ignore: true,
+			});
+			n.setPosition(
+				layoutStore.computed_size[node.id].left,
+				layoutStore.computed_size[node.id].top, {
+				ignore: true,
+			});
+		}
+	}, [layoutStore.computed_size[node.id]]);
+
 	const childrenWithProps = React.Children.map(children, child =>
 		React.cloneElement(child, { parent_id: rendered ? node.id : -1 })
 	);
@@ -203,7 +383,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	);
 });
 
-export const VericalBox = observer((props: any) => {
+const VericalBox = observer((props: any) => {
 	const { data, parent_id } = props;
 
 	const node = {
@@ -216,7 +396,6 @@ export const VericalBox = observer((props: any) => {
 			return (<NodeShape text={data["@id"]} />);
 		},
 	}
-	console.log("high:", node.component);
 
 	const generalFields = Object.entries(data)
 		.filter(([key, val]) => (key !== 'property' && key !== '@id'));
@@ -236,7 +415,7 @@ export const VericalBox = observer((props: any) => {
 	);
 });
 
-export const WrapBox = observer((props: any) => {
+const WrapBox = observer((props: any) => {
 	const { parent_id, header, data } = props;
 
 	const node = {
@@ -256,7 +435,7 @@ export const WrapBox = observer((props: any) => {
 	);
 });
 
-export const FieldBox = observer((props: any) => {
+const FieldBox = observer((props: any) => {
 	const { parent_id, text } = props;
 
 	const node = {
@@ -270,7 +449,7 @@ export const FieldBox = observer((props: any) => {
 	}
 
 	return (
-		<NodeBox node={node} parent_id={parent_id}/>
+		<NodeBox node={node} parent_id={parent_id} />
 	);
 });
 
