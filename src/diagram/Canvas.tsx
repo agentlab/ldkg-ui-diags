@@ -1,31 +1,15 @@
+
 import React from "react";
-import { Graph, Node, Cell } from "@antv/x6";
-
+import { useLocalObservable } from "mobx-react-lite";
+import { Graph, Node, } from "@antv/x6";
+// import "@antv/x6-react-shape";
 import { ReactShape } from "@antv/x6-react-shape";
-import "@antv/x6-react-shape";
-
-import { NodeShape } from "./NodeShape";
-import { Compartment } from "./Compartment";
-import { NodeField } from "./NodeField";
-
-import { useLocalObservable, observer } from "mobx-react-lite";
 import * as kiwi from "kiwi.js";
-import { v4 as uuidv4 } from 'uuid';
 
-const graphWidth = 800;
-const graphHeight = 600;
+export const layoutContext = React.createContext<any>(null);
+export const graphContext = React.createContext<any>(null);
 
-const randPos = () => {
-	return {
-		x: Math.random() * (graphWidth - 100),
-		y: Math.random() * (graphHeight - 100),
-	};
-};
-
-const layoutContext = React.createContext<any>(null);
-const graphContext = React.createContext<any>(null);
-
-const Canvas = ({ children }) => {
+export const Canvas = ({ children, width, height }) => {
 	const refContainer = React.useRef<any>();
 
 	const graphStore = useLocalObservable(() => ({
@@ -71,8 +55,8 @@ const Canvas = ({ children }) => {
 
 		const g = new Graph({
 			container: refContainer.current,
-			width: graphWidth,
-			height: graphHeight,
+			width: width,
+			height: height,
 			grid: {
 				size: 10,
 				visible: true,
@@ -136,7 +120,7 @@ const Canvas = ({ children }) => {
 					layoutStore.solver.removeConstraint(parent.children.data[node.id]);
 					delete parent.children.data[node.id];
 
-					layoutStore.update_parent(parent);
+					layoutStore.update_parent(parent_id);
 
 					const updated = layoutStore.size_data[node.id];
 					for (const constraint of updated.parent.constraints) {
@@ -302,169 +286,5 @@ const Canvas = ({ children }) => {
 				</layoutContext.Provider>
 			</graphContext.Provider>
 		</div>
-	);
-}
-
-const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
-	const graphStore = React.useContext(graphContext);
-	const layoutStore = React.useContext(layoutContext);
-	const [rendered, setRendered] = React.useState<boolean>(false);
-
-	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
-		}
-		if (parent_id === -1) { // parent not available
-			return;
-		}
-		if (parent_id === null) { // no parent, render to canvas
-			const res = graphStore.graph.addNode(node);
-		}
-		else {
-			const parent: Cell = (graphStore.graph as Graph).getCell(parent_id);
-			const child = (graphStore.graph as Graph).addNode(node);
-			parent.addChild(child);
-		}
-		setRendered(true);
-
-		if (graphStore.hasEdge(node.id)) {
-			const [src_id, label] = graphStore.getEdge(node.id);
-			(graphStore.graph as Graph).addEdge({
-				source: src_id,
-				target: node.id,
-				label: label,
-			});
-			graphStore.deleteEdge(node.id)
-		}
-
-	}, [node, parent_id, graphStore.graph]);
-
-	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
-		}
-		for (const [label, dest_id] of edges) {
-			if ((graphStore.graph as Graph).hasCell(dest_id)) {
-				graphStore.addEdge({
-					source: node.id,
-					target: dest_id,
-					label: label,
-				});
-			}
-			else {
-				graphStore.addEdge(dest_id, node.id, label);
-			}
-		}
-	}, [edges, node.id, graphStore.graph]);
-
-	React.useEffect(() => {
-		if (layoutStore.computed_size[node.id]) {
-			console.log("RERUN", layoutStore.computed_size[node.id].width,  layoutStore.computed_size[node.id].height);
-			const n: Node = (graphStore.graph as Graph).getCell(node.id);
-			n.resize(
-				layoutStore.computed_size[node.id].width,
-				layoutStore.computed_size[node.id].height, {
-				ignore: true,
-			});
-			n.setPosition(
-				layoutStore.computed_size[node.id].left,
-				layoutStore.computed_size[node.id].top, {
-				ignore: true,
-			});
-		}
-	}, [layoutStore.computed_size[node.id]]);
-
-	const childrenWithProps = React.Children.map(children, child =>
-		React.cloneElement(child, { parent_id: rendered ? node.id : -1 })
-	);
-
-	return (
-		<>{childrenWithProps}</>
-	);
-});
-
-const VericalBox = observer((props: any) => {
-	const { data, parent_id } = props;
-
-	const node = {
-		id: data["@id"],
-		size: { width: 140, height: 40 },
-		zIndex: 0,
-		position: randPos(),
-		shape: "group",
-		component(_) {
-			return (<NodeShape text={data["@id"]} />);
-		},
-	}
-
-	const generalFields = Object.entries(data)
-		.filter(([key, val]) => (key !== 'property' && key !== '@id'));
-
-	let propertyFields = [] as any;
-	if (data['property']) {
-		if (Array.isArray(data['property'])) {
-			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
-		}
-		else {
-			propertyFields = [ [ 'sh:property', data['property']['@id'] ] ];
-		}
-	}
-
-	return (
-		<NodeBox node={node} edges={propertyFields} parent_id={parent_id}>
-			{(generalFields.length > 0)
-				? <WrapBox header="General" data={generalFields} />
-				: <></>}
-			{(propertyFields.length > 0)
-				? <WrapBox header="Properties" data={propertyFields} />
-				: <></>}
-		</NodeBox>
-	);
-});
-
-const WrapBox = observer((props: any) => {
-	const { parent_id, header, data } = props;
-	const node = {
-		id: uuidv4(),
-		size: { width: 200, height: 30 },
-		zIndex: 1,
-		shape: "compartment",
-		component(_) {
-			return <Compartment text={header} />;
-		},
-	}
-
-	return (
-		<NodeBox node={node} parent_id={parent_id}>
-			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} />)}
-		</NodeBox>
-	);
-});
-
-const FieldBox = observer((props: any) => {
-	const { parent_id, text } = props;
-
-	const node = {
-		id: uuidv4(),
-		size: { width: 200, height: 50 },
-		zIndex: 2,
-		shape: "field",
-		component(_) {
-			return <NodeField text={text} />
-		},
-	}
-
-	return (
-		<NodeBox node={node} parent_id={parent_id} />
-	);
-});
-
-export const G = (props: any) => {
-
-	return (
-		<Canvas>
-			{props.data.shapes.map(shape => <VericalBox key={shape['@id']} data={shape} />)}
-			{props.data.properties.map(shape => <VericalBox key={shape['@id']} data={shape} />)}
-		</Canvas>
 	);
 }

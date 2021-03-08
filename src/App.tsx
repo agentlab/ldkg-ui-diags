@@ -1,16 +1,14 @@
 import React from "react";
-import moment from "moment";
-import { Spin } from "antd";
 import { getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
+import moment from "moment";
+import { Spin } from "antd";
 
 import "./App.css";
 
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./diagram/get_data";
-import { G } from "./diagram/nested_2";
 import { rmRepositoryParam } from "./config";
-
-
+import { rootStore, viewDescrCollConstr, viewDescrs } from "./diagram/get_data";
+import { Graph } from "./diagram/graph";
 
 const App = observer(() => {
 	let shapes: any = [];
@@ -44,7 +42,7 @@ const App = observer(() => {
 	}	
 	return (properties.length > 0 && shapes.length > 0)
 		?
-			( <G data={{shapes, properties}} /> )
+			( <Graph data={{shapes, properties}} /> )
 		: 
 			( <Spin/> );
 });
