@@ -192,7 +192,7 @@ const add_node = (node: Node, size_data: any, solver: any) => {
 	}
 }
 
-const propogade_update = (id: string, graph: any) => {
+const propogate_update = (id: string, graph: any) => {
 	const node = graph.getCell(id);
 	const ancestors = node.getAncestors();
 	let root: any = null;
@@ -280,7 +280,7 @@ const size_calc = (e: any, type: string, graph: any, size_data: any, solver: any
 
 			update_parent(parent, size_data, solver);
 
-			changed = new Set([...changed, ...propogade_update(updated, graph)]);
+			changed = new Set([...changed, ...propogate_update(updated, graph)]);
 		} else {
 			// console.log("removed");
 			const intersection = prev.filter((x: any) => !curr.includes(x));
@@ -298,7 +298,7 @@ const size_calc = (e: any, type: string, graph: any, size_data: any, solver: any
 			}
 			u.parent = null;
 
-			changed = new Set([...changed, ...propogade_update(node.id, graph)]); // only node.id !!!
+			changed = new Set([...changed, ...propogate_update(node.id, graph)]); // only node.id !!!
 
 			// console.log(u.left.value(), u.top.value());
 		}
@@ -306,13 +306,13 @@ const size_calc = (e: any, type: string, graph: any, size_data: any, solver: any
 		// console.log(node.position());
 		solver.suggestValue(size_data[node.id].left, node.position().x);
 		solver.suggestValue(size_data[node.id].top, node.position().y);
-		changed = new Set([...changed, ...propogade_update(node.id, graph)]);
+		changed = new Set([...changed, ...propogate_update(node.id, graph)]);
 	} else if (type === "resize") {
 		solver.suggestValue(size_data[node.id].width, node.size().width);
 		solver.suggestValue(size_data[node.id].height, node.size().height);
 		solver.suggestValue(size_data[node.id].left, node.position().x);
 		solver.suggestValue(size_data[node.id].top, node.position().y);
-		changed = new Set([...changed, ...propogade_update(node.id, graph)]);
+		changed = new Set([...changed, ...propogate_update(node.id, graph)]);
 	}
 
 	solver.updateVariables();
