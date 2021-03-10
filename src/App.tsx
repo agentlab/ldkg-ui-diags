@@ -8,7 +8,7 @@ import "./App.css";
 
 import { rmRepositoryParam } from "./config";
 import { rootStore, viewDescrCollConstr, viewDescrs } from "./diagram/get_data";
-import { Graph } from "./diagram/graph";
+import { Graph } from "./diagram/Graph";
 
 const App = observer(() => {
 	let shapes: any = [];
