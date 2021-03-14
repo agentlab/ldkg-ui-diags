@@ -37,11 +37,11 @@ export const Canvas = ({ children, width, height }) => {
 		addEdge(dest_id: string, src_id: string, label: string) {
 			graphStore.deferredEdges[dest_id] = [src_id, label];
 		}
-	}), 
-	{
-		graph: observable.ref,
-		deferredEdges: observable
-	});
+	}),
+		{
+			graph: observable.ref,
+			deferredEdges: observable
+		});
 
 	React.useEffect(() => {
 		try {
@@ -187,15 +187,15 @@ export const Canvas = ({ children, width, height }) => {
 					const parent = layoutStore.size_data[parent_id];
 					layoutStore.solver.removeConstraint(parent.children.data[node.id]);
 					delete parent.children.data[node.id];
-	
+
 					layoutStore.update_parent(parent_id);
 
 					for (const constraint of removed.parent.constraints) {
 						layoutStore.solver.removeConstraint(constraint);
 					}
 				}
-				
-				// TODO: remove children
+
+				// embed events should've already removed children from `updated` component
 
 				for (const constraint of removed.constraints) {
 					layoutStore.solver.removeConstraint(constraint);
@@ -211,13 +211,18 @@ export const Canvas = ({ children, width, height }) => {
 
 			layoutStore.solver.updateVariables();
 			for (const [id, sizes] of Object.entries(layoutStore.size_data) as any) {
-				layoutStore.computed_size[id] = {
+				const updated = {
 					width: sizes.width.value(),
 					height: sizes.height.value(),
 					top: sizes.top.value(),
-					left: sizes.left.value()
-				};
+					left: sizes.left.value(),
+				}
+				const current = layoutStore.computed_size[id];
+				if (!Object.keys(current).every(key => current[key] === updated[key])) {
+					layoutStore.computed_size[id] = updated;
+				}
 			}
+
 		},
 		add_node(node: Node) {
 			if (!layoutStore.size_data[node.id]) {
@@ -272,6 +277,12 @@ export const Canvas = ({ children, width, height }) => {
 				for (const constraint of n.constraints) {
 					layoutStore.solver.addConstraint(constraint);
 				}
+				layoutStore.computed_size[node.id] = {
+					width: 0,
+					height: 0,
+					top: 0,
+					left: 0
+				};
 			}
 
 		},
@@ -298,9 +309,8 @@ export const Canvas = ({ children, width, height }) => {
 				parent.children.constraint = new kiwi.Constraint(parent_size.plus(parent.padding.bottom), kiwi.Operator.Eq, parent.height, kiwi.Strength.required);
 				layoutStore.solver.addConstraint(parent.children.constraint);
 			}
-		}
-	}),
-	{
+		},
+	}), {
 		solver: observable.ref,
 		size_data: observable,
 		computed_size: observable
@@ -329,7 +339,7 @@ export const Canvas = ({ children, width, height }) => {
 			graphStore.graph.on("node:removed", (e) => {
 				layoutStore.size_calc(e, "remove");
 			});
-			
+
 			set_callbacks_binded(true);
 		}
 	}, [graphStore.graph]);

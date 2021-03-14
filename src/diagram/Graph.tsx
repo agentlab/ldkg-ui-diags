@@ -105,7 +105,16 @@ const CircleNode = observer((props: any) => {
 		zIndex: 0,
 		position: randPos(),
 		shape: "circle",
-		label: data["@id"]
+		label: data["@id"],
+		attrs: {
+			body: {
+				fill: '#efdbff',
+				stroke: '#9254de',
+			},
+			label: {
+				backgroundColor: 'black'
+			}
+		},
 	}
 
 	let propertyFields = [] as any;
@@ -128,7 +137,7 @@ export const Graph = (props: any) => {
 	const [class_diagram, set_class_diagram] = React.useState<boolean>(false);
 
 	const shapes = [...props.data.shapes, ...props.data.properties];
-	
+
 	const render_children = () => {
 		if (class_diagram) {
 			return shapes.map(shape =>

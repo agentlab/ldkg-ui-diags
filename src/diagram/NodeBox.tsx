@@ -63,7 +63,6 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 
 	React.useEffect(() => {
 		if (layoutStore.computed_size[node.id]) {
-			console.log("RERUN", layoutStore.computed_size[node.id].width, layoutStore.computed_size[node.id].height);
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(
 				layoutStore.computed_size[node.id].width,
@@ -76,9 +75,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 				ignore: true,
 			});
 		}
-		return (() => {
 
-		});
 	}, [layoutStore.computed_size[node.id]]);
 
 	const childrenWithProps = React.Children.map(children, child =>
