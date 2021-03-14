@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { Component } from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,6 +8,7 @@ import { Compartment } from "./visual_components/Compartment";
 import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
 import { Canvas } from "./Canvas"
+import { Vertices } from "@antv/x6/lib/registry/tool/vertices";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -42,12 +43,12 @@ const VericalBox = observer((props: any) => {
 			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
 		}
 		else {
-			propertyFields = [ [ 'sh:property', data['property']['@id'] ] ];
+			propertyFields = [['sh:property', data['property']['@id']]];
 		}
 	}
 
 	return (
-		<NodeBox node={node} edges={propertyFields} parent_id={parent_id}>
+		<NodeBox node={node} edges={[]} parent_id={parent_id}>
 			{(generalFields.length > 0)
 				? <WrapBox header="General" data={generalFields} />
 				: <></>}
@@ -95,12 +96,56 @@ const FieldBox = observer((props: any) => {
 	);
 });
 
-export const Graph = (props: any) => {
+const CircleNode = observer((props: any) => {
+	const { data, parent_id } = props;
+
+	const node = {
+		id: data["@id"],
+		size: { width: 80, height: 80 },
+		zIndex: 0,
+		position: randPos(),
+		shape: "circle",
+		label: data["@id"]
+	}
+
+	let propertyFields = [] as any;
+	if (data['property']) {
+		if (Array.isArray(data['property'])) {
+			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
+		}
+		else {
+			propertyFields = [['sh:property', data['property']['@id']]];
+		}
+	}
 
 	return (
-		<Canvas width={graphWidth} height={graphHeight}>
-			{props.data.shapes.map(shape => <VericalBox key={shape['@id']} data={shape} />)}
-			{props.data.properties.map(shape => <VericalBox key={shape['@id']} data={shape} />)}
-		</Canvas>
+		<NodeBox node={node} edges={[]} parent_id={parent_id} />
+	);
+});
+
+export const Graph = (props: any) => {
+
+	const [class_diagram, set_class_diagram] = React.useState<boolean>(false);
+
+	const shapes = [...props.data.shapes, ...props.data.properties];
+	
+	const render_children = () => {
+		if (class_diagram) {
+			return shapes.map(shape =>
+				<VericalBox key={shape['@id']} data={shape} />);
+		}
+		else {
+			return shapes.map(shape =>
+				<CircleNode key={shape['@id']} data={shape} />)
+		}
+	};
+
+	return (
+		<div>
+			<button onClick={() => set_class_diagram(!class_diagram)}> Switch! </button>
+			<Canvas width={graphWidth} height={graphHeight}>
+				{render_children()}
+			</Canvas>
+		</div>
 	);
 }

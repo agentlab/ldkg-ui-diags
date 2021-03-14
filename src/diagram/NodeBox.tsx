@@ -21,8 +21,8 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 			const res = graphStore.graph.addNode(node);
 		}
 		else {
-			const parent: Cell = (graphStore.graph as Graph).getCell(parent_id);
 			const child = (graphStore.graph as Graph).addNode(node);
+			const parent: Cell = (graphStore.graph as Graph).getCell(parent_id);
 			parent.addChild(child);
 		}
 		setRendered(true);
@@ -36,6 +36,10 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 			});
 			graphStore.deleteEdge(node.id)
 		}
+
+		return (() => {
+			(graphStore.graph as Graph).removeNode(node.id);
+		});
 
 	}, [node, parent_id, graphStore.graph]);
 
@@ -59,7 +63,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 
 	React.useEffect(() => {
 		if (layoutStore.computed_size[node.id]) {
-			console.log("RERUN", layoutStore.computed_size[node.id].width,  layoutStore.computed_size[node.id].height);
+			console.log("RERUN", layoutStore.computed_size[node.id].width, layoutStore.computed_size[node.id].height);
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(
 				layoutStore.computed_size[node.id].width,
@@ -72,6 +76,9 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 				ignore: true,
 			});
 		}
+		return (() => {
+
+		});
 	}, [layoutStore.computed_size[node.id]]);
 
 	const childrenWithProps = React.Children.map(children, child =>

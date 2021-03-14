@@ -5,12 +5,14 @@ import { Graph, Node, } from "@antv/x6";
 // import "@antv/x6-react-shape";
 import { ReactShape } from "@antv/x6-react-shape";
 import * as kiwi from "kiwi.js";
+import { toJS, observable, action } from 'mobx'
 
 export const layoutContext = React.createContext<any>(null);
 export const graphContext = React.createContext<any>(null);
 
 export const Canvas = ({ children, width, height }) => {
 	const refContainer = React.useRef<any>();
+	const [callbacks_binded, set_callbacks_binded] = React.useState<boolean>(false);
 
 	const graphStore = useLocalObservable(() => ({
 		graph: undefined as any,
@@ -35,7 +37,11 @@ export const Canvas = ({ children, width, height }) => {
 		addEdge(dest_id: string, src_id: string, label: string) {
 			graphStore.deferredEdges[dest_id] = [src_id, label];
 		}
-	}));
+	}), 
+	{
+		graph: observable.ref,
+		deferredEdges: observable
+	});
 
 	React.useEffect(() => {
 		try {
@@ -110,7 +116,8 @@ export const Canvas = ({ children, width, height }) => {
 
 			if (type === "add") {
 				layoutStore.add_node(node);
-			} else if (type === "embed") {
+			}
+			else if (type === "embed") {
 
 				// remove from old parent
 				if (e.previous) {
@@ -161,14 +168,45 @@ export const Canvas = ({ children, width, height }) => {
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
 
-			} else if (type === "move") {
+			}
+			else if (type === "move") {
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
-			} else if (type === "resize") {
+			}
+			else if (type === "resize") {
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].width, node.size().width);
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].height, node.size().height);
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].left, node.position().x);
 				layoutStore.solver.suggestValue(layoutStore.size_data[node.id].top, node.position().y);
+			}
+			else if (type === "remove") {
+				const removed = layoutStore.size_data[node.id];
+
+				if (removed.parent) {
+					const parent_id = layoutStore.size_data[node.id].parent.id;
+					const parent = layoutStore.size_data[parent_id];
+					layoutStore.solver.removeConstraint(parent.children.data[node.id]);
+					delete parent.children.data[node.id];
+	
+					layoutStore.update_parent(parent_id);
+
+					for (const constraint of removed.parent.constraints) {
+						layoutStore.solver.removeConstraint(constraint);
+					}
+				}
+				
+				// TODO: remove children
+
+				for (const constraint of removed.constraints) {
+					layoutStore.solver.removeConstraint(constraint);
+				}
+				layoutStore.solver.removeEditVariable(removed.top);
+				layoutStore.solver.removeEditVariable(removed.left);
+				layoutStore.solver.removeEditVariable(removed.width);
+				layoutStore.solver.removeEditVariable(removed.height);
+
+				delete layoutStore.size_data[node.id];
+				delete layoutStore.computed_size[node.id];
 			}
 
 			layoutStore.solver.updateVariables();
@@ -206,18 +244,27 @@ export const Canvas = ({ children, width, height }) => {
 					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.weak);
 					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.strong);
 					n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
-				} else if (node.shape === "compartment") {
+				}
+				else if (node.shape === "compartment") {
 					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.medium);
 					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.medium);
 					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.weak);
 					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
 					n.padding = { top: 30, bottom: 5, left: 5, right: 5 };
-				} else {
+				}
+				else if (node.shape === "group") {
 					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
 					n.padding = { top: 40, bottom: 5, left: 5, right: 5 };
+				}
+				else {
+					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.strong);
+					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
+					n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
 				}
 
 				layoutStore.solver.suggestValue(n.left, node.position().x);
@@ -252,10 +299,15 @@ export const Canvas = ({ children, width, height }) => {
 				layoutStore.solver.addConstraint(parent.children.constraint);
 			}
 		}
-	}));
+	}),
+	{
+		solver: observable.ref,
+		size_data: observable,
+		computed_size: observable
+	});
 
 	React.useEffect(() => {
-		if (graphStore.graph) {
+		if (graphStore.graph && !callbacks_binded) {
 			graphStore.graph.on("node:resized", (e: any) => {
 				if (e.options && e.options.ignore) {
 					return;
@@ -274,8 +326,13 @@ export const Canvas = ({ children, width, height }) => {
 			graphStore.graph.on("node:change:parent", (e) => {
 				layoutStore.size_calc(e, "embed");
 			});
+			graphStore.graph.on("node:removed", (e) => {
+				layoutStore.size_calc(e, "remove");
+			});
+			
+			set_callbacks_binded(true);
 		}
-	}, [graphStore.graph, layoutStore]);
+	}, [graphStore.graph]);
 
 	return (
 		<div className="app-wrap">
