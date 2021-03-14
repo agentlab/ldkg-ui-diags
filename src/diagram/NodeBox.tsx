@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { Graph, Node, Cell } from "@antv/x6";
 
 import { graphContext, layoutContext } from "./Canvas"
+import { toJS } from "mobx";
 
 const no_parent = Symbol('no_parent');
 
@@ -39,6 +40,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	}, [node, parent_id, graphStore.graph]);
 
 	React.useEffect(() => {
+		// console.log("RESIZE", toJS(layoutStore.computed_size[node.id]));
 		if (layoutStore.computed_size[node.id]) {
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(

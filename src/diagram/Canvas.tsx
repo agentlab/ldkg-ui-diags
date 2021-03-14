@@ -106,6 +106,8 @@ export const Canvas = ({ children, width, height }) => {
 			console.log(type, e);
 			const node: Node = e.node;
 
+			let changed_ids = layoutStore.propogate_updates(layoutStore.get_root(node.id));
+
 			if (type === "add") {
 				layoutStore.add_node(node);
 			}
@@ -201,20 +203,45 @@ export const Canvas = ({ children, width, height }) => {
 				delete layoutStore.computed_size[node.id];
 			}
 
+			changed_ids = [...changed_ids, ...layoutStore.propogate_updates(layoutStore.get_root(node.id))];
+
 			layoutStore.solver.updateVariables();
-			for (const [id, sizes] of Object.entries(layoutStore.size_data) as any) {
-				const updated = {
+			for (const id of changed_ids) {
+				const sizes = layoutStore.size_data[id];
+				if (!sizes) { // node deleted
+					continue;
+				}
+				layoutStore.computed_size[id] = {
 					width: sizes.width.value(),
 					height: sizes.height.value(),
 					top: sizes.top.value(),
 					left: sizes.left.value(),
-				}
-				const current = layoutStore.computed_size[id];
-				if (!Object.keys(current).every(key => current[key] === updated[key])) {
-					layoutStore.computed_size[id] = updated;
-				}
+				};
 			}
 
+		},
+		propogate_updates(root_id: string) {
+			let changed_ids: any = new Set([root_id]);
+			const current = layoutStore.size_data[root_id];
+			if (!current) {
+				return changed_ids;
+			}
+			for (const child_id of Object.keys(current.children.data)) {
+				changed_ids = [...changed_ids, ...layoutStore.propogate_updates(child_id)];
+			}
+			return changed_ids;
+		},
+		get_root(id: string) {
+			let current = layoutStore.size_data[id];
+			let c_id = id;
+			if (!current) {
+				return c_id;
+			}
+			while (current.parent) {
+				c_id = current.parent.id;
+				current = layoutStore.size_data[c_id];
+			}
+			return c_id;
 		},
 		add_node(node: Node) {
 			if (!layoutStore.size_data[node.id]) {
