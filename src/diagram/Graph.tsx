@@ -7,8 +7,8 @@ import { NodeShape } from "./visual_components/NodeShape";
 import { Compartment } from "./visual_components/Compartment";
 import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
+import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
-import { Vertices } from "@antv/x6/lib/registry/tool/vertices";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -19,6 +19,38 @@ const randPos = () => {
 		y: Math.random() * (graphHeight - 100),
 	};
 };
+
+const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
+
+	const edge = {
+		id: uuidv4(),
+		target: target_id,
+		label: label,
+		router: {
+			name: 'normal'
+		}
+	};
+
+	return (
+		<EdgeBox edge={edge} parent_id={parent_id} />
+	);
+});
+
+const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
+
+	const edge = {
+		id: uuidv4(),
+		target: target_id,
+		label: label,
+		router: {
+			name: 'manhattan'
+		}
+	};
+
+	return (
+		<EdgeBox edge={edge} parent_id={parent_id} />
+	);
+});
 
 const VericalBox = observer((props: any) => {
 	const { data, parent_id } = props;
@@ -53,7 +85,11 @@ const VericalBox = observer((props: any) => {
 				? <WrapBox header="General" data={generalFields} />
 				: <></>}
 			{(propertyFields.length > 0)
-				? <WrapBox header="Properties" data={propertyFields} />
+				? [
+					<WrapBox header="Properties" data={propertyFields} />,
+					...propertyFields.map(([label, dest_id], idx) =>
+						<SquareEdge key={idx} target_id={dest_id} label={label} />)
+					]
 				: <></>}
 		</NodeBox>
 	);
@@ -111,9 +147,6 @@ const CircleNode = observer((props: any) => {
 				fill: '#efdbff',
 				stroke: '#9254de',
 			},
-			label: {
-				backgroundColor: 'black'
-			}
 		},
 	}
 
@@ -128,13 +161,16 @@ const CircleNode = observer((props: any) => {
 	}
 
 	return (
-		<NodeBox node={node} edges={[]} parent_id={parent_id} />
+		<NodeBox node={node} parent_id={parent_id}>
+			{propertyFields.map(([label, dest_id], idx) =>
+				<DirectEdge key={idx} target_id={dest_id} label={label} />)}
+		</NodeBox>
 	);
 });
 
 export const Graph = (props: any) => {
 
-	const [class_diagram, set_class_diagram] = React.useState<boolean>(false);
+	const [class_diagram, set_class_diagram] = React.useState<boolean>(true);
 
 	const shapes = [...props.data.shapes, ...props.data.properties];
 

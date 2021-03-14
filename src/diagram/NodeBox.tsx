@@ -5,6 +5,8 @@ import { Graph, Node, Cell } from "@antv/x6";
 
 import { graphContext, layoutContext } from "./Canvas"
 
+const no_parent = Symbol('no_parent');
+
 export const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
 	const graphStore = React.useContext(graphContext);
 	const layoutStore = React.useContext(layoutContext);
@@ -14,7 +16,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 		if (!graphStore.graph) {
 			return;
 		}
-		if (parent_id === -1) { // parent not available
+		if (parent_id === no_parent) { // parent not available
 			return;
 		}
 		if (parent_id === null) { // no parent, render to canvas
@@ -27,39 +29,14 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 		}
 		setRendered(true);
 
-		if (graphStore.hasEdge(node.id)) {
-			const [src_id, label] = graphStore.getEdge(node.id);
-			(graphStore.graph as Graph).addEdge({
-				source: src_id,
-				target: node.id,
-				label: label,
-			});
-			graphStore.deleteEdge(node.id)
-		}
+		graphStore.addNode(node.id);
 
 		return (() => {
 			(graphStore.graph as Graph).removeNode(node.id);
+			graphStore.deleteNode(node.id);
 		});
 
 	}, [node, parent_id, graphStore.graph]);
-
-	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
-		}
-		for (const [label, dest_id] of edges) {
-			if ((graphStore.graph as Graph).hasCell(dest_id)) {
-				graphStore.addEdge({
-					source: node.id,
-					target: dest_id,
-					label: label,
-				});
-			}
-			else {
-				graphStore.addEdge(dest_id, node.id, label);
-			}
-		}
-	}, [edges, node.id, graphStore.graph]);
 
 	React.useEffect(() => {
 		if (layoutStore.computed_size[node.id]) {
@@ -79,7 +56,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	}, [layoutStore.computed_size[node.id]]);
 
 	const childrenWithProps = React.Children.map(children, child =>
-		React.cloneElement(child, { parent_id: rendered ? node.id : -1 })
+		React.cloneElement(child, { parent_id: rendered ? node.id : no_parent })
 	);
 
 	return (

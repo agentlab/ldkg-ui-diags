@@ -16,7 +16,7 @@ export const Canvas = ({ children, width, height }) => {
 
 	const graphStore = useLocalObservable(() => ({
 		graph: undefined as any,
-		deferredEdges: {} as any,
+		nodes: observable.set() as any,
 		setGraph(graph: any) {
 			graphStore.graph = graph;
 		},
@@ -24,23 +24,15 @@ export const Canvas = ({ children, width, height }) => {
 			return graphStore.graph;
 		},
 
-		deleteEdge(id: string) {
-			const { [id]: _, ...newEdges } = graphStore.deferredEdges;
-			graphStore.deferredEdges = newEdges;
+		addNode(id: string) {
+			graphStore.nodes.add(id);
 		},
-		hasEdge(id: string) {
-			return (id in graphStore.deferredEdges);
+		deleteNode(id: string) {
+			graphStore.nodes.delete(id);
 		},
-		getEdge(id: string) {
-			return graphStore.deferredEdges[id];
-		},
-		addEdge(dest_id: string, src_id: string, label: string) {
-			graphStore.deferredEdges[dest_id] = [src_id, label];
-		}
 	}),
 		{
 			graph: observable.ref,
-			deferredEdges: observable
 		});
 
 	React.useEffect(() => {
