@@ -20,6 +20,18 @@ const randPos = () => {
 	};
 };
 
+const prepare_array = (obj: any) => {
+	if (!obj) {
+		return [];
+	}
+	if (Array.isArray(obj)) {
+		return obj;
+	}
+	else {
+		return [obj];
+	}
+}
+
 const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
 
 	const edge = {
@@ -69,15 +81,8 @@ const VericalBox = observer((props: any) => {
 	const generalFields = Object.entries(data)
 		.filter(([key, val]) => (key !== 'property' && key !== '@id'));
 
-	let propertyFields = [] as any;
-	if (data['property']) {
-		if (Array.isArray(data['property'])) {
-			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
-		}
-		else {
-			propertyFields = [['sh:property', data['property']['@id']]];
-		}
-	}
+	const propertyFields = prepare_array(data['property'])
+		.map((prop) => ['sh:property', prop['@id']]);
 
 	return (
 		<NodeBox node={node} edges={[]} parent_id={parent_id}>
@@ -89,7 +94,7 @@ const VericalBox = observer((props: any) => {
 					<WrapBox header="Properties" data={propertyFields} />,
 					...propertyFields.map(([label, dest_id], idx) =>
 						<SquareEdge key={idx} target_id={dest_id} label={label} />)
-					]
+				]
 				: <></>}
 		</NodeBox>
 	);
@@ -150,15 +155,8 @@ const CircleNode = observer((props: any) => {
 		},
 	}
 
-	let propertyFields = [] as any;
-	if (data['property']) {
-		if (Array.isArray(data['property'])) {
-			propertyFields = data['property'].map((prop) => ['sh:property', prop['@id']]);
-		}
-		else {
-			propertyFields = [['sh:property', data['property']['@id']]];
-		}
-	}
+	const propertyFields = prepare_array(data['property'])
+		.map((prop) => ['sh:property', prop['@id']]);
 
 	return (
 		<NodeBox node={node} parent_id={parent_id}>
