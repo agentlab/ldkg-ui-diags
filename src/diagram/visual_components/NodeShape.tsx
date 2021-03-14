@@ -30,7 +30,7 @@ class NodeShape extends React.Component<{
 					style={{
 						backgroundColor: '#5c00b3',
 						color: 'white',
-						padding: 4,
+						paddingLeft: 5,
 						height: 25,
 
 						whiteSpace: "nowrap",
@@ -39,15 +39,6 @@ class NodeShape extends React.Component<{
 					}}
 				>
 					{this.props.text}
-				</div>
-				<div
-					style={{
-
-						whiteSpace: "nowrap",
-						overflow: "hidden",
-						textOverflow: "ellipsis",
-					}}
-				>
 				</div>
 			</div>
 		);

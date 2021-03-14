@@ -2,10 +2,9 @@
 import React from "react";
 import { useLocalObservable } from "mobx-react-lite";
 import { Graph, Node, } from "@antv/x6";
-// import "@antv/x6-react-shape";
 import { ReactShape } from "@antv/x6-react-shape";
 import * as kiwi from "kiwi.js";
-import { toJS, observable, action } from 'mobx'
+import { toJS, observable } from 'mobx'
 
 export const layoutContext = React.createContext<any>(null);
 export const graphContext = React.createContext<any>(null);
@@ -258,8 +257,8 @@ export const Canvas = ({ children, width, height }) => {
 				const n = layoutStore.size_data[node.id];
 
 				n.constraints = [
-					new kiwi.Constraint(n.width, kiwi.Operator.Ge, 200, kiwi.Strength.required),
-					new kiwi.Constraint(n.height, kiwi.Operator.Ge, 35, kiwi.Strength.required)
+					new kiwi.Constraint(n.width, kiwi.Operator.Ge, 120, kiwi.Strength.required),
+					new kiwi.Constraint(n.height, kiwi.Operator.Ge, 20, kiwi.Strength.required)
 				];
 
 				if (node.shape === "field") {
@@ -274,14 +273,14 @@ export const Canvas = ({ children, width, height }) => {
 					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.medium);
 					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.weak);
 					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
-					n.padding = { top: 30, bottom: 5, left: 5, right: 5 };
+					n.padding = { top: 20, bottom: 3, left: 3, right: 3 };
 				}
 				else if (node.shape === "group") {
 					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.left, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.width, kiwi.Strength.strong);
 					layoutStore.solver.addEditVariable(n.height, kiwi.Strength.weak);
-					n.padding = { top: 40, bottom: 5, left: 5, right: 5 };
+					n.padding = { top: 30, bottom: 3, left: 3, right: 3 };
 				}
 				else {
 					layoutStore.solver.addEditVariable(n.top, kiwi.Strength.strong);

@@ -20,12 +20,11 @@ class NodeField extends React.Component<{
 			<div
 				style={{
 					backgroundColor: "white",
-					// border: "2px solid black",
 					boxSizing: "border-box",
 
 					width: "100%",
 					height: "100%",
-					padding: 4,
+					paddingLeft: 3,
 
 					whiteSpace: "nowrap",
 					overflow: "hidden",

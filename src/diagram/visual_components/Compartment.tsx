@@ -29,8 +29,7 @@ class Compartment extends React.Component<{
 				<div
 					style={{
 						backgroundColor: '#ab80ff',
-						padding: 4,
-						// border: "2px solid black",
+						paddingLeft: 5,
 						height: 20,
 
 						whiteSpace: "nowrap",
@@ -39,15 +38,6 @@ class Compartment extends React.Component<{
 					}}
 				>
 					{this.props.text}
-				</div>
-				<div
-					style={{
-
-						whiteSpace: "nowrap",
-						overflow: "hidden",
-						textOverflow: "ellipsis",
-					}}
-				>
 				</div>
 			</div>
 		);
