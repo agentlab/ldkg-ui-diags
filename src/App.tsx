@@ -1,16 +1,16 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import { Spin } from "antd";
-import EditorToolbar from './EditorToolbar'
+import EditorToolbar from './components/editor/Toolbar/EditorToolbar'
 import styles from './Editor.module.css'
 
 import "./App.css";
 
 import { rmRepositoryParam } from "./config";
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./diagram/get_data";
-import { Graph } from "./diagram/Graph";
+import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
+import { Graph } from "./components/diagram/Graph";
 
 const App = observer(() => {
 	let shapes: any = [];

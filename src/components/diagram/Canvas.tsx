@@ -2,7 +2,7 @@
 import React from "react";
 import { Graph } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
-import useGraph from '../stores/graph'
+import useGraph from '../../stores/graph'
 import useMinimap from './visual_components/minimap'
 
 export const Canvas = ({ children, width, height, minimapRef }) => {

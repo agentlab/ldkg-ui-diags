@@ -8,7 +8,7 @@ import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
-import useGraph from "../stores/graph";
+import useGraph from "../../stores/graph";
 
 const graphWidth = 800;
 const graphHeight = 600;

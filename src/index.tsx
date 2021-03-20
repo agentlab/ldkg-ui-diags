@@ -6,7 +6,7 @@ import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { rootStore } from "./diagram/get_data";
+import { rootStore } from './components/diagram/get_data'
 
 const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
