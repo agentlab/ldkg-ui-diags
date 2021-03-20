@@ -1,13 +1,22 @@
 import { action, makeObservable, observable } from 'mobx'
 import * as kiwi from "kiwi.js";
 import { Node } from "@antv/x6";
-import React from 'react';
 
 export default class LayoutStore {
   solver;
   size_data;
   computed_size;
   isClassDiagram = true;
+  gridOptions = {
+    type: 'mesh',
+    size: 10,
+    color: '#e5e5e5',
+    thickness: 1,
+    colorSecond: '#d0d0d0',
+    thicknessSecond: 1,
+    factor: 4,
+    bgColor: 'transparent',
+  }
 
   constructor() {
     this.solver = new kiwi.Solver();
@@ -18,11 +27,13 @@ export default class LayoutStore {
       size_data: observable,
       computed_size: observable,
       isClassDiagram: observable,
+      gridOptions: observable,
       size_calc: action,
       propogate_updates: action,
       get_root: action,
       add_node: action,
-      update_parent: action
+      update_parent: action,
+      setGridAttr: action
     });
   }
 
@@ -263,4 +274,7 @@ export default class LayoutStore {
     this.isClassDiagram = !this.isClassDiagram;
   }
 
+  setGridAttr(key: string, value: any) {
+    this.gridOptions[key] = value;
+  }
 }

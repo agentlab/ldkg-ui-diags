@@ -33,20 +33,7 @@ export const Canvas = ({ children, width, height, minimapRef }) => {
 			width: width,
 			height: height,
 			grid: {
-				size: 10,
 				visible: true,
-				type: 'dot',
-				args: [
-          {
-            color: '#cccccc',
-            thickness: 1,
-          },
-          {
-            color: '#5F95FF',
-            thickness: 1,
-            factor: 4,
-          },
-        ],
 			},
 			resizing: {
 				enabled: true,

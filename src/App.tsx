@@ -11,6 +11,7 @@ import "./App.css";
 import { rmRepositoryParam } from "./config";
 import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
 import { Graph } from "./components/diagram/Graph";
+import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 
 const App = observer(() => {
 	let shapes: any = [];
@@ -65,7 +66,7 @@ const App = observer(() => {
 						( <Spin/> )}
 				</div>
 				<div className={styles.config}>
-					<span>Config panel</span>
+					<ConfigPanel />
 				</div>
 			</div>
 		</div>
