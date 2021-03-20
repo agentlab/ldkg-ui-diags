@@ -3,12 +3,14 @@ import React from "react";
 import { Graph } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
 import useGraph from '../stores/graph'
+import useMinimap from './visual_components/minimap'
 
-export const Canvas = ({ children, width, height }) => {
+export const Canvas = ({ children, width, height, minimapRef }) => {
 	const refContainer = React.useRef<any>();
 	const [callbacks_binded, set_callbacks_binded] = React.useState<boolean>(false);
 
 	const {graphStore, layoutStore} = useGraph();
+	const minimap = useMinimap(minimapRef.current);
 
 	React.useEffect(() => {
 		try {
@@ -59,6 +61,7 @@ export const Canvas = ({ children, width, height }) => {
         pageBreak: false,
         pannable: true,
       },
+			minimap,
 			embedding: {
 				enabled: true,
 				findParent: "center",

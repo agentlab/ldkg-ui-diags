@@ -184,7 +184,7 @@ export const Graph = observer((props: any) => {
 	};
 
 	return (
-		<Canvas width={graphWidth} height={graphHeight}>
+		<Canvas width={graphWidth} height={graphHeight} minimapRef={props.minimapRef}>
 			{render_children()}
 		</Canvas>
 	);

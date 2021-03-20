@@ -24,6 +24,11 @@
       height: 100%;
       border-right: 1px solid rgba(0, 0, 0, 0.08);
     }
+
+  .wrap .content .sider .minimap {
+    position: absolute;
+    bottom: 0
+  }
     
     .wrap .content .panel {
       height: 100%;

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
@@ -14,6 +15,8 @@ import { Graph } from "./diagram/Graph";
 const App = observer(() => {
 	let shapes: any = [];
 	let properties: any = [];
+	const minimapContainer = useRef<HTMLDivElement>(null);
+
 	if (Object.keys(rootStore.ns.currentJs).length < 5) {
 		rootStore.setId(rmRepositoryParam['Repository ID']);
 		rootStore.ns.reloadNs();
@@ -49,6 +52,7 @@ const App = observer(() => {
 			<div className={styles.content}>
 				<div id="stencil" className={styles.sider} >
 					<span>Panel</span>
+					<div className={styles.minimap} ref={minimapContainer} />
 				</div>
 				<div className={styles.panel}>
 					<div className={styles.toolbar}>
@@ -56,7 +60,7 @@ const App = observer(() => {
 					</div>
 					{(properties.length > 0 && shapes.length > 0)
 					?
-						( <Graph data={{shapes, properties}} /> )
+						( <Graph data={{shapes, properties}} minimapRef={minimapContainer} /> )
 					: 
 						( <Spin/> )}
 				</div>
