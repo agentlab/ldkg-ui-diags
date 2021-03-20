@@ -1,5 +1,4 @@
 
-import React, { Component } from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,6 +8,7 @@ import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
+import useGraph from "../stores/graph";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -166,14 +166,14 @@ const CircleNode = observer((props: any) => {
 	);
 });
 
-export const Graph = (props: any) => {
+export const Graph = observer((props: any) => {
 
-	const [class_diagram, set_class_diagram] = React.useState<boolean>(true);
+	const {layoutStore} = useGraph();
 
 	const shapes = [...props.data.shapes, ...props.data.properties];
 
 	const render_children = () => {
-		if (class_diagram) {
+		if (layoutStore.isClassDiagram) {
 			return shapes.map(shape =>
 				<VericalBox key={shape['@id']} data={shape} />);
 		}
@@ -184,11 +184,8 @@ export const Graph = (props: any) => {
 	};
 
 	return (
-		<div>
-			<button onClick={() => set_class_diagram(!class_diagram)}> Switch! </button>
-			<Canvas width={graphWidth} height={graphHeight}>
-				{render_children()}
-			</Canvas>
-		</div>
+		<Canvas width={graphWidth} height={graphHeight}>
+			{render_children()}
+		</Canvas>
 	);
-}
+});

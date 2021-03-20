@@ -7,6 +7,7 @@ export default class LayoutStore {
   solver;
   size_data;
   computed_size;
+  isClassDiagram = true;
 
   constructor() {
     this.solver = new kiwi.Solver();
@@ -16,6 +17,7 @@ export default class LayoutStore {
       solver: observable.ref,
       size_data: observable,
       computed_size: observable,
+      isClassDiagram: observable,
       size_calc: action,
       propogate_updates: action,
       get_root: action,
@@ -255,6 +257,10 @@ export default class LayoutStore {
       parent.children.constraint = new kiwi.Constraint(parent_size.plus(parent.padding.bottom), kiwi.Operator.Eq, parent.height, kiwi.Strength.required);
       this.solver.addConstraint(parent.children.constraint);
     }
+  }
+
+  switchShape() {
+    this.isClassDiagram = !this.isClassDiagram;
   }
 
 }

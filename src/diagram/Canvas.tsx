@@ -34,17 +34,31 @@ export const Canvas = ({ children, width, height }) => {
 				size: 10,
 				visible: true,
 				type: 'dot',
-				args: {
-					color: '#a0a0a0',
-					thickness: 2,
-				},
-			},
-			background: {
-				color: '#ededed',
+				args: [
+          {
+            color: '#cccccc',
+            thickness: 1,
+          },
+          {
+            color: '#5F95FF',
+            thickness: 1,
+            factor: 4,
+          },
+        ],
 			},
 			resizing: {
 				enabled: true,
 			},
+			history: true,
+      clipboard: {
+        enabled: true,
+      },
+			scroller: {
+        enabled: true,
+        pageVisible: true,
+        pageBreak: false,
+        pannable: true,
+      },
 			embedding: {
 				enabled: true,
 				findParent: "center",
@@ -72,6 +86,27 @@ export const Canvas = ({ children, width, height }) => {
 		graphStore.setGraph(g);
 
 	}, []);
+
+	const getContainerSize = () => {
+    return {
+      width: document.body.offsetWidth - 581,
+      height: document.body.offsetHeight - 90,
+    }
+  }
+
+  React.useEffect(() => {
+
+    const resizeFn = () => {
+      const { width, height } = getContainerSize()
+			graphStore.graph.resize(width, height)
+    }
+    resizeFn()
+
+    window.addEventListener('resize', resizeFn)
+    return () => {
+      window.removeEventListener('resize', resizeFn)
+    }
+  }, [graphStore.graph])
 
 	React.useEffect(() => {
 		if (graphStore.graph && !callbacks_binded) {
@@ -102,8 +137,8 @@ export const Canvas = ({ children, width, height }) => {
 	}, [graphStore.graph]);
 
 	return (
-		<div id="container" ref={refContainer} className="x6-graph">
-			{children}
-		</div>
+			<div id="container" ref={refContainer} className="x6-graph">
+				{children}
+			</div>
 	);
 }

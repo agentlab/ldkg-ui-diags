@@ -1,8 +1,9 @@
-import React from "react";
 import { getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
 import { Spin } from "antd";
+import EditorToolbar from './EditorToolbar'
+import styles from './Editor.module.css'
 
 import "./App.css";
 
@@ -40,11 +41,31 @@ const App = observer(() => {
 			}
 		}
 	}	
-	return (properties.length > 0 && shapes.length > 0)
-		?
-			( <Graph data={{shapes, properties}} /> )
-		: 
-			( <Spin/> );
+	return (
+		<div className={styles.wrap}>
+			<div className={styles.header}>
+				<span>Diagram Editor Demo</span>
+			</div>
+			<div className={styles.content}>
+				<div id="stencil" className={styles.sider} >
+					<span>Panel</span>
+				</div>
+				<div className={styles.panel}>
+					<div className={styles.toolbar}>
+						<EditorToolbar />
+					</div>
+					{(properties.length > 0 && shapes.length > 0)
+					?
+						( <Graph data={{shapes, properties}} /> )
+					: 
+						( <Spin/> )}
+				</div>
+				<div className={styles.config}>
+					<span>Config panel</span>
+				</div>
+			</div>
+		</div>
+	)
 });
 
 export default App;
