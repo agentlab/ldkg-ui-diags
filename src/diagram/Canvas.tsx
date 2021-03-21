@@ -364,7 +364,6 @@ export const Canvas = ({ children, width, height }) => {
 
 	return (
 		<div className="app-wrap">
-			<div ref={refContainer} className="app-content" />
 			{graphStore.graph
 				? <graphContext.Provider value={graphStore}>
 					<layoutContext.Provider value={layoutStore}>
@@ -373,6 +372,7 @@ export const Canvas = ({ children, width, height }) => {
 				</graphContext.Provider>
 				: <></>
 			}
+			<div ref={refContainer} className="app-content" />
 		</div>
 	);
 }

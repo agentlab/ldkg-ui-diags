@@ -1,5 +1,5 @@
 
-import React, { Component } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,6 +9,7 @@ import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
+import { Stencil } from "./Stencil"
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -173,6 +174,43 @@ export const Graph = (props: any) => {
 
 	const shapes = [...props.data.shapes, ...props.data.properties];
 
+	const render_stencil = () => {
+		const nodeShape = {
+			id: "Node Shape",
+			size: { width: 140, height: 40 },
+			zIndex: 0,
+			shape: "group",
+			component(_) {
+				return <NodeShape text={"Node Shape"} />;
+			},
+		};
+		const nodeField = {
+			id: "Node Field",
+			size: { width: 140, height: 40 },
+			zIndex: 2,
+			shape: "field",
+			component(_) {
+				return <NodeField text={"Node Field"} />;
+			},
+		};
+		const nodeCircle = {
+			id: "Node Circle",
+			size: { width: 80, height: 80 },
+			zIndex: 0,
+			shape: "circle",
+			label: "Node Circle",
+			attrs: {
+				body: {
+					fill: '#efdbff',
+					stroke: '#9254de',
+				},
+			},
+		};
+		return class_diagram
+			? <Stencil nodes={[nodeField, nodeShape]} />
+			: <Stencil nodes={[nodeCircle]} />;
+	};
+
 	const render_children = () => {
 		if (class_diagram) {
 			return shapes.map(shape =>
@@ -188,6 +226,7 @@ export const Graph = (props: any) => {
 		<div>
 			<button onClick={() => set_class_diagram(!class_diagram)}> Switch! </button>
 			<Canvas width={graphWidth} height={graphHeight}>
+				{render_stencil()}
 				{render_children()}
 			</Canvas>
 		</div>
