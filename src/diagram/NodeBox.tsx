@@ -14,10 +14,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	const [rendered, setRendered] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
-		}
-		if (parent_id === no_parent) { // parent not available
+		if (parent_id === no_parent) { // parent not available, just wait
 			return;
 		}
 		if (parent_id === null) { // no parent, render to canvas

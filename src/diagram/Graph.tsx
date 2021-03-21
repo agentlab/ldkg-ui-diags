@@ -167,6 +167,7 @@ const CircleNode = observer((props: any) => {
 });
 
 export const Graph = (props: any) => {
+	// console.log("tmp");
 
 	const [class_diagram, set_class_diagram] = React.useState<boolean>(true);
 

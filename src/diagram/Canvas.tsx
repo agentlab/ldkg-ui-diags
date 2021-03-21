@@ -365,11 +365,14 @@ export const Canvas = ({ children, width, height }) => {
 	return (
 		<div className="app-wrap">
 			<div ref={refContainer} className="app-content" />
-			<graphContext.Provider value={graphStore}>
-				<layoutContext.Provider value={layoutStore}>
-					{children}
-				</layoutContext.Provider>
-			</graphContext.Provider>
+			{graphStore.graph
+				? <graphContext.Provider value={graphStore}>
+					<layoutContext.Provider value={layoutStore}>
+						{children}
+					</layoutContext.Provider>
+				</graphContext.Provider>
+				: <></>
+			}
 		</div>
 	);
 }
