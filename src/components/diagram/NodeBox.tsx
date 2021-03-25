@@ -2,7 +2,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Graph, Node, Cell } from "@antv/x6";
-import useGraph from "../../stores/graph";
+import { useGraph } from "../../stores/graph";
 
 const no_parent = Symbol('no_parent');
 
@@ -11,10 +11,7 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 	const [rendered, setRendered] = React.useState<boolean>(false);
 
 	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
-		}
-		if (parent_id === no_parent) { // parent not available
+		if (parent_id === no_parent) { // parent not available, just wait
 			return;
 		}
 		if (parent_id === null) { // no parent, render to canvas

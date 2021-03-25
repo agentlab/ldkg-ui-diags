@@ -1,8 +1,8 @@
 
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Graph, Node, Cell } from "@antv/x6";
-import useGraph from "../../stores/graph";
+import { Graph } from "@antv/x6";
+import { useGraph } from "../../stores/graph";
 
 
 export const EdgeBox = observer(({ edge, parent_id }: any) => {
@@ -14,34 +14,14 @@ export const EdgeBox = observer(({ edge, parent_id }: any) => {
 
 	const {graphStore} = useGraph();
 
-	const [rendered, set_rendered] = React.useState<boolean>(false);
-
 	React.useEffect(() => {
-		if (!graphStore.graph) {
-			return;
+		if (graphStore.nodes.has(dest_id)) {
+			(graphStore.graph as Graph).addEdge(graph_edge);
 		}
-		if (!rendered) {
-			if ((graphStore.graph as Graph).hasCell(dest_id)) {
-				(graphStore.graph as Graph).addEdge(graph_edge);
-				set_rendered(true);
-			}
-		}
-
 		return (() => {
 			(graphStore.graph as Graph).removeEdge(graph_edge.id);
 		});
-
-	}, [edge, graphStore.graph]);
-
-	React.useEffect(() => {
-		if (!graphStore.graph || rendered) {
-			return;
-		}
-		if (graphStore.nodes.has(dest_id)) {
-			(graphStore.graph as Graph).addEdge(graph_edge);
-			set_rendered(true);
-		}
-	}, [graphStore.nodes]);
+	}, [graph_edge, graphStore.graph, graphStore.nodes]);
 
 	return (<></>);
 });

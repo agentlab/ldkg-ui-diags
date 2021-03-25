@@ -13,7 +13,7 @@ import {
   RetweetOutlined,
 } from '@ant-design/icons'
 import '@antv/x6-react-components/es/toolbar/style/index.css'
-import useGraph from '../../../stores/graph'
+import { useGraph } from '../../../stores/graph'
 import { observer } from "mobx-react-lite";
 
 const Item = Toolbar.Item
@@ -22,7 +22,7 @@ const Group = Toolbar.Group
 const EditorToolbar = observer(() => {
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
-  const {graphStore, layoutStore} = useGraph();
+  const {graphStore, switchShape} = useGraph();
 
   const copy = () => {
      const { graph } = graphStore
@@ -52,8 +52,8 @@ const EditorToolbar = observer(() => {
     return false
   }
 
-  const switchShape = () => {
-    layoutStore.switchShape()
+  const switchShape2 = () => {
+    switchShape()
     return false;
   }
 
@@ -131,7 +131,7 @@ const EditorToolbar = observer(() => {
         paste()
         break
       case 'switch':
-        switchShape()
+        switchShape2()
         break
       default:
         break
