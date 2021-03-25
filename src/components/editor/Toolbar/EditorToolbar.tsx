@@ -13,7 +13,7 @@ import {
   RetweetOutlined,
 } from '@ant-design/icons'
 import '@antv/x6-react-components/es/toolbar/style/index.css'
-import useGraph from '../../../stores/graph'
+import { useGraph } from '../../../stores/graph'
 import { observer } from "mobx-react-lite";
 
 const Item = Toolbar.Item

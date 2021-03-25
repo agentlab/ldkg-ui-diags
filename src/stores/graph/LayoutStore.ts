@@ -1,42 +1,12 @@
-import { action, makeObservable, observable } from 'mobx'
+import { action, observable } from 'mobx'
 import * as kiwi from "kiwi.js";
 import { Node } from "@antv/x6";
 
-export default class LayoutStore {
-  solver;
-  size_data;
-  computed_size;
-  isClassDiagram = true;
-  gridOptions = {
-    type: 'mesh',
-    size: 10,
-    color: '#e5e5e5',
-    thickness: 1,
-    colorSecond: '#d0d0d0',
-    thicknessSecond: 1,
-    factor: 4,
-    bgColor: 'transparent',
-  }
-
-  constructor() {
-    this.solver = new kiwi.Solver();
-    this.size_data = {};
-    this.computed_size = {};
-    makeObservable(this, {
-      solver: observable.ref,
-      size_data: observable,
-      computed_size: observable,
-      isClassDiagram: observable,
-      gridOptions: observable,
-      size_calc: action,
-      propogate_updates: action,
-      get_root: action,
-      add_node: action,
-      update_parent: action,
-      setGridAttr: action
-    });
-  }
-
+export const layoutStoreConstr = () => ({
+  solver: new kiwi.Solver(),
+  size_data: {},
+  computed_size: {},
+  isClassDiagram: true,
   size_calc(e: any, type: string) {
     console.log(type, e);
     const node: Node = e.node;
@@ -154,8 +124,7 @@ export default class LayoutStore {
       };
     }
 
-  }
-
+  },
   propogate_updates(root_id: string) {
     let changed_ids: any = new Set([root_id]);
     const current = this.size_data[root_id];
@@ -166,9 +135,7 @@ export default class LayoutStore {
       changed_ids = [...changed_ids, ...this.propogate_updates(child_id)];
     }
     return changed_ids;
-  }
-
-
+  },
   get_root(id: string) {
     let current = this.size_data[id];
     let c_id = id;
@@ -180,8 +147,7 @@ export default class LayoutStore {
       current = this.size_data[c_id];
     }
     return c_id;
-  }
-
+  },
   add_node(node: Node) {
     if (!this.size_data[node.id]) {
       this.size_data[node.id] = {
@@ -243,8 +209,7 @@ export default class LayoutStore {
       };
     }
 
-  }
-
+  },
   update_parent(parent_id: string) {
     const parent = this.size_data[parent_id]
     if (parent.children.constraint) {
@@ -268,13 +233,20 @@ export default class LayoutStore {
       parent.children.constraint = new kiwi.Constraint(parent_size.plus(parent.padding.bottom), kiwi.Operator.Eq, parent.height, kiwi.Strength.required);
       this.solver.addConstraint(parent.children.constraint);
     }
-  }
-
+  },
   switchShape() {
     this.isClassDiagram = !this.isClassDiagram;
-  }
+  },
+});
 
-  setGridAttr(key: string, value: any) {
-    this.gridOptions[key] = value;
-  }
+export const layoutStoreAnnot = {
+  solver: observable.ref,
+  size_data: observable,
+  computed_size: observable,
+  isClassDiagram: observable,
+  size_calc: action,
+  propogate_updates: action,
+  get_root: action,
+  add_node: action,
+  update_parent: action,
 }

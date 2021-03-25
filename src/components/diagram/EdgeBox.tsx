@@ -1,8 +1,8 @@
 
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Graph, Node, Cell } from "@antv/x6";
-import useGraph from "../../stores/graph";
+import { Graph } from "@antv/x6";
+import { useGraph } from "../../stores/graph";
 
 
 export const EdgeBox = observer(({ edge, parent_id }: any) => {

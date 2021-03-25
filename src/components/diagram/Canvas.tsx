@@ -2,10 +2,12 @@
 import React from "react";
 import { Graph } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
-import useGraph from '../../stores/graph'
+import { useGraph } from '../../stores/graph'
 import useMinimap from './visual_components/minimap'
 
-export const Canvas = ({ children, width, height, minimapRef }) => {
+
+
+export const Canvas = ({ children, view, width, height, minimapRef }) => {
 	const refContainer = React.useRef<any>();
 	const [callbacks_binded, set_callbacks_binded] = React.useState<boolean>(false);
 
@@ -88,7 +90,7 @@ export const Canvas = ({ children, width, height, minimapRef }) => {
 
     const resizeFn = () => {
       const { width, height } = getContainerSize()
-			graphStore.graph.resize(width, height)
+			graphStore.graph?.resize(width, height)
     }
     resizeFn()
 
@@ -100,25 +102,25 @@ export const Canvas = ({ children, width, height, minimapRef }) => {
 
 	React.useEffect(() => {
 		if (graphStore.graph && !callbacks_binded) {
-			graphStore.graph.on("node:resized", (e: any) => {
+			graphStore.graph?.on("node:resized", (e: any) => {
 				if (e.options && e.options.ignore) {
 					return;
 				}
 				layoutStore.size_calc(e, "resize");
 			});
-			graphStore.graph.on("node:moved", (e: any) => {
+			graphStore.graph?.on("node:moved", (e: any) => {
 				if (e.options && e.options.ignore) {
 					return;
 				}
 				layoutStore.size_calc(e, "move");
 			});
-			graphStore.graph.on("node:added", (e) => {
+			graphStore.graph?.on("node:added", (e) => {
 				layoutStore.size_calc(e, "add");
 			});
-			graphStore.graph.on("node:change:parent", (e) => {
+			graphStore.graph?.on("node:change:parent", (e) => {
 				layoutStore.size_calc(e, "embed");
 			});
-			graphStore.graph.on("node:removed", (e) => {
+			graphStore.graph?.on("node:removed", (e) => {
 				layoutStore.size_calc(e, "remove");
 			});
 
@@ -126,9 +128,48 @@ export const Canvas = ({ children, width, height, minimapRef }) => {
 		}
 	}, [graphStore.graph]);
 
+	if (graphStore.graph) {
+		const onGridAttrsChanged = (attrs) => {
+			let options
+			if (attrs.type === 'doubleMesh') {
+				options = {
+					type: attrs.type,
+					args: [
+						{
+							color: attrs.color,
+							thickness: attrs.thickness,
+						},
+						{
+							color: attrs.colorSecond,
+							thickness: attrs.thicknessSecond,
+							factor: attrs.factor,
+						},
+					],
+				}
+			} else {
+				options = {
+					type: attrs.type,
+					args: [
+						{
+							color: attrs.color,
+							thickness: attrs.thickness,
+						},
+					],
+				}
+			}
+			graphStore.graph?.drawGrid(options)
+		}
+
+		if (view.options?.gridOptions) {
+			onGridAttrsChanged(view.options.gridOptions);
+			if (view.options.gridOptions.size) graphStore.graph?.setGridSize(view.options.gridOptions.size);
+			if (view.options.gridOptions.bgColor) graphStore.graph?.drawBackground({ color: view.options.gridOptions.bgColor });
+		}
+	}
+
 	return (
-			<div id="container" ref={refContainer} className="x6-graph">
-				{children}
-			</div>
+		<div id="container" ref={refContainer} className="x6-graph">
+			{children}
+		</div>
 	);
 }

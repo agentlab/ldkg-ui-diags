@@ -8,7 +8,7 @@ import { NodeField } from "./visual_components/NodeField";
 import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
-import useGraph from "../../stores/graph";
+import { useGraph } from "../../stores/graph";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -168,7 +168,7 @@ const CircleNode = observer((props: any) => {
 
 export const Graph = observer((props: any) => {
 
-	const {layoutStore} = useGraph();
+	const { layoutStore } = useGraph();
 
 	const shapes = [...props.data.shapes, ...props.data.properties];
 
@@ -184,7 +184,7 @@ export const Graph = observer((props: any) => {
 	};
 
 	return (
-		<Canvas width={graphWidth} height={graphHeight} minimapRef={props.minimapRef}>
+		<Canvas view={props.view} width={graphWidth} height={graphHeight} minimapRef={props.minimapRef}>
 			{render_children()}
 		</Canvas>
 	);

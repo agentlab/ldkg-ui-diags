@@ -1,9 +1,9 @@
 import ConfigGrid from './ConfigGrid'
 import styles from './ConfigPanel.module.css'
 
-const ConfigPanel = () => (
+const ConfigPanel = ({view, onChange}) => (
   <div className={styles.config}>
-    <ConfigGrid />
+    <ConfigGrid view={view} onChange={onChange} />
   </div>
 );
 
