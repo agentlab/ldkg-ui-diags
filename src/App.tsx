@@ -1,6 +1,6 @@
-import React, { useRef } from "react";
+import React from "react";
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
-import { observer, useLocalObservable } from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import moment from "moment";
 import cloneDeep from 'lodash/cloneDeep';
 import { Spin } from "antd";
@@ -13,20 +13,16 @@ import { rmRepositoryParam } from "./config";
 import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
-import { graphStoreConstr, graphStoreAnnot } from "./stores/graph/GraphStore";
-import { layoutStoreConstr, layoutStoreAnnot } from "./stores/graph/LayoutStore";
-import { GraphContext } from "./stores/graph";
+import { GraphContextProvider } from "./stores/graph";
+import { Minimap } from "./components/diagram/visual_components/minimap";
 
 
 const App = observer(() => {
 	let view: any = {};
 	let shapes: any = [];
 	let properties: any = [];
-	const minimapContainer = useRef<HTMLDivElement>(null);
+	
 	let viewDescrObs: any = undefined;
-
-	const graphStore = useLocalObservable(graphStoreConstr, graphStoreAnnot);
-	const layoutStore = useLocalObservable(layoutStoreConstr, layoutStoreAnnot);
 
 	if (Object.keys(rootStore.ns.currentJs).length < 5) {
 		rootStore.setId(rmRepositoryParam['Repository ID']);
@@ -58,7 +54,7 @@ const App = observer(() => {
 	}	
 	return (
 		<div className={styles.wrap}>
-			<GraphContext.Provider value={{graphStore, layoutStore}}>
+			<GraphContextProvider>
 			{view.title &&
 				<div className={styles.header}>
 					<span>{view.title}</span>
@@ -67,7 +63,7 @@ const App = observer(() => {
 			<div className={styles.content}>
 				<div id="stencil" className={styles.sider} >
 					<span>Panel</span>
-					<div className={styles.minimap} ref={minimapContainer} />
+					<Minimap />
 				</div>
 				<div className={styles.panel}>
 					<div className={styles.toolbar}>
@@ -75,7 +71,7 @@ const App = observer(() => {
 					</div>
 					{(properties.length > 0 && shapes.length > 0)
 					?
-						( <Graph view={view} data={{shapes, properties}} minimapRef={minimapContainer} /> )
+						( <Graph view={view} data={{shapes, properties}} /> )
 					: 
 						( <Spin/> )}
 				</div>
@@ -93,7 +89,7 @@ const App = observer(() => {
 					}}/>
 				</div>
 			</div>
-			</GraphContext.Provider>
+			</GraphContextProvider>
 		</div>
 	)
 });

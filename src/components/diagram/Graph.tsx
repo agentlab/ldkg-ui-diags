@@ -1,4 +1,3 @@
-
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -33,7 +32,6 @@ const prepare_array = (obj: any) => {
 }
 
 const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
-
 	const edge = {
 		id: uuidv4(),
 		target: target_id,
@@ -42,14 +40,12 @@ const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
 			name: 'normal'
 		}
 	};
-
 	return (
 		<EdgeBox edge={edge} parent_id={parent_id} />
 	);
 });
 
 const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
-
 	const edge = {
 		id: uuidv4(),
 		target: target_id,
@@ -58,7 +54,6 @@ const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
 			name: 'manhattan'
 		}
 	};
-
 	return (
 		<EdgeBox edge={edge} parent_id={parent_id} />
 	);
@@ -66,7 +61,6 @@ const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
 
 const VericalBox = observer((props: any) => {
 	const { data, parent_id } = props;
-
 	const node = {
 		id: data["@id"],
 		size: { width: 140, height: 40 },
@@ -77,13 +71,10 @@ const VericalBox = observer((props: any) => {
 			return (<NodeShape text={data["@id"]} />);
 		},
 	}
-
 	const generalFields = Object.entries(data)
 		.filter(([key, val]) => (key !== 'property' && key !== '@id'));
-
 	const propertyFields = prepare_array(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
-
 	return (
 		<NodeBox node={node} edges={[]} parent_id={parent_id}>
 			{(generalFields.length > 0)
@@ -111,7 +102,6 @@ const WrapBox = observer((props: any) => {
 			return <Compartment text={header} />;
 		},
 	}
-
 	return (
 		<NodeBox node={node} parent_id={parent_id}>
 			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} />)}
@@ -121,7 +111,6 @@ const WrapBox = observer((props: any) => {
 
 const FieldBox = observer((props: any) => {
 	const { parent_id, text } = props;
-
 	const node = {
 		id: uuidv4(),
 		size: { width: 200, height: 50 },
@@ -131,7 +120,6 @@ const FieldBox = observer((props: any) => {
 			return <NodeField text={text} />
 		},
 	}
-
 	return (
 		<NodeBox node={node} parent_id={parent_id} />
 	);
@@ -139,7 +127,6 @@ const FieldBox = observer((props: any) => {
 
 const CircleNode = observer((props: any) => {
 	const { data, parent_id } = props;
-
 	const node = {
 		id: data["@id"],
 		size: { width: 80, height: 80 },
@@ -154,10 +141,8 @@ const CircleNode = observer((props: any) => {
 			},
 		},
 	}
-
 	const propertyFields = prepare_array(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
-
 	return (
 		<NodeBox node={node} parent_id={parent_id}>
 			{propertyFields.map(([label, dest_id], idx) =>
@@ -167,13 +152,10 @@ const CircleNode = observer((props: any) => {
 });
 
 export const Graph = observer((props: any) => {
-
-	const { layoutStore } = useGraph();
-
+	const { isClassDiagram } = useGraph();
 	const shapes = [...props.data.shapes, ...props.data.properties];
-
 	const render_children = () => {
-		if (layoutStore.isClassDiagram) {
+		if (isClassDiagram) {
 			return shapes.map(shape =>
 				<VericalBox key={shape['@id']} data={shape} />);
 		}
@@ -182,9 +164,8 @@ export const Graph = observer((props: any) => {
 				<CircleNode key={shape['@id']} data={shape} />)
 		}
 	};
-
 	return (
-		<Canvas view={props.view} width={graphWidth} height={graphHeight} minimapRef={props.minimapRef}>
+		<Canvas view={props.view} width={graphWidth} height={graphHeight} >
 			{render_children()}
 		</Canvas>
 	);

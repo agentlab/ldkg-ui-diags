@@ -6,18 +6,15 @@ export const layoutStoreConstr = () => ({
   solver: new kiwi.Solver(),
   size_data: {},
   computed_size: {},
-  isClassDiagram: true,
   size_calc(e: any, type: string) {
     console.log(type, e);
     const node: Node = e.node;
-
     let changed_ids = this.propogate_updates(this.get_root(node.id));
 
     if (type === "add") {
       this.add_node(node);
     }
     else if (type === "embed") {
-
       // remove from old parent
       if (e.previous) {
         const parent_id = e.previous;
@@ -25,31 +22,24 @@ export const layoutStoreConstr = () => ({
         const parent = this.size_data[parent_id];
         this.solver.removeConstraint(parent.children.data[node.id]);
         delete parent.children.data[node.id];
-
         this.update_parent(parent_id);
-
         const updated = this.size_data[node.id];
         for (const constraint of updated.parent.constraints) {
           this.solver.removeConstraint(constraint);
         }
         updated.parent = null;
       }
-
       // add to new parent
       if (e.current) {
         const parent_id = e.current;
-
         this.add_node(node);
-
         const updated = this.size_data[node.id];
         updated.parent = {
           id: parent_id,
           constraints: [],
         };
-
         const parent = this.size_data[parent_id];
         parent.children.data[node.id] = null;
-
         updated.parent.constraints = [
           new kiwi.Constraint(updated.width, kiwi.Operator.Eq,
             new kiwi.Expression(parent.width, -parent.padding.right, -parent.padding.left),
@@ -60,13 +50,10 @@ export const layoutStoreConstr = () => ({
         for (const constraint of updated.parent.constraints) {
           this.solver.addConstraint(constraint);
         }
-
         this.update_parent(parent_id);
       }
-
       this.solver.suggestValue(this.size_data[node.id].left, node.position().x);
       this.solver.suggestValue(this.size_data[node.id].top, node.position().y);
-
     }
     else if (type === "move") {
       this.solver.suggestValue(this.size_data[node.id].left, node.position().x);
@@ -80,22 +67,18 @@ export const layoutStoreConstr = () => ({
     }
     else if (type === "remove") {
       const removed = this.size_data[node.id];
-
       if (removed.parent) {
         const parent_id = this.size_data[node.id].parent.id;
         const parent = this.size_data[parent_id];
         this.solver.removeConstraint(parent.children.data[node.id]);
         delete parent.children.data[node.id];
-
         this.update_parent(parent_id);
 
         for (const constraint of removed.parent.constraints) {
           this.solver.removeConstraint(constraint);
         }
       }
-
       // embed events should've already removed children from `updated` component
-
       for (const constraint of removed.constraints) {
         this.solver.removeConstraint(constraint);
       }
@@ -107,9 +90,7 @@ export const layoutStoreConstr = () => ({
       delete this.size_data[node.id];
       delete this.computed_size[node.id];
     }
-
     changed_ids = [...changed_ids, ...this.propogate_updates(this.get_root(node.id))];
-
     this.solver.updateVariables();
     for (const id of changed_ids) {
       const sizes = this.size_data[id];
@@ -123,7 +104,6 @@ export const layoutStoreConstr = () => ({
         left: sizes.left.value(),
       };
     }
-
   },
   propogate_updates(root_id: string) {
     let changed_ids: any = new Set([root_id]);
@@ -195,7 +175,6 @@ export const layoutStoreConstr = () => ({
         this.solver.addEditVariable(n.height, kiwi.Strength.weak);
         n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
       }
-
       this.solver.suggestValue(n.left, node.position().x);
       this.solver.suggestValue(n.top, node.position().y);
       for (const constraint of n.constraints) {
@@ -208,7 +187,6 @@ export const layoutStoreConstr = () => ({
         left: 0
       };
     }
-
   },
   update_parent(parent_id: string) {
     const parent = this.size_data[parent_id]
@@ -234,16 +212,12 @@ export const layoutStoreConstr = () => ({
       this.solver.addConstraint(parent.children.constraint);
     }
   },
-  switchShape() {
-    this.isClassDiagram = !this.isClassDiagram;
-  },
 });
 
 export const layoutStoreAnnot = {
   solver: observable.ref,
   size_data: observable,
   computed_size: observable,
-  isClassDiagram: observable,
   size_calc: action,
   propogate_updates: action,
   get_root: action,
