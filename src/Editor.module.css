@@ -23,6 +23,14 @@
   width: 290px;
   height: 100%;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 0;
+  display: flex;
+}
+
+.stencil {
+  width: 290px;
+  border: 1px solid #f0f0f0;
+  position: relative;
 }
 
 .minimap {

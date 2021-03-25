@@ -158,10 +158,11 @@ export const Canvas = ({ children, view, width, height }) => {
 			if (view.options.gridOptions.bgColor) graphStore.graph?.drawBackground({ color: view.options.gridOptions.bgColor });
 		}
 	}
+	const toRender = graphStore.graph ? children : <></>;
 
 	return (
 		<div id="container" ref={refContainer} className="x6-graph">
-			{children}
+			{toRender}
 		</div>
 	);
 }

@@ -13,8 +13,9 @@ import { rmRepositoryParam } from "./config";
 import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
-import { GraphContextProvider } from "./stores/graph";
+import { useGraph } from "./stores/graph";
 import { Minimap } from "./components/diagram/visual_components/minimap";
+import { createStencils } from "./components/diagram/Stencil";
 
 
 const App = observer(() => {
@@ -23,6 +24,7 @@ const App = observer(() => {
 	let properties: any = [];
 	
 	let viewDescrObs: any = undefined;
+	const { graphStore, isClassDiagram } = useGraph();
 
 	if (Object.keys(rootStore.ns.currentJs).length < 5) {
 		rootStore.setId(rmRepositoryParam['Repository ID']);
@@ -51,10 +53,11 @@ const App = observer(() => {
 				}
 			}
 		}
-	}	
+	}
+	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
+	
 	return (
 		<div className={styles.wrap}>
-			<GraphContextProvider>
 			{view.title &&
 				<div className={styles.header}>
 					<span>{view.title}</span>
@@ -62,7 +65,7 @@ const App = observer(() => {
 			}
 			<div className={styles.content}>
 				<div id="stencil" className={styles.sider} >
-					<span>Panel</span>
+					{stencils}
 					<Minimap />
 				</div>
 				<div className={styles.panel}>
@@ -89,7 +92,6 @@ const App = observer(() => {
 					}}/>
 				</div>
 			</div>
-			</GraphContextProvider>
 		</div>
 	)
 });
