@@ -2,7 +2,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Graph, Node, Cell } from "@antv/x6";
-import useGraph from "../../stores/graph";
+import { useGraph } from "../../stores/graph";
 
 const no_parent = Symbol('no_parent');
 
