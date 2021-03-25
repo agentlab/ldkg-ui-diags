@@ -1,9 +1,8 @@
 
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Graph, Node, Cell } from "@antv/x6";
-
-import { graphContext } from "./Canvas"
+import { Graph } from "@antv/x6";
+import { useGraph } from "../../stores/graph";
 
 
 export const EdgeBox = observer(({ edge, parent_id }: any) => {
@@ -13,7 +12,7 @@ export const EdgeBox = observer(({ edge, parent_id }: any) => {
 	const graph_edge = { ...edge, source: parent_id }
 	const dest_id = graph_edge.target;
 
-	const graphStore = React.useContext(graphContext);
+	const {graphStore} = useGraph();
 
 	React.useEffect(() => {
 		if (graphStore.nodes.has(dest_id)) {

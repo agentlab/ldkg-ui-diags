@@ -2,15 +2,12 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { Graph, Node, Cell } from "@antv/x6";
-
-import { graphContext, layoutContext } from "./Canvas"
-import { toJS } from "mobx";
+import { useGraph } from "../../stores/graph";
 
 const no_parent = Symbol('no_parent');
 
 export const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
-	const graphStore = React.useContext(graphContext);
-	const layoutStore = React.useContext(layoutContext);
+	const {graphStore, layoutStore} = useGraph();
 	const [rendered, setRendered] = React.useState<boolean>(false);
 
 	React.useEffect(() => {

@@ -6,7 +6,8 @@ import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import "./index.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import { rootStore } from "./diagram/get_data";
+import { rootStore } from './components/diagram/get_data'
+import { GraphContextProvider } from "./stores/graph";
 
 const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
@@ -14,7 +15,9 @@ connectReduxDevtools(require('remotedev'), rootStore);
 ReactDOM.render(
 	<React.StrictMode>
 		<Provider store={store}>
-			<App />
+			<GraphContextProvider>
+				<App />
+			</GraphContextProvider>
 		</Provider>
 	</React.StrictMode>,
 	document.getElementById("root")
