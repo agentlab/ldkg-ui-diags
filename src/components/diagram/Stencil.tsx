@@ -3,8 +3,8 @@ import React from "react";
 import { Addon } from "@antv/x6";
 
 import { useGraph } from "../../stores/graph";
-import { NodeShape } from "./visual_components/NodeShape";
-import { NodeField } from "./visual_components/NodeField";
+import { NodeShape } from "./visualComponents/NodeShape";
+import { NodeField } from "./visualComponents/NodeField";
 
 import styles from '../../Editor.module.css'
 
@@ -12,7 +12,7 @@ import styles from '../../Editor.module.css'
 export const Stencil = ({nodes = []}: any) => {
 	const refContainer = React.useRef<any>();
 	const { graphStore } = useGraph();
-	const [stencil, set_stencil] = React.useState<any>();
+	const [stencil, setStencil] = React.useState<any>();
 
 	React.useEffect(() => {
 		const s = new Addon.Stencil({
@@ -31,7 +31,7 @@ export const Stencil = ({nodes = []}: any) => {
 				},
 			],
 		});
-		set_stencil(s);		
+		setStencil(s);		
 		refContainer.current.appendChild(s.container);
 	}, [graphStore.graph]);
 

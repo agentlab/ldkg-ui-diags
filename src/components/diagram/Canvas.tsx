@@ -6,7 +6,7 @@ import { useGraph } from '../../stores/graph'
 
 export const Canvas = ({ children, view, width, height }) => {
 	const refContainer = React.useRef<any>();
-	const [callbacks_binded, set_callbacks_binded] = React.useState<boolean>(false);
+	const [callbacksBinded, setCallbacksBinded] = React.useState<boolean>(false);
 	const {graphStore, layoutStore, minimap} = useGraph();
 
 	React.useEffect(() => {
@@ -93,30 +93,30 @@ export const Canvas = ({ children, view, width, height }) => {
   }, [graphStore.graph])
 
 	React.useEffect(() => {
-		if (graphStore.graph && !callbacks_binded) {
+		if (graphStore.graph && !callbacksBinded) {
 			graphStore.graph?.on("node:resized", (e: any) => {
 				if (e.options && e.options.ignore) {
 					return;
 				}
-				layoutStore.size_calc(e, "resize");
+				layoutStore.sizeCalc(e, "resize");
 			});
 			graphStore.graph?.on("node:moved", (e: any) => {
 				if (e.options && e.options.ignore) {
 					return;
 				}
-				layoutStore.size_calc(e, "move");
+				layoutStore.sizeCalc(e, "move");
 			});
 			graphStore.graph?.on("node:added", (e) => {
-				layoutStore.size_calc(e, "add");
+				layoutStore.sizeCalc(e, "add");
 			});
 			graphStore.graph?.on("node:change:parent", (e) => {
-				layoutStore.size_calc(e, "embed");
+				layoutStore.sizeCalc(e, "embed");
 			});
 			graphStore.graph?.on("node:removed", (e) => {
-				layoutStore.size_calc(e, "remove");
+				layoutStore.sizeCalc(e, "remove");
 			});
 
-			set_callbacks_binded(true);
+			setCallbacksBinded(true);
 		}
 	}, [graphStore.graph]);
 
