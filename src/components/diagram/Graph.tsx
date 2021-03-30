@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'antd';
 
 import { NodeShape } from "./visual_components/NodeShape";
 import { Compartment } from "./visual_components/Compartment";
@@ -77,18 +78,23 @@ const VericalBox = observer((props: any) => {
 	const propertyFields = prepare_array(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
 	return (
-		<NodeBox node={node} edges={[]} parent_id={parent_id}>
-			{(generalFields.length > 0)
-				? <WrapBox header="General" data={generalFields} />
-				: <></>}
-			{(propertyFields.length > 0)
-				? [
-					<WrapBox header="Properties" data={propertyFields} />,
-					...propertyFields.map(([label, dest_id], idx) =>
-						<SquareEdge key={idx} target_id={dest_id} label={label} />)
-				]
-				: <></>}
-		</NodeBox>
+		<React.Fragment>
+			<NodeBox node={node} edges={[]} parent_id={parent_id}>
+				{(generalFields.length > 0)
+					? <WrapBox header="General" data={generalFields} />
+					: <></>}
+				{(propertyFields.length > 0)
+					? [
+						<WrapBox header="Properties" data={propertyFields} />,
+						...propertyFields.map(([label, dest_id], idx) =>
+							<SquareEdge key={idx} target_id={dest_id} label={label} />)
+					]
+					: <></>}
+			</NodeBox>
+			
+			{(data['property']?.length > 0) ? data['property'].map(shape =>
+				<VericalBox key={shape['@id']} data={shape} />) : <></>}
+		</React.Fragment>
 	);
 });
 
@@ -154,8 +160,8 @@ const CircleNode = observer((props: any) => {
 
 export const Graph = observer((props: any) => {
 	const { isClassDiagram } = useGraph();
-	const shapes = [...props.data.shapes, ...props.data.properties];
-	const render_children = () => {
+	const [shapes, setShapes] = useState([...props.data.shapes])
+	const render_children = (shapes) => {
 		if (isClassDiagram) {
 			return shapes.map(shape =>
 				<VericalBox key={shape['@id']} data={shape} />);
@@ -165,9 +171,17 @@ export const Graph = observer((props: any) => {
 				<CircleNode key={shape['@id']} data={shape} />)
 		}
 	};
+	const addData = () => {
+		const newData = props.loadData(shapes.length, 5);
+		const newShapes = [...shapes, ...newData];
+		setShapes(newShapes);
+	}
 	return (
-		<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-			{render_children()}
-		</Canvas>
+		<React.Fragment>
+			<Button type="primary" shape="round" onClick={addData}>Load More</Button>
+			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
+				{render_children(shapes)}
+			</Canvas>
+		</React.Fragment>
 	);
 });

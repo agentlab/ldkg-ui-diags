@@ -45,7 +45,7 @@ const App = observer(() => {
 				shapes = rootStore.getColl('rm:NodeShapes_CollConstr')?.data;
 				properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
 				if (shapes && properties) {
-					shapes = (getSnapshot(shapes) as []).slice(8, 10);
+					shapes = (getSnapshot(shapes) as []);
 					properties = (getSnapshot(properties) as []).slice(8, 18);
 				} else {
 					shapes = [];
@@ -55,7 +55,12 @@ const App = observer(() => {
 		}
 	}
 	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
-	
+	const loadMoreData = (idx: number, count: number) => {
+		if (idx >= shapes.length) {
+			return [];
+		} 
+		return (idx + count < shapes.length) ? shapes.slice(idx,count + idx) : shapes.slice(idx);
+	}
 	return (
 		<div className={styles.wrap}>
 			{view.title &&
@@ -72,9 +77,9 @@ const App = observer(() => {
 					<div className={styles.toolbar}>
 						<EditorToolbar />
 					</div>
-					{(properties.length > 0 && shapes.length > 0)
+					{(shapes.length > 0)
 					?
-						( <Graph view={view} data={{shapes, properties}} /> )
+						( <Graph view={view} data={{shapes: shapes.slice(0,5)}} loadData={loadMoreData} /> )
 					: 
 						( <Spin/> )}
 				</div>

@@ -36,7 +36,17 @@ export const viewDescrs = [
 					'@id': 'rm:NodeShapes_EntConstr0',
 					'@type': 'rm:EntConstr',
 					schema: ArtifactShapeSchema['@id'],
+					conditions: {
+						'@id': 'rm:PropertyShapes_CollConstr_condition',
+						'@type': 'cond type',
+						property: '?eIri1',
+					  },
 				  },
+				  {
+					'@id': 'rm:PropertyShapes_CollConstr_1',
+					'@type': 'rm:CollConstr',
+					schema: PropertyShapeSchema['@id'],
+				},
 				],
 			},
 			{
