@@ -4,8 +4,11 @@ import { observer } from "mobx-react-lite";
 import { Graph } from "@antv/x6";
 import { useGraph } from "../../stores/graph";
 
+import { ParentContext } from './NodeBox'
 
-export const EdgeBox = observer(({ edge, parent_id }: any) => {
+export const EdgeBox = observer(({ edge }: any) => {
+	
+	const parent_id = React.useContext<any>(ParentContext);
 	if (parent_id === undefined) {
 		throw ReferenceError(`Parent is undefined for edge ${edge.id}`);
 	}

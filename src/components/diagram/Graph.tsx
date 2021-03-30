@@ -32,7 +32,7 @@ const prepare_array = (obj: any) => {
 	}
 }
 
-const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
+const DirectEdge = observer(({ target_id, label }: any) => {
 	const edge = {
 		id: uuidv4(),
 		target: target_id,
@@ -42,11 +42,11 @@ const DirectEdge = observer(({ target_id, label, parent_id }: any) => {
 		}
 	};
 	return (
-		<EdgeBox edge={edge} parent_id={parent_id} />
+		<EdgeBox edge={edge} />
 	);
 });
 
-const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
+const SquareEdge = observer(({ target_id, label }: any) => {
 	const edge = {
 		id: uuidv4(),
 		target: target_id,
@@ -56,12 +56,11 @@ const SquareEdge = observer(({ target_id, label, parent_id }: any) => {
 		}
 	};
 	return (
-		<EdgeBox edge={edge} parent_id={parent_id} />
+		<EdgeBox edge={edge} />
 	);
 });
 
-const VericalBox = observer((props: any) => {
-	const { data, parent_id } = props;
+const VericalBox = observer(({ data }: any) => {
 	const node = {
 		id: data["@id"],
 		size: { width: 140, height: 40 },
@@ -77,7 +76,7 @@ const VericalBox = observer((props: any) => {
 	const propertyFields = prepare_array(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
 	return (
-		<NodeBox node={node} edges={[]} parent_id={parent_id}>
+		<NodeBox node={node} edges={[]}>
 			{(generalFields.length > 0)
 				? <WrapBox header="General" data={generalFields} />
 				: <></>}
@@ -92,8 +91,7 @@ const VericalBox = observer((props: any) => {
 	);
 });
 
-const WrapBox = observer((props: any) => {
-	const { parent_id, header, data } = props;
+const WrapBox = observer(({ header, data }: any) => {
 	const node = {
 		id: uuidv4(),
 		size: { width: 200, height: 30 },
@@ -104,14 +102,13 @@ const WrapBox = observer((props: any) => {
 		},
 	}
 	return (
-		<NodeBox node={node} parent_id={parent_id}>
+		<NodeBox node={node}>
 			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} />)}
 		</NodeBox>
 	);
 });
 
-const FieldBox = observer((props: any) => {
-	const { parent_id, text } = props;
+const FieldBox = observer(({ text }: any) => {
 	const node = {
 		id: uuidv4(),
 		size: { width: 200, height: 50 },
@@ -122,12 +119,11 @@ const FieldBox = observer((props: any) => {
 		},
 	}
 	return (
-		<NodeBox node={node} parent_id={parent_id} />
+		<NodeBox node={node} />
 	);
 });
 
-const CircleNode = observer((props: any) => {
-	const { data, parent_id } = props;
+const CircleNode = observer(({ data }: any) => {
 	const node = {
 		id: data["@id"],
 		size: { width: 80, height: 80 },
@@ -145,7 +141,7 @@ const CircleNode = observer((props: any) => {
 	const propertyFields = prepare_array(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
 	return (
-		<NodeBox node={node} parent_id={parent_id}>
+		<NodeBox node={node}>
 			{propertyFields.map(([label, dest_id], idx) =>
 				<DirectEdge key={idx} target_id={dest_id} label={label} />)}
 		</NodeBox>
