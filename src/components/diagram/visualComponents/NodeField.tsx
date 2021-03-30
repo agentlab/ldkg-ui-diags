@@ -1,21 +1,6 @@
-import React from "react";
-import { ReactShape } from "@antv/x6-react-shape";
 
-class NodeField extends React.Component<{
-	node?: ReactShape;
-	text: string;
-}> {
-	shouldComponentUpdate() {
-		const node = this.props.node;
-		if (node) {
-			if (node.hasChanged("data")) {
-				return true;
-			}
-		}
-		return false;
-	}
+export const NodeField = ({/*node,*/ text}) => {
 
-	render() {
 		return (
 			<div
 				style={{
@@ -31,10 +16,7 @@ class NodeField extends React.Component<{
 					textOverflow: "ellipsis",
 				}}
 			>
-				{this.props.text}
+				{text}
 			</div>
 		);
-	}
-}
-
-export { NodeField };
+};
