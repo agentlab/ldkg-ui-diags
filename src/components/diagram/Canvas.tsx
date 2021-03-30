@@ -71,7 +71,7 @@ export const Canvas = ({ children, view, width, height }) => {
 		// });
 
 		graphStore.setGraph(g);
-	}, []);
+	}, [graphStore, height, minimap, width]);
 
 	const getContainerSize = () => {
     return {
@@ -118,7 +118,7 @@ export const Canvas = ({ children, view, width, height }) => {
 
 			setCallbacksBinded(true);
 		}
-	}, [graphStore.graph]);
+	}, [graphStore.graph, callbacksBinded, layoutStore]);
 
 	if (graphStore.graph) {
 		const onGridAttrsChanged = (attrs) => {

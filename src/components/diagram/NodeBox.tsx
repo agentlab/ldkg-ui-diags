@@ -19,7 +19,7 @@ export const NodeBox = observer(({ node, children }: any) => {
 			return;
 		}
 		else if (parentId === null) { // no parent, render to canvas
-			const res = graphStore.graph.addNode(node);
+			graphStore.graph.addNode(node);
 		}
 		else {
 			const child = (graphStore.graph as Graph).addNode(node);
@@ -35,25 +35,26 @@ export const NodeBox = observer(({ node, children }: any) => {
 			graphStore.deleteNode(node.id);
 		});
 
-	}, [node, parentId, graphStore.graph]);
+	}, [node, parentId, graphStore, graphStore.graph]);
 
+	const node_size = layoutStore.computedSize[node.id];
 	React.useEffect(() => {
-		// console.log("RESIZE", toJS(layoutStore.computedSize[node.id]));
-		if (layoutStore.computedSize[node.id]) {
+		// console.log("RESIZE", toJS(node_size));
+		if (node_size) {
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(
-				layoutStore.computedSize[node.id].width,
-				layoutStore.computedSize[node.id].height, {
+				node_size.width,
+				node_size.height, {
 				ignore: true,
 			});
 			n.setPosition(
-				layoutStore.computedSize[node.id].left,
-				layoutStore.computedSize[node.id].top, {
+				node_size.left,
+				node_size.top, {
 				ignore: true,
 			});
 		}
 
-	}, [layoutStore.computedSize[node.id]]);
+	}, [node_size, graphStore.graph, node.id]);
 
 	return (
 		// provide current node id as parent id for childrens

@@ -12,7 +12,8 @@ export const EdgeBox = observer(({ edge }: any) => {
 	if (parentId === undefined) {
 		throw ReferenceError(`Parent is undefined for edge ${edge.id}`);
 	}
-	const graphEdge = { ...edge, source: parentId }
+	const graphEdge = React.useMemo<any>(() => 
+		({ ...edge, source: parentId }), [edge, parentId]);
 	const destId = graphEdge.target;
 
 	const {graphStore} = useGraph();
@@ -24,7 +25,7 @@ export const EdgeBox = observer(({ edge }: any) => {
 		return (() => {
 			(graphStore.graph as Graph).removeEdge(graphEdge.id);
 		});
-	}, [graphEdge, graphStore.graph, graphStore.nodes]);
+	}, [destId, graphEdge, graphStore.graph, graphStore.nodes]);
 
 	return (<></>);
 });
