@@ -7,7 +7,7 @@ import { useGraph } from '../../stores/graph'
 export const Canvas = ({ children, view, width, height }) => {
 	const refContainer = React.useRef<any>();
 	const [callbacksBinded, setCallbacksBinded] = React.useState<boolean>(false);
-	const {graphStore, layoutStore, minimap} = useGraph();
+	const { graphStore, layoutStore, minimap } = useGraph();
 
 	React.useEffect(() => {
 		try {
@@ -36,15 +36,15 @@ export const Canvas = ({ children, view, width, height }) => {
 				enabled: true,
 			},
 			history: true,
-      clipboard: {
-        enabled: true,
-      },
+			clipboard: {
+				enabled: true,
+			},
 			scroller: {
-        enabled: true,
-        pageVisible: true,
-        pageBreak: false,
-        pannable: true,
-      },
+				enabled: true,
+				pageVisible: true,
+				pageBreak: false,
+				pannable: true,
+			},
 			minimap,
 			embedding: {
 				enabled: true,
@@ -64,6 +64,10 @@ export const Canvas = ({ children, view, width, height }) => {
 			keyboard: {
 				enabled: true,
 			},
+			interacting: {
+				edgeMovable: true,
+				arrowheadMovable: true,
+			},
 		});
 
 		// g.on("node:added", (e) => {
@@ -74,23 +78,23 @@ export const Canvas = ({ children, view, width, height }) => {
 	}, [graphStore, height, minimap, width]);
 
 	const getContainerSize = () => {
-    return {
-      width: document.body.offsetWidth - 581,
-      height: document.body.offsetHeight - 90,
-    }
-  }
+		return {
+			width: document.body.offsetWidth - 581,
+			height: document.body.offsetHeight - 90,
+		}
+	}
 
-  React.useEffect(() => {
-    const resizeFn = () => {
-      const { width, height } = getContainerSize()
+	React.useEffect(() => {
+		const resizeFn = () => {
+			const { width, height } = getContainerSize()
 			graphStore.graph?.resize(width, height)
-    }
-    resizeFn()
-    window.addEventListener('resize', resizeFn)
-    return () => {
-      window.removeEventListener('resize', resizeFn)
-    }
-  }, [graphStore.graph])
+		}
+		resizeFn()
+		window.addEventListener('resize', resizeFn)
+		return () => {
+			window.removeEventListener('resize', resizeFn)
+		}
+	}, [graphStore.graph])
 
 	React.useEffect(() => {
 		if (graphStore.graph && !callbacksBinded) {
@@ -115,6 +119,30 @@ export const Canvas = ({ children, view, width, height }) => {
 			graphStore.graph?.on("node:removed", (e) => {
 				layoutStore.sizeCalc(e, "remove");
 			});
+			graphStore.graph.on('edge:mouseenter', ({ cell }) => {
+				cell.addTools([
+					{
+						name: 'source-arrowhead',
+						args: {
+							attrs: {
+								fill: 'orange',
+							},
+						},
+					},
+					{
+						name: 'target-arrowhead',
+						args: {
+							attrs: {
+								fill: 'orange',
+							},
+						},
+					},
+				])
+			});
+
+			graphStore.graph.on('edge:mouseleave', ({ cell }) => {
+				cell.removeTools()
+			})
 
 			setCallbacksBinded(true);
 		}
