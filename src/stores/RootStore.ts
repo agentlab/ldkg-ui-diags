@@ -1,5 +1,5 @@
 import { Repository, rootModelInitialState, SparqlClientImpl, ArtifactShapeSchema, PropertyShapeSchema, ViewShapeSchema } from "@agentlab/sparql-jsld-client";
-import { rdfServerUrl } from '../../config';
+import { rdfServerUrl } from '../config';
 
 const client = new SparqlClientImpl(rdfServerUrl);
 //@ts-ignore

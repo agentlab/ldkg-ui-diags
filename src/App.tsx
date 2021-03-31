@@ -10,7 +10,7 @@ import styles from './Editor.module.css'
 import "./App.css";
 
 import { rmRepositoryParam } from "./config";
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
+import { rootStore, viewDescrCollConstr, viewDescrs } from "./stores/RootStore";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 import { useGraph } from "./stores/graph";
