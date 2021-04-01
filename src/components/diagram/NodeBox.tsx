@@ -4,22 +4,26 @@ import { observer } from "mobx-react-lite";
 import { Graph, Node, Cell } from "@antv/x6";
 import { useGraph } from "../../stores/graph";
 
-const no_parent = Symbol('no_parent');
+const parentNotReady = Symbol('parentNotReady');
 
-export const NodeBox = observer(({ node, children, parent_id = null, edges = [] }: any) => {
+export const ParentContext = 
+	React.createContext<string | null | typeof parentNotReady>(null);
+
+export const NodeBox = observer(({ node, children }: any) => {
 	const {graphStore, layoutStore} = useGraph();
 	const [rendered, setRendered] = React.useState<boolean>(false);
+	const parentId = React.useContext(ParentContext); // try to get nearest parent
 
 	React.useEffect(() => {
-		if (parent_id === no_parent) { // parent not available, just wait
+		if (parentId === parentNotReady) { // parent not available, just wait
 			return;
 		}
-		if (parent_id === null) { // no parent, render to canvas
-			const res = graphStore.graph.addNode(node);
+		else if (parentId === null) { // no parent, render to canvas
+			graphStore.graph.addNode(node);
 		}
 		else {
 			const child = (graphStore.graph as Graph).addNode(node);
-			const parent: Cell = (graphStore.graph as Graph).getCell(parent_id);
+			const parent: Cell = (graphStore.graph as Graph).getCell(parentId);
 			parent.addChild(child);
 		}
 		setRendered(true);
@@ -31,31 +35,31 @@ export const NodeBox = observer(({ node, children, parent_id = null, edges = [] 
 			graphStore.deleteNode(node.id);
 		});
 
-	}, [node, parent_id, graphStore.graph]);
+	}, [node, parentId, graphStore, graphStore.graph]);
 
+	const node_size = layoutStore.computedSize[node.id];
 	React.useEffect(() => {
-		// console.log("RESIZE", toJS(layoutStore.computed_size[node.id]));
-		if (layoutStore.computed_size[node.id]) {
+		// console.log("RESIZE", toJS(node_size));
+		if (node_size) {
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(
-				layoutStore.computed_size[node.id].width,
-				layoutStore.computed_size[node.id].height, {
+				node_size.width,
+				node_size.height, {
 				ignore: true,
 			});
 			n.setPosition(
-				layoutStore.computed_size[node.id].left,
-				layoutStore.computed_size[node.id].top, {
+				node_size.left,
+				node_size.top, {
 				ignore: true,
 			});
 		}
 
-	}, [layoutStore.computed_size[node.id]]);
-
-	const childrenWithProps = React.Children.map(children, child =>
-		React.cloneElement(child, { parent_id: rendered ? node.id : no_parent })
-	);
+	}, [node_size, graphStore.graph, node.id]);
 
 	return (
-		<>{childrenWithProps}</>
+		// provide current node id as parent id for childrens
+		<ParentContext.Provider value={rendered ? node.id : parentNotReady}>
+			{children}
+		</ParentContext.Provider>
 	);
 });
