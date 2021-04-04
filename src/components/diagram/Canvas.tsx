@@ -162,6 +162,23 @@ export const Canvas = ({ children, view, width, height }) => {
 				cell.removeTools()
 			})
 
+			const connect_key = 'shift';
+			graphStore.graph.bindKey(connect_key, () => {
+				(graphStore.graph as Graph).getNodes().map(node =>
+					node.attr('body/magnet', true)
+				);
+			}, 'keydown');
+			graphStore.graph.bindKey(connect_key, () => {
+				(graphStore.graph as Graph).getNodes().map(node =>
+					node.attr('body/magnet', false)
+				);
+			}, 'keyup');
+			graphStore.graph.on('edge:connected', () => {
+				(graphStore.graph as Graph).getNodes().map(node =>
+					node.attr('body/magnet', false)
+				);
+			});
+
 			setCallbacksBinded(true);
 		}
 	}, [graphStore.graph, callbacksBinded, layoutStore]);
