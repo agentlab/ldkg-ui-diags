@@ -16,6 +16,7 @@ import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 import { useGraph } from "./stores/graph";
 import { Minimap } from "./components/diagram/visualComponents/minimap";
 import { createStencils } from "./components/diagram/Stencil";
+import { ConnectorTool } from './components/diagram/ConnectorTool'
 
 
 const App = observer(() => {
@@ -90,6 +91,9 @@ const App = observer(() => {
 							applySnapshot(viewDescrObs, viewDescr);
 						}
 					}}/>
+				</div>
+				<div style={{position: 'absolute', bottom: 0, right: 0}}>
+					<ConnectorTool />
 				</div>
 			</div>
 		</div>

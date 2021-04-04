@@ -162,7 +162,7 @@ export const Canvas = ({ children, view, width, height }) => {
 				cell.removeTools()
 			})
 
-			const connect_key = 'shift';
+			const connect_key = 'alt';
 			graphStore.graph.bindKey(connect_key, () => {
 				(graphStore.graph as Graph).getNodes().map(node =>
 					node.attr('body/magnet', true)
