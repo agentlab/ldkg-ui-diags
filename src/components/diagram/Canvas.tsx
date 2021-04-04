@@ -73,6 +73,11 @@ export const Canvas = ({ children, view, width, height }) => {
 				pageBreak: false,
 				pannable: true,
 			},
+			mousewheel: {
+				enabled: true,
+				factor: 1.1,
+				modifiers: ['ctrl', 'meta'],
+			},
 			minimap,
 			embedding: {
 				enabled: true,
