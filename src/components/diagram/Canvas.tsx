@@ -1,5 +1,5 @@
 import React from "react";
-import { Graph } from "@antv/x6";
+import { Graph, Node } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
 import { useGraph } from '../../stores/graph'
 
@@ -103,10 +103,6 @@ export const Canvas = ({ children, view, width, height }) => {
 			},
 		});
 
-		// g.on("node:added", (e) => {
-		// 	handleGraphEvent(e, "add");
-		// });
-
 		graphStore.setGraph(g);
 	}, [graphStore, height, minimap, width]);
 
@@ -162,21 +158,25 @@ export const Canvas = ({ children, view, width, height }) => {
 				cell.removeTools()
 			})
 
-			const connect_key = 'alt';
+			const connect_key = 'shift';
+			const setMagnet = (node: Node, active: boolean) => {
+				node.attr('body/magnet', active);
+				node.attr('fo/magnet', active);
+			}
 			graphStore.graph.bindKey(connect_key, () => {
 				(graphStore.graph as Graph).getNodes().map(node =>
-					node.attr('body/magnet', true)
+					setMagnet(node, true)
 				);
 			}, 'keydown');
 			graphStore.graph.bindKey(connect_key, () => {
 				(graphStore.graph as Graph).getNodes().map(node =>
-					node.attr('body/magnet', false)
+					setMagnet(node, false)
 				);
 			}, 'keyup');
 			graphStore.graph.on('edge:connected', () => {
-				(graphStore.graph as Graph).getNodes().map(node =>
-					node.attr('body/magnet', false)
-				);
+				(graphStore.graph as Graph).getNodes().map(node => {
+					setMagnet(node, false)
+				});
 			});
 
 			setCallbacksBinded(true);
