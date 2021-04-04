@@ -13,13 +13,41 @@ export const Canvas = ({ children, view, width, height }) => {
 		try {
 			Graph.registerNode("group", {
 				inherit: ReactShape,
-			});
+			}, true);
 			Graph.registerNode("compartment", {
 				inherit: ReactShape,
-			});
+			}, true);
 			Graph.registerNode("field", {
 				inherit: ReactShape,
-			});
+			}, true);
+
+			const circlArrowhead = {
+				tagName: 'circle',
+				attrs: {
+					r: 6,
+					fill: 'grey',
+					'fill-opacity': 0.3,
+					stroke: 'black',
+					'stroke-width': 1,
+					cursor: 'move',
+				},
+			};
+			Graph.registerEdgeTool(
+				'circle-source-arrowhead',
+				{
+					inherit: 'source-arrowhead',
+					...circlArrowhead,
+				},
+				true,
+			);
+			Graph.registerEdgeTool(
+				'circle-target-arrowhead',
+				{
+					inherit: 'target-arrowhead',
+					...circlArrowhead,
+				},
+				true,
+			)
 		}
 		catch (e) { // typically happens during recompilation
 			console.log(e);
@@ -121,22 +149,7 @@ export const Canvas = ({ children, view, width, height }) => {
 			});
 			graphStore.graph.on('edge:mouseenter', ({ cell }) => {
 				cell.addTools([
-					{
-						name: 'source-arrowhead',
-						args: {
-							attrs: {
-								fill: 'orange',
-							},
-						},
-					},
-					{
-						name: 'target-arrowhead',
-						args: {
-							attrs: {
-								fill: 'orange',
-							},
-						},
-					},
+					'circle-source-arrowhead', 'circle-target-arrowhead'
 				])
 			});
 
