@@ -14,7 +14,7 @@ import { rootStore, viewDescrCollConstr, viewDescrs } from "./stores/RootStore";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 import { useGraph } from "./stores/graph";
-import { Minimap } from "./components/diagram/visual_components/minimap";
+import { Minimap } from "./components/diagram/visualComponents/minimap";
 import { createStencils } from "./components/diagram/Stencil";
 
 

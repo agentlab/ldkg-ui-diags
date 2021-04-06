@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Toolbar } from '@antv/x6-react-components'
 import { DataUri } from '@antv/x6'
 import {
@@ -24,25 +24,25 @@ const EditorToolbar = observer(() => {
   const [canRedo, setCanRedo] = useState(false)
   const {graphStore, switchShape} = useGraph();
 
-  const copy = () => {
+  const copy = useCallback(() => {
      const { graph } = graphStore
      const cells = graph.getSelectedCells()
     if (cells.length) {
        graph.copy(cells)
      }
     return false
-  }
+  }, [graphStore]);
 
-  const cut = () => {
+  const cut = useCallback(() => {
     const { graph } = graphStore
     const cells = graph.getSelectedCells()
     if (cells.length) {
       graph.cut(cells)
     }
     return false
-  }
+  }, [graphStore]);
 
-  const paste = () => {
+  const paste = useCallback(() => {
     const { graph } = graphStore
     if (!graph.isClipboardEmpty()) {
       const cells = graph.paste({ offset: 32 })
@@ -50,7 +50,7 @@ const EditorToolbar = observer(() => {
       graph.select(cells)
     }
     return false
-  }
+  }, [graphStore]);
 
   const switchShape2 = () => {
     switchShape()
@@ -99,7 +99,7 @@ const EditorToolbar = observer(() => {
     graph.bindKey('meta+v', paste)
     graph.bindKey('meta+x', cut)
   }
-  }, [graphStore.graph])
+  }, [graphStore.graph, graphStore, copy, cut, paste])
 
   const handleClick = (name: string) => {
     const { graph } = graphStore
