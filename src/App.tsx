@@ -1,59 +1,45 @@
 import React from "react";
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
-import moment from "moment";
 import cloneDeep from 'lodash/cloneDeep';
 import { Spin } from "antd";
+
 import EditorToolbar from './components/editor/Toolbar/EditorToolbar'
 import styles from './Editor.module.css'
 
 import "./App.css";
-
-import { rmRepositoryParam } from "./config";
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./stores/RootStore";
+import { rootStore } from "./stores/RootStore";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 import { useGraph } from "./stores/graph";
 import { Minimap } from "./components/diagram/visualComponents/minimap";
 import { createStencils } from "./components/diagram/Stencil";
+import { viewDescrCollConstr } from "./stores/view";
 
 
 const App = observer(() => {
 	let view: any = {};
 	let shapes: any = [];
 	let properties: any = [];
-	
 	let viewDescrObs: any = undefined;
 	const { graphStore, isClassDiagram } = useGraph();
 
-	if (Object.keys(rootStore.ns.currentJs).length < 5) {
-		rootStore.setId(rmRepositoryParam['Repository ID']);
-		rootStore.ns.reloadNs();
-		return <Spin />;
+	// Should get ViewDescr data first to trigger ViewDescr.afterAttach() call
+	const collWithViewDescrsObs = rootStore.getColl(viewDescrCollConstr['@id']);
+	if (!collWithViewDescrsObs) return <Spin />;
+	viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
+	if (!viewDescrObs) return <Spin />;
+
+	shapes = rootStore.getColl('rm:NodeShapes_CollConstr')?.data;
+	properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
+	if (shapes && properties) {
+		shapes = (getSnapshot(shapes) as [])/*.slice(8, 10)*/;
+		properties = (getSnapshot(properties) as [])/*.slice(8, 18)*/;
 	} else {
-		if (!rootStore.getColl(viewDescrCollConstr['@id'])) {
-			const coll0 = rootStore.addColl(viewDescrCollConstr, {updPeriod: undefined, lastSynced: moment.now()}, viewDescrs);
-			if (!coll0) {
-			  console.warn('coll0 is undefined');
-			}
-		} else {
-			// Should get ViewDescr data first to trigger ViewDescr.afterAttach() call
-			const collWithViewDescrsObs = rootStore.getColl(viewDescrCollConstr['@id']);
-			viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
-			if (viewDescrObs) {
-				view = getSnapshot(viewDescrObs);
-				shapes = rootStore.getColl('rm:NodeShapes_CollConstr')?.data;
-				properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
-				if (shapes && properties) {
-					shapes = (getSnapshot(shapes) as []).slice(8, 10);
-					properties = (getSnapshot(properties) as []).slice(8, 18);
-				} else {
-					shapes = [];
-					properties = [];
-				}
-			}
-		}
+		shapes = [];
+		properties = [];
 	}
+	view = getSnapshot(viewDescrObs);
 	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
 	
 	return (
