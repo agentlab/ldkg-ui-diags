@@ -10,11 +10,11 @@ import styles from './Editor.module.css'
 import "./App.css";
 
 import { rmRepositoryParam } from "./config";
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/get_data";
+import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/getData";
 import { Graph } from "./components/diagram/Graph";
 import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
 import { useGraph } from "./stores/graph";
-import { Minimap } from "./components/diagram/visual_components/minimap";
+import { Minimap } from "./components/diagram/visualComponents/minimap";
 import { createStencils } from "./components/diagram/Stencil";
 
 
@@ -22,7 +22,6 @@ const App = observer(() => {
 	let view: any = {};
 	let shapesStore: any = {}
 	let shapes: any = [];
-	let properties: any = [];
 	
 	let viewDescrObs: any = undefined;
 	const { graphStore, isClassDiagram } = useGraph();
@@ -45,13 +44,10 @@ const App = observer(() => {
 				view = getSnapshot(viewDescrObs);
 				shapesStore = rootStore.getColl('rm:NodeShapes_CollConstr');
 				shapes = shapesStore?.data				
-				properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
-				if (shapes && properties) {
+				if (shapes) {
 					shapes = (getSnapshot(shapes) as []);
-					properties = (getSnapshot(properties) as []).slice(8, 18);
 				} else {
 					shapes = [];
-					properties = [];
 				}
 			}
 		}

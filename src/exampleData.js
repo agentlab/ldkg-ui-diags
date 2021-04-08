@@ -1,4 +1,4 @@
-const test_data = JSON.parse(`
+const testData = JSON.parse(`
 {
 "shapes": [
 	{
@@ -67,4 +67,4 @@ const test_data = JSON.parse(`
 }
 `);
 
-export { test_data };
+export { testData };
