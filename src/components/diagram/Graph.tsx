@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'antd';
 
 import { NodeShape } from "./visualComponents/NodeShape";
 import { Compartment } from "./visualComponents/Compartment";
@@ -76,18 +77,23 @@ const VericalBox = observer(({ data }: any) => {
 	const propertyFields = prepareArray(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
 	return (
-		<NodeBox node={node} edges={[]}>
-			{(generalFields.length > 0)
-				? <WrapBox header="General" data={generalFields} />
-				: <></>}
-			{(propertyFields.length > 0)
-				? [
-					<WrapBox header="Properties" data={propertyFields} />,
-					...propertyFields.map(([label, destId], idx) =>
-						<SquareEdge key={idx} targetId={destId} label={label} />)
-				]
-				: <></>}
-		</NodeBox>
+		<React.Fragment>
+			<NodeBox node={node} edges={[]}>
+				{(generalFields.length > 0)
+					? <WrapBox header="General" data={generalFields} />
+					: <></>}
+				{(propertyFields.length > 0)
+					? [
+						<WrapBox header="Properties" data={propertyFields} />,
+						...propertyFields.map(([label, destId], idx) =>
+							<SquareEdge key={idx} targetId={destId} label={label} />)
+					]
+					: <></>}
+			</NodeBox>
+			
+			{(data['property']?.length > 0) ? data['property'].map(shape =>
+				<VericalBox key={shape['@id']} data={shape} />) : <></>}
+		</React.Fragment>
 	);
 });
 
@@ -150,8 +156,7 @@ const CircleNode = observer(({ data }: any) => {
 
 export const Graph = observer((props: any) => {
 	const { isClassDiagram } = useGraph();
-	const shapes = [...props.data.shapes, ...props.data.properties];
-	const renderChildren = () => {
+	const renderChildren = (shapes) => {
 		if (isClassDiagram) {
 			return shapes.map(shape =>
 				<VericalBox key={shape['@id']} data={shape} />);
@@ -162,8 +167,11 @@ export const Graph = observer((props: any) => {
 		}
 	};
 	return (
-		<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-			{renderChildren()}
-		</Canvas>
+		<React.Fragment>
+			<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
+			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
+				{renderChildren(props.data.shapes)}
+			</Canvas>
+		</React.Fragment>
 	);
 });

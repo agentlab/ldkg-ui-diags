@@ -38,26 +38,22 @@ export const viewDescrs = [
 				'@type': 'rm:CollConstr',
 				entConstrs: [
 				  {
-					'@id': 'rm:NodeShapes_EntConstr0',
-					'@type': 'rm:EntConstr',
-					schema: ArtifactShapeSchema['@id'],
-				  },
-				],
-				offset: 8,
-				limit: 8,
-			},
-			{
-				'@id': 'rm:PropertyShapes_CollConstr',
-				'@type': 'rm:CollConstr',
-				entConstrs: [
-					{
-						'@id': 'rm:PropertyShapes_EntConstr0',
+						'@id': 'rm:NodeShapes_EntConstr0',
 						'@type': 'rm:EntConstr',
+						schema: ArtifactShapeSchema['@id'],
+						conditions: {
+							'@id': 'rm:PropertyShapes_CollConstr_condition',
+							'@type': 'cond type',
+							property: '?eIri1',
+						},
+				  },
+				  {
+					  '@id': 'rm:PropertyShapes_CollConstr_1',
+						'@type': 'rm:CollConstr',
 						schema: PropertyShapeSchema['@id'],
 					},
 				],
-				offset: 8,
-				limit: 20,
+				limit: 5,
 			},
 		],
 	},
