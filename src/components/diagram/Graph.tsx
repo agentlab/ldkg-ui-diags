@@ -10,6 +10,7 @@ import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
 import { useGraph } from "../../stores/graph";
+import { Spin } from "antd";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -62,6 +63,7 @@ const SquareEdge = observer(({ targetId, label }: any) => {
 });
 
 const VericalBox = observer(({ data }: any) => {
+	console.log('DATASHAPE', data);
 	const node = {
 		id: data["@id"],
 		size: { width: 140, height: 40 },
@@ -74,8 +76,19 @@ const VericalBox = observer(({ data }: any) => {
 	}
 	const generalFields = Object.entries(data)
 		.filter(([key,]) => (key !== 'property' && key !== '@id'));
+	console.log('GENERAL', generalFields);
 	const propertyFields = prepareArray(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
+	const propertyShapes = () => {
+		if ( !data.property ) {
+			return null;
+		}
+		if (Array.isArray(data.property)) {
+			return data.property.map(shape =>
+				<VericalBox key={shape['@id']} data={shape} />) 
+		}
+		return <VericalBox key={data.property['@id']} data={data.property} />
+	}
 	return (
 		<React.Fragment>
 			<NodeBox node={node} edges={[]}>
@@ -91,8 +104,7 @@ const VericalBox = observer(({ data }: any) => {
 					: <></>}
 			</NodeBox>
 			
-			{(data['property']?.length > 0) ? data['property'].map(shape =>
-				<VericalBox key={shape['@id']} data={shape} />) : <></>}
+			{propertyShapes()}
 		</React.Fragment>
 	);
 });
@@ -156,6 +168,9 @@ const CircleNode = observer(({ data }: any) => {
 
 export const Graph = observer((props: any) => {
 	const { isClassDiagram } = useGraph();
+	if (!props.data){
+		return <Spin/>
+	}
 	const renderChildren = (shapes) => {
 		if (isClassDiagram) {
 			return shapes.map(shape =>
@@ -170,7 +185,7 @@ export const Graph = observer((props: any) => {
 		<React.Fragment>
 			<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
 			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-				{renderChildren(props.data.shapes)}
+				{renderChildren(props.data)}
 			</Canvas>
 		</React.Fragment>
 	);

@@ -10,67 +10,69 @@ export const Canvas = ({ children, view, width, height }) => {
 	const {graphStore, layoutStore, minimap} = useGraph();
 
 	React.useEffect(() => {
-		try {
-			Graph.registerNode("group", {
-				inherit: ReactShape,
-			});
-			Graph.registerNode("compartment", {
-				inherit: ReactShape,
-			});
-			Graph.registerNode("field", {
-				inherit: ReactShape,
-			});
-		}
-		catch (e) { // typically happens during recompilation
-			console.log(e);
-		}
+		if (minimap){
+			try {
+				Graph.registerNode("group", {
+					inherit: ReactShape,
+				});
+				Graph.registerNode("compartment", {
+					inherit: ReactShape,
+				});
+				Graph.registerNode("field", {
+					inherit: ReactShape,
+				});
+			}
+			catch (e) { // typically happens during recompilation
+				console.log(e);
+			}
 
-		const g = new Graph({
-			container: refContainer.current,
-			width: width,
-			height: height,
-			grid: {
-				visible: true,
-			},
-			resizing: {
-				enabled: true,
-			},
-			history: true,
-      clipboard: {
-        enabled: true,
-      },
-			scroller: {
-        enabled: true,
-        pageVisible: true,
-        pageBreak: false,
-        pannable: true,
-      },
-			minimap,
-			embedding: {
-				enabled: true,
-				findParent: "center",
-			},
-			selecting: true,
-			connecting: {
-				dangling: false,
-				router: "manhattan",
-				connector: {
-					name: "jumpover",
-					args: {
-						type: "gap",
+			const g = new Graph({
+				container: refContainer.current,
+				width: width,
+				height: height,
+				grid: {
+					visible: true,
+				},
+				resizing: {
+					enabled: true,
+				},
+				history: true,
+    	  clipboard: {
+    	    enabled: true,
+    	  },
+				scroller: {
+    	    enabled: true,
+    	    pageVisible: true,
+    	    pageBreak: false,
+    	    pannable: true,
+    	  },
+				minimap,
+				embedding: {
+					enabled: true,
+					findParent: "center",
+				},
+				selecting: true,
+				connecting: {
+					dangling: false,
+					router: "manhattan",
+					connector: {
+						name: "jumpover",
+						args: {
+							type: "gap",
+						},
 					},
 				},
-			},
-			keyboard: {
-				enabled: true,
-			},
-		});
+				keyboard: {
+					enabled: true,
+				},
+			});
 
-		// g.on("node:added", (e) => {
-		// 	handleGraphEvent(e, "add");
-		// });
+			// g.on("node:added", (e) => {
+			// 	handleGraphEvent(e, "add");
+			// });
 
-		graphStore.setGraph(g);
+			graphStore.setGraph(g);
+		}
 	}, [graphStore, height, minimap, width]);
 
 	const getContainerSize = () => {
