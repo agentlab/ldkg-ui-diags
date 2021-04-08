@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
@@ -20,8 +20,8 @@ import { createStencils } from "./components/diagram/Stencil";
 
 const App = observer(() => {
 	let view: any = {};
+	let shapesStore: any = {}
 	let shapes: any = [];
-	let properties: any = [];
 	
 	let viewDescrObs: any = undefined;
 	const { graphStore, isClassDiagram } = useGraph();
@@ -42,20 +42,17 @@ const App = observer(() => {
 			viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
 			if (viewDescrObs) {
 				view = getSnapshot(viewDescrObs);
-				shapes = rootStore.getColl('rm:NodeShapes_CollConstr')?.data;
-				properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
-				if (shapes && properties) {
-					shapes = (getSnapshot(shapes) as []).slice(8, 10);
-					properties = (getSnapshot(properties) as []).slice(8, 18);
+				shapesStore = rootStore.getColl('rm:NodeShapes_CollConstr');
+				shapes = shapesStore?.data				
+				if (shapes) {
+					shapes = (getSnapshot(shapes) as []);
 				} else {
 					shapes = [];
-					properties = [];
 				}
 			}
 		}
 	}
 	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
-	
 	return (
 		<div className={styles.wrap}>
 			{view.title &&
@@ -72,9 +69,9 @@ const App = observer(() => {
 					<div className={styles.toolbar}>
 						<EditorToolbar />
 					</div>
-					{(properties.length > 0 && shapes.length > 0)
+					{(shapes.length > 0)
 					?
-						( <Graph view={view} data={{shapes, properties}} /> )
+						( <Graph view={view} data={{shapes}} loadData={() => shapesStore.loadMore()} /> )
 					: 
 						( <Spin/> )}
 				</div>

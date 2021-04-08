@@ -37,24 +37,24 @@ export const NodeBox = observer(({ node, children }: any) => {
 
 	}, [node, parentId, graphStore, graphStore.graph]);
 
-	const node_size = layoutStore.computedSize[node.id];
+	const nodeSize = layoutStore.computedSize[node.id];
 	React.useEffect(() => {
-		// console.log("RESIZE", toJS(node_size));
-		if (node_size) {
+		// console.log("RESIZE", toJS(nodeSize));
+		if (nodeSize) {
 			const n: Node = (graphStore.graph as Graph).getCell(node.id);
 			n.resize(
-				node_size.width,
-				node_size.height, {
+				nodeSize.width,
+				nodeSize.height, {
 				ignore: true,
 			});
 			n.setPosition(
-				node_size.left,
-				node_size.top, {
+				nodeSize.left,
+				nodeSize.top, {
 				ignore: true,
 			});
 		}
 
-	}, [node_size, graphStore.graph, node.id]);
+	}, [nodeSize, graphStore.graph, node.id]);
 
 	return (
 		// provide current node id as parent id for childrens
