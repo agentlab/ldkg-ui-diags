@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { applySnapshot, getSnapshot } from "mobx-state-tree";
 import { observer } from "mobx-react-lite";
 import moment from "moment";
@@ -20,6 +20,7 @@ import { createStencils } from "./components/diagram/Stencil";
 
 const App = observer(() => {
 	let view: any = {};
+	let shapesStore: any = {}
 	let shapes: any = [];
 	let properties: any = [];
 	
@@ -42,7 +43,8 @@ const App = observer(() => {
 			viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
 			if (viewDescrObs) {
 				view = getSnapshot(viewDescrObs);
-				shapes = rootStore.getColl('rm:NodeShapes_CollConstr')?.data;
+				shapesStore = rootStore.getColl('rm:NodeShapes_CollConstr');
+				shapes = shapesStore?.data				
 				properties = rootStore.getColl('rm:PropertyShapes_CollConstr')?.data;
 				if (shapes && properties) {
 					shapes = (getSnapshot(shapes) as []);
@@ -55,12 +57,6 @@ const App = observer(() => {
 		}
 	}
 	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
-	const loadMoreData = (idx: number, count: number) => {
-		if (idx >= shapes.length) {
-			return [];
-		} 
-		return (idx + count < shapes.length) ? shapes.slice(idx,count + idx) : shapes.slice(idx);
-	}
 	return (
 		<div className={styles.wrap}>
 			{view.title &&
@@ -79,7 +75,7 @@ const App = observer(() => {
 					</div>
 					{(shapes.length > 0)
 					?
-						( <Graph view={view} data={{shapes: shapes.slice(0,5)}} loadData={loadMoreData} /> )
+						( <Graph view={view} data={{shapes}} loadData={() => shapesStore.loadMore()} /> )
 					: 
 						( <Spin/> )}
 				</div>

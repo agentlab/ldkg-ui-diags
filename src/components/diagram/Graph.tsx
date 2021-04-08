@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'antd';
@@ -160,7 +160,6 @@ const CircleNode = observer((props: any) => {
 
 export const Graph = observer((props: any) => {
 	const { isClassDiagram } = useGraph();
-	const [shapes, setShapes] = useState([...props.data.shapes])
 	const render_children = (shapes) => {
 		if (isClassDiagram) {
 			return shapes.map(shape =>
@@ -171,16 +170,11 @@ export const Graph = observer((props: any) => {
 				<CircleNode key={shape['@id']} data={shape} />)
 		}
 	};
-	const addData = () => {
-		const newData = props.loadData(shapes.length, 5);
-		const newShapes = [...shapes, ...newData];
-		setShapes(newShapes);
-	}
 	return (
 		<React.Fragment>
-			<Button type="primary" shape="round" onClick={addData}>Load More</Button>
+			<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
 			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-				{render_children(shapes)}
+				{render_children(props.data.shapes)}
 			</Canvas>
 		</React.Fragment>
 	);

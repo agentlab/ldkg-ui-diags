@@ -48,6 +48,7 @@ export const viewDescrs = [
 					schema: PropertyShapeSchema['@id'],
 				},
 				],
+				limit: 5,
 			},
 			{
 				'@id': 'rm:PropertyShapes_CollConstr',
