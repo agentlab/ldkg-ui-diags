@@ -63,7 +63,6 @@ const SquareEdge = observer(({ targetId, label, pId }: any) => {
 });
 
 const VericalBox = observer(({ data }: any) => {
-	console.log('DATASHAPE', data);
 	const node = {
 		id: data["@id"],
 		size: { width: 140, height: 40 },
@@ -76,7 +75,6 @@ const VericalBox = observer(({ data }: any) => {
 	}
 	const generalFields = Object.entries(data)
 		.filter(([key,]) => (key !== 'property' && key !== '@id'));
-	console.log('GENERAL', generalFields);
 	const propertyFields = prepareArray(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
 	const propertyShapes = () => {
