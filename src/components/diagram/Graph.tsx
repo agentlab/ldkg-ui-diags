@@ -48,9 +48,9 @@ const DirectEdge = observer(({ targetId, label }: any) => {
 	);
 });
 
-const SquareEdge = observer(({ targetId, label }: any) => {
+const SquareEdge = observer(({ targetId, label, pId }: any) => {
 	const edge = {
-		id: uuidv4(),
+		id: pId + '/' + targetId,
 		target: targetId,
 		label: label,
 		router: {
@@ -93,13 +93,13 @@ const VericalBox = observer(({ data }: any) => {
 		<React.Fragment>
 			<NodeBox node={node} edges={[]}>
 				{(generalFields.length > 0)
-					? <WrapBox header="General" data={generalFields} />
+					? <WrapBox header="General" data={generalFields} pId={data['@id']}/>
 					: <></>}
 				{(propertyFields.length > 0)
 					? [
-						<WrapBox header="Properties" data={propertyFields} />,
+						<WrapBox header="Properties" data={propertyFields} pId={data['@id']}/>,
 						...propertyFields.map(([label, destId], idx) =>
-							<SquareEdge key={idx} targetId={destId} label={label} />)
+							<SquareEdge key={idx} targetId={destId} label={label} pId={data['@id']}/>)
 					]
 					: <></>}
 			</NodeBox>
@@ -109,9 +109,9 @@ const VericalBox = observer(({ data }: any) => {
 	);
 });
 
-const WrapBox = observer(({ header, data }: any) => {
+const WrapBox = observer(({ header, data, pId }: any) => {
 	const node = {
-		id: uuidv4(),
+		id: pId + '/' + header,
 		size: { width: 200, height: 30 },
 		zIndex: 1,
 		shape: "compartment",
@@ -121,14 +121,14 @@ const WrapBox = observer(({ header, data }: any) => {
 	}
 	return (
 		<NodeBox node={node}>
-			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} />)}
+			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} pId={node.id}/>)}
 		</NodeBox>
 	);
 });
 
-const FieldBox = observer(({ text }: any) => {
+const FieldBox = observer(({ text, pId }: any) => {
 	const node = {
-		id: uuidv4(),
+		id: pId + '/' + text.split(':')[0],
 		size: { width: 200, height: 50 },
 		zIndex: 2,
 		shape: "field",
