@@ -2,7 +2,7 @@
 import React from 'react';
 import { Graph } from "@antv/x6";
 
-const edges_example = [
+export const edgeExamples = [
 	{
 		label: 'square-edge',
 		router: {
@@ -19,19 +19,20 @@ const edges_example = [
 
 const defOnSelect = (itemIdx: number) => console.log("Selected edge: ", itemIdx);
 
-export const ConnectorTool = ({ edges = edges_example, onSelect = defOnSelect }: any) => {
+export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: any) => {
 	const refContainer = React.useRef<HTMLDivElement | null>(null);
 	const [selectedIdx, setSelectedIdx] = React.useState<number>(0);
+	onSelect(0); // select on start
 	const [graph, setGraph] = React.useState<Graph | null>(null);
 
-	const selected_boundary = {
+	const selectedBoundary = {
 		name: 'selected-boundary',
 		value: {
 			inherit: 'boundary',
 			padding: 6,
 		}
 	};
-	const hover_boundary = {
+	const hoverBoundary = {
 		name: 'hover-boundary',
 		value: {
 			inherit: 'boundary',
@@ -66,8 +67,8 @@ export const ConnectorTool = ({ edges = edges_example, onSelect = defOnSelect }:
 				...edge
 			})
 		);
-		Graph.registerEdgeTool(hover_boundary.name, hover_boundary.value, true);
-		Graph.registerEdgeTool(selected_boundary.name, selected_boundary.value, true);
+		Graph.registerEdgeTool(hoverBoundary.name, hoverBoundary.value, true);
+		Graph.registerEdgeTool(selectedBoundary.name, selectedBoundary.value, true);
 		setGraph(g);
 
 	}, [refContainer]);
@@ -78,10 +79,10 @@ export const ConnectorTool = ({ edges = edges_example, onSelect = defOnSelect }:
 		}
 
 		graph.on('edge:mouseenter', ({ edge }) => {
-			edge.addTools(hover_boundary.name)
+			edge.addTools(hoverBoundary.name)
 		});
 		graph.on('edge:mouseleave', ({ edge }) => {
-			edge.removeTool(hover_boundary.name);
+			edge.removeTool(hoverBoundary.name);
 		})
 		graph.on('edge:click', ({ edge }) => {
 			const itemIdx = Number(edge.id)
@@ -96,9 +97,9 @@ export const ConnectorTool = ({ edges = edges_example, onSelect = defOnSelect }:
 		}
 
 		graph.getEdges().forEach(e =>
-			e.removeTool(selected_boundary.name)
+			e.removeTool(selectedBoundary.name)
 		);
-		graph.getCellById(String(selectedIdx)).addTools(selected_boundary.name);
+		graph.getCellById(String(selectedIdx)).addTools(selectedBoundary.name);
 
 	}, [graph, selectedIdx]);
 

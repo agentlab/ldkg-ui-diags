@@ -7,7 +7,13 @@ import { useGraph } from '../../stores/graph'
 export const Canvas = ({ children, view, width, height }) => {
 	const refContainer = React.useRef<any>();
 	const [callbacksBinded, setCallbacksBinded] = React.useState<boolean>(false);
-	const { graphStore, layoutStore, minimap } = useGraph();
+	const { graphStore, layoutStore, minimap, edgeConnector } = useGraph();
+
+	// The only way to update edge connector inside `Graph` options when it changes
+	const edgeConnectorRef = React.useRef(edgeConnector);
+	React.useEffect(() => {
+		edgeConnectorRef.current = edgeConnector;
+	}, [edgeConnector]);
 
 	React.useEffect(() => {
 		if (minimap) {
@@ -22,7 +28,7 @@ export const Canvas = ({ children, view, width, height }) => {
 					inherit: ReactShape,
 				}, true);
 
-				const circlArrowhead = {
+				const circleArrowhead = {
 					tagName: 'circle',
 					attrs: {
 						r: 6,
@@ -37,7 +43,7 @@ export const Canvas = ({ children, view, width, height }) => {
 					'circle-source-arrowhead',
 					{
 						inherit: 'source-arrowhead',
-						...circlArrowhead,
+						...circleArrowhead,
 					},
 					true,
 				);
@@ -45,7 +51,7 @@ export const Canvas = ({ children, view, width, height }) => {
 					'circle-target-arrowhead',
 					{
 						inherit: 'target-arrowhead',
-						...circlArrowhead,
+						...circleArrowhead,
 					},
 					true,
 				)
@@ -94,6 +100,9 @@ export const Canvas = ({ children, view, width, height }) => {
 							type: "gap",
 						},
 					},
+					createEdge() {
+						return g.createEdge(edgeConnectorRef.current);
+					}
 				},
 				keyboard: {
 					enabled: true,
