@@ -1,6 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { v4 as uuidv4 } from 'uuid';
+import { Button } from 'antd';
 
 import { NodeShape } from "./visualComponents/NodeShape";
 import { Compartment } from "./visualComponents/Compartment";
@@ -9,6 +10,7 @@ import { NodeBox } from "./NodeBox"
 import { EdgeBox } from "./EdgeBox";
 import { Canvas } from "./Canvas"
 import { useGraph } from "../../stores/graph";
+import { Spin } from "antd";
 
 const graphWidth = 800;
 const graphHeight = 600;
@@ -46,9 +48,9 @@ const DirectEdge = observer(({ targetId, label }: any) => {
 	);
 });
 
-const SquareEdge = observer(({ targetId, label }: any) => {
+const SquareEdge = observer(({ targetId, label, pId }: any) => {
 	const edge = {
-		id: uuidv4(),
+		id: pId + '/' + targetId,
 		target: targetId,
 		label: label,
 		router: {
@@ -75,25 +77,39 @@ const VericalBox = observer(({ data }: any) => {
 		.filter(([key,]) => (key !== 'property' && key !== '@id'));
 	const propertyFields = prepareArray(data['property'])
 		.map((prop) => ['sh:property', prop['@id']]);
+	const propertyShapes = () => {
+		if ( !data.property ) {
+			return null;
+		}
+		if (Array.isArray(data.property)) {
+			return data.property.map(shape =>
+				<VericalBox key={shape['@id']} data={shape} />) 
+		}
+		return <VericalBox key={data.property['@id']} data={data.property} />
+	}
 	return (
-		<NodeBox node={node} edges={[]}>
-			{(generalFields.length > 0)
-				? <WrapBox header="General" data={generalFields} />
-				: <></>}
-			{(propertyFields.length > 0)
-				? [
-					<WrapBox header="Properties" data={propertyFields} />,
-					...propertyFields.map(([label, destId], idx) =>
-						<SquareEdge key={idx} targetId={destId} label={label} />)
-				]
-				: <></>}
-		</NodeBox>
+		<React.Fragment>
+			<NodeBox node={node} edges={[]}>
+				{(generalFields.length > 0)
+					? <WrapBox header="General" data={generalFields} pId={data['@id']}/>
+					: <></>}
+				{(propertyFields.length > 0)
+					? [
+						<WrapBox header="Properties" data={propertyFields} pId={data['@id']}/>,
+						...propertyFields.map(([label, destId], idx) =>
+							<SquareEdge key={idx} targetId={destId} label={label} pId={data['@id']}/>)
+					]
+					: <></>}
+			</NodeBox>
+			
+			{propertyShapes()}
+		</React.Fragment>
 	);
 });
 
-const WrapBox = observer(({ header, data }: any) => {
+const WrapBox = observer(({ header, data, pId }: any) => {
 	const node = {
-		id: uuidv4(),
+		id: pId + '/' + header,
 		size: { width: 200, height: 30 },
 		zIndex: 1,
 		shape: "compartment",
@@ -103,14 +119,14 @@ const WrapBox = observer(({ header, data }: any) => {
 	}
 	return (
 		<NodeBox node={node}>
-			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} />)}
+			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} pId={node.id}/>)}
 		</NodeBox>
 	);
 });
 
-const FieldBox = observer(({ text }: any) => {
+const FieldBox = observer(({ text, pId }: any) => {
 	const node = {
-		id: uuidv4(),
+		id: pId + '/' + text.split(':')[0],
 		size: { width: 200, height: 50 },
 		zIndex: 2,
 		shape: "field",
@@ -150,8 +166,10 @@ const CircleNode = observer(({ data }: any) => {
 
 export const Graph = observer((props: any) => {
 	const { isClassDiagram } = useGraph();
-	const shapes = [...props.data.shapes, ...props.data.properties];
-	const renderChildren = () => {
+	if (!props.data){
+		return <Spin/>
+	}
+	const renderChildren = (shapes) => {
 		if (isClassDiagram) {
 			return shapes.map(shape =>
 				<VericalBox key={shape['@id']} data={shape} />);
@@ -162,8 +180,11 @@ export const Graph = observer((props: any) => {
 		}
 	};
 	return (
-		<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-			{renderChildren()}
-		</Canvas>
+		<React.Fragment>
+			<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
+			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
+				{renderChildren(props.data)}
+			</Canvas>
+		</React.Fragment>
 	);
 });

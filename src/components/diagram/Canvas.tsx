@@ -10,100 +10,102 @@ export const Canvas = ({ children, view, width, height }) => {
 	const { graphStore, layoutStore, minimap } = useGraph();
 
 	React.useEffect(() => {
-		try {
-			Graph.registerNode("group", {
-				inherit: ReactShape,
-			}, true);
-			Graph.registerNode("compartment", {
-				inherit: ReactShape,
-			}, true);
-			Graph.registerNode("field", {
-				inherit: ReactShape,
-			}, true);
+		if (minimap) {
+			try {
+				Graph.registerNode("group", {
+					inherit: ReactShape,
+				}, true);
+				Graph.registerNode("compartment", {
+					inherit: ReactShape,
+				}, true);
+				Graph.registerNode("field", {
+					inherit: ReactShape,
+				}, true);
 
-			const circlArrowhead = {
-				tagName: 'circle',
-				attrs: {
-					r: 6,
-					fill: 'grey',
-					'fill-opacity': 0.3,
-					stroke: 'black',
-					'stroke-width': 1,
-					cursor: 'move',
-				},
-			};
-			Graph.registerEdgeTool(
-				'circle-source-arrowhead',
-				{
-					inherit: 'source-arrowhead',
-					...circlArrowhead,
-				},
-				true,
-			);
-			Graph.registerEdgeTool(
-				'circle-target-arrowhead',
-				{
-					inherit: 'target-arrowhead',
-					...circlArrowhead,
-				},
-				true,
-			)
-		}
-		catch (e) { // typically happens during recompilation
-			console.log(e);
-		}
+				const circlArrowhead = {
+					tagName: 'circle',
+					attrs: {
+						r: 6,
+						fill: 'grey',
+						'fill-opacity': 0.3,
+						stroke: 'black',
+						'stroke-width': 1,
+						cursor: 'move',
+					},
+				};
+				Graph.registerEdgeTool(
+					'circle-source-arrowhead',
+					{
+						inherit: 'source-arrowhead',
+						...circlArrowhead,
+					},
+					true,
+				);
+				Graph.registerEdgeTool(
+					'circle-target-arrowhead',
+					{
+						inherit: 'target-arrowhead',
+						...circlArrowhead,
+					},
+					true,
+				)
+			}
+			catch (e) { // typically happens during recompilation
+				console.log(e);
+			}
 
-		const g = new Graph({
-			container: refContainer.current,
-			width: width,
-			height: height,
-			grid: {
-				visible: true,
-			},
-			resizing: {
-				enabled: true,
-			},
-			history: true,
-			clipboard: {
-				enabled: true,
-			},
-			scroller: {
-				enabled: true,
-				pageVisible: true,
-				pageBreak: false,
-				pannable: true,
-			},
-			mousewheel: {
-				enabled: true,
-				factor: 1.1,
-				modifiers: ['ctrl', 'meta'],
-			},
-			minimap,
-			embedding: {
-				enabled: true,
-				findParent: "center",
-			},
-			selecting: true,
-			connecting: {
-				dangling: false,
-				router: "manhattan",
-				connector: {
-					name: "jumpover",
-					args: {
-						type: "gap",
+			const g = new Graph({
+				container: refContainer.current,
+				width: width,
+				height: height,
+				grid: {
+					visible: true,
+				},
+				resizing: {
+					enabled: true,
+				},
+				history: true,
+				clipboard: {
+					enabled: true,
+				},
+				scroller: {
+					enabled: true,
+					pageVisible: true,
+					pageBreak: false,
+					pannable: true,
+				},
+				mousewheel: {
+					enabled: true,
+					factor: 1.1,
+					modifiers: ['ctrl', 'meta'],
+				},
+				minimap,
+				embedding: {
+					enabled: true,
+					findParent: "center",
+				},
+				selecting: true,
+				connecting: {
+					dangling: false,
+					router: "manhattan",
+					connector: {
+						name: "jumpover",
+						args: {
+							type: "gap",
+						},
 					},
 				},
-			},
-			keyboard: {
-				enabled: true,
-			},
-			interacting: {
-				edgeMovable: true,
-				arrowheadMovable: true,
-			},
-		});
+				keyboard: {
+					enabled: true,
+				},
+				interacting: {
+					edgeMovable: true,
+					arrowheadMovable: true,
+				},
+			});
 
-		graphStore.setGraph(g);
+			graphStore.setGraph(g);
+		}
 	}, [graphStore, height, minimap, width]);
 
 	const getContainerSize = () => {
@@ -158,23 +160,23 @@ export const Canvas = ({ children, view, width, height }) => {
 				cell.removeTools()
 			})
 
-			const connect_key = 'shift';
+			const connectKey = 'shift';
 			const setMagnet = (node: Node, active: boolean) => {
 				node.attr('body/magnet', active);
 				node.attr('fo/magnet', active);
 			}
-			graphStore.graph.bindKey(connect_key, () => {
+			graphStore.graph.bindKey(connectKey, () => {
 				(graphStore.graph as Graph).getNodes().map(node =>
 					setMagnet(node, true)
 				);
 			}, 'keydown');
-			graphStore.graph.bindKey(connect_key, () => {
+			graphStore.graph.bindKey(connectKey, () => {
 				(graphStore.graph as Graph).getNodes().map(node =>
 					setMagnet(node, false)
 				);
 			}, 'keyup');
 			graphStore.graph.on('edge:connected', () => {
-				(graphStore.graph as Graph).getNodes().map(node => {
+				(graphStore.graph as Graph).getNodes().forEach(node => {
 					setMagnet(node, false)
 				});
 			});
