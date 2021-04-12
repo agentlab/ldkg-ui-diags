@@ -43,6 +43,7 @@ export const GraphEditor = observer(({ viewDescrId }: any) => {
 						<Graph view={view} data={shapesData} loadData={() => shapes.loadMore()} /> )
 					</div>
 					<GraphCongigPanel view={view} viewDescrObs={viewDescrObs} />
+					<Minimap />
 				</div>
 			</div>
 		</GraphContextProvider>
@@ -56,7 +57,6 @@ const Stencils = () => {
 	return (
 		<div id="stencil" className={styles.sider} >
 			{stencils}
-			<Minimap />
 			<ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
 		</div>
 	)
