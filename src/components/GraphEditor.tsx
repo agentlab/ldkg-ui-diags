@@ -23,8 +23,12 @@ export const GraphEditor = observer(({viewDescrId}: any) => {
 	const viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
 	if (!viewDescrObs) return <Spin />;
 
-	const shapes = rootStore.getColl('rm:NodeShapes_CollConstr');
-	const shapesData: any = shapes?.data ? getSnapshot(shapes?.data) : [];
+	const rootNodes = rootStore.getColl('rm:RootNodes_CollConstr');
+	const childNodes = rootStore.getColl('rm:ChildNodes_CollConstr');
+	const arrows = rootStore.getColl('rm:Arrows_CollConstr');
+	const shapesData: any = rootNodes?.data ? getSnapshot(rootNodes?.data) : [];
+	const childNodesData: any = childNodes?.data ? getSnapshot(childNodes?.data) : [];
+	const arrowsData: any = arrows?.data ? getSnapshot(arrows?.data) : [];
 
 	const view: any = getSnapshot(viewDescrObs);
 
@@ -40,7 +44,7 @@ export const GraphEditor = observer(({viewDescrId}: any) => {
 					<Stencils />
 					<div className={styles.panel}>
 						<GraphToolbar />
-					  <Graph view={view} data={shapesData} loadData={() => shapes.loadMore()} /> )
+					  <Graph view={view} data={shapesData} loadData={() => rootNodes.loadMore()} /> )
 					</div>
 					<GraphCongigPanel view={view} viewDescrObs={viewDescrObs}/>
 				</div>

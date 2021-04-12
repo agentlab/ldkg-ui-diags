@@ -32,28 +32,72 @@ export const viewDescrs = [
 				bgColor: 'transparent',
 			},
 		},
-		collsConstrs: [ //TODO: correct coll constr!!!
+		collsConstrs: [
 			{
-				'@id': 'rm:NodeShapes_CollConstr',
+				'@id': 'rm:RootNodes_CollConstr',
 				'@type': 'rm:CollConstr',
 				entConstrs: [
 				  {
-						'@id': 'rm:NodeShapes_EntConstr0',
+						'@id': 'rm:RootNodes_EntConstr_0',
 						'@type': 'rm:EntConstr',
-						schema: ArtifactShapeSchema['@id'],
+						schema: 'rm:UsedInDiagramAsRootNodeShape',
 						conditions: {
-							'@id': 'rm:PropertyShapes_CollConstr_condition',
-							'@type': 'cond type',
-							property: '?eIri1',
+							'@id': 'rm:RootNodes_EntConstr_0_Condition',
+							'@type': 'rm:EntConstrCondition',
+              subject: '?eIri1',
+							object: 'rm:DataModelView',
 						},
 				  },
 				  {
-					  '@id': 'rm:PropertyShapes_CollConstr_1',
+					  '@id': 'rm:RootNodes_EntConstr_1',
+						'@type': 'rm:EntConstr',
+						schema: ArtifactShapeSchema['@id'],
+					},
+				],
+			},
+      {
+				'@id': 'rm:ChildNodes_CollConstr',
+				'@type': 'rm:CollConstr',
+				entConstrs: [
+          {
+						'@id': 'rm:ChildNodes_EntConstr_0',
+						'@type': 'rm:EntConstr',
+						schema: 'rm:UsedInDiagramAsChildNode',
+						conditions: {
+							'@id': 'rm:ChildNodes_EntConstr_0_Condition',
+							'@type': 'rm:EntConstrCondition',
+              subject: '?eIri1',
+							object: 'rm:DataModelView',
+						},
+				  },
+				  {
+					  '@id': 'rm:ChildNodes_EntConstr_1',
+						'@type': 'rm:EntConstr',
+						schema: PropertyShapeSchema['@id'],
+					},
+				],
+			},
+      {
+				'@id': 'rm:Arrows_CollConstr',
+				'@type': 'rm:CollConstr',
+				entConstrs: [
+          {
+						'@id': 'rm:Arrows_EntConstr_0',
+						'@type': 'rm:EntConstr',
+						schema: 'rm:UsedInDiagramAsArrow',
+						conditions: {
+							'@id': 'rm:Arrows_EntConstr_0_Condition',
+							'@type': 'rm:EntConstrCondition',
+              subject: '?eIri1',
+							object: 'rm:DataModelView',
+						},
+				  },
+				  {
+					  '@id': 'rm:Arrows_EntConstr_1',
 						'@type': 'rm:CollConstr',
 						schema: PropertyShapeSchema['@id'],
 					},
 				],
-				limit: 1,
 			},
 		],
 	},
@@ -68,13 +112,13 @@ export const viewDescrs = [
 	}
 ];
 
-export const viewDataShapes = [
-  /**
-   * Parent (root, top level) Graph Nodes
-   */
+/**
+ * Parent (root, top level) Graph Nodes
+ */
+export const viewDataRootNodes = [
   {
     '@id': 'rm:diagramNode1',
-    '@type': 'rm:UsedInDiagramAsNode',
+    '@type': 'rm:UsedInDiagramAsRootNodeShape',
     x: 10,
     y: 10,
     z: 0,
@@ -105,7 +149,7 @@ export const viewDataShapes = [
   },
   {
     '@id': 'rm:diagramNode_UserShape',
-    '@type': 'rm:UsedInDiagramAsNode',
+    '@type': 'rm:UsedInDiagramAsRootNodeShape',
     x: 40,
     y: 20,
     z: 0,
@@ -127,10 +171,12 @@ export const viewDataShapes = [
     stencil: 'rm:ClassNodeStencil',
     //styles: 'string with css?',
   },
+];
 
-  /**
-   * Child Nodes (primitive properties)
-   */
+/**
+ * Child Nodes (primitive properties)
+ */
+export const viewDataChildNodes = [
   {
     '@id': 'rm:diagramNode11',
     '@type': 'rm:UsedInDiagramAsChildNode',
@@ -294,10 +340,12 @@ export const viewDataShapes = [
     stencil: 'rm:PropertyNodeStencil',
     //styles: 'string with css?',
   },
+];
 
-  /**
-   * Arrows (reference properties)
-   */
+/**
+ * Arrows (reference properties)
+ */
+export const viewDataArrows = [
   {
     '@id': 'rm:diagramArrow1',
     '@type': 'rm:UsedInDiagramAsArrow',

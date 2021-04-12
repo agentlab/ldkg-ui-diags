@@ -4,7 +4,7 @@ import moment from "moment";
 import { Repository, rootModelInitialState, SparqlClientImpl } from "@agentlab/sparql-jsld-client";
 
 import { rdfServerUrl, rmRepositoryParam } from '../config';
-import { viewDataShapes, viewDescrCollConstr, viewDescrs } from './view';
+import { viewDataRootNodes, viewDataChildNodes, viewDataArrows, viewDescrCollConstr, viewDescrs } from './view';
 //import { viewKindCollConstr, viewKinds } from "./viewKinds";
 
 const client = new SparqlClientImpl(rdfServerUrl);
@@ -35,7 +35,23 @@ const rootModelInitialState2 = {
 		[viewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
 			'@id': viewDescrs[0].collsConstrs?.[0]['@id'],
 			collConstr: viewDescrs[0].collsConstrs?.[0]['@id'], // reference by @id
-			dataIntrnl: viewDataShapes,
+			dataIntrnl: viewDataRootNodes,
+			updPeriod: undefined,
+			lastSynced: moment.now(),
+			resolveCollConstrs: false,
+		},
+		[viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
+			'@id': viewDescrs[0].collsConstrs?.[1]['@id'],
+			collConstr: viewDescrs[0].collsConstrs?.[1]['@id'], // reference by @id
+			dataIntrnl: viewDataChildNodes,
+			updPeriod: undefined,
+			lastSynced: moment.now(),
+			resolveCollConstrs: false,
+		},
+		[viewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
+			'@id': viewDescrs[0].collsConstrs?.[2]['@id'],
+			collConstr: viewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
+			dataIntrnl: viewDataArrows,
 			updPeriod: undefined,
 			lastSynced: moment.now(),
 			resolveCollConstrs: false,
