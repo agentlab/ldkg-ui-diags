@@ -1,5 +1,5 @@
 import React from "react";
-import { Graph } from "@antv/x6";
+import { Graph, Node } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
 import { useGraph } from '../../stores/graph'
 
@@ -7,20 +7,54 @@ import { useGraph } from '../../stores/graph'
 export const Canvas = ({ children, view, width, height }) => {
 	const refContainer = React.useRef<any>();
 	const [callbacksBinded, setCallbacksBinded] = React.useState<boolean>(false);
-	const {graphStore, layoutStore, minimap} = useGraph();
+	const { graphStore, layoutStore, minimap, edgeConnector } = useGraph();
+
+	// The only way to update edge connector inside `Graph` options when it changes
+	const edgeConnectorRef = React.useRef(edgeConnector);
+	React.useEffect(() => {
+		edgeConnectorRef.current = edgeConnector;
+	}, [edgeConnector]);
 
 	React.useEffect(() => {
-		if (minimap){
+		if (minimap) {
 			try {
 				Graph.registerNode("group", {
 					inherit: ReactShape,
-				});
+				}, true);
 				Graph.registerNode("compartment", {
 					inherit: ReactShape,
-				});
+				}, true);
 				Graph.registerNode("field", {
 					inherit: ReactShape,
-				});
+				}, true);
+
+				const circleArrowhead = {
+					tagName: 'circle',
+					attrs: {
+						r: 6,
+						fill: 'grey',
+						'fill-opacity': 0.3,
+						stroke: 'black',
+						'stroke-width': 1,
+						cursor: 'move',
+					},
+				};
+				Graph.registerEdgeTool(
+					'circle-source-arrowhead',
+					{
+						inherit: 'source-arrowhead',
+						...circleArrowhead,
+					},
+					true,
+				);
+				Graph.registerEdgeTool(
+					'circle-target-arrowhead',
+					{
+						inherit: 'target-arrowhead',
+						...circleArrowhead,
+					},
+					true,
+				)
 			}
 			catch (e) { // typically happens during recompilation
 				console.log(e);
@@ -37,15 +71,20 @@ export const Canvas = ({ children, view, width, height }) => {
 					enabled: true,
 				},
 				history: true,
-    	  clipboard: {
-    	    enabled: true,
-    	  },
+				clipboard: {
+					enabled: true,
+				},
 				scroller: {
-    	    enabled: true,
-    	    pageVisible: true,
-    	    pageBreak: false,
-    	    pannable: true,
-    	  },
+					enabled: true,
+					pageVisible: true,
+					pageBreak: false,
+					pannable: true,
+				},
+				mousewheel: {
+					enabled: true,
+					factor: 1.1,
+					modifiers: ['ctrl', 'meta'],
+				},
 				minimap,
 				embedding: {
 					enabled: true,
@@ -61,38 +100,41 @@ export const Canvas = ({ children, view, width, height }) => {
 							type: "gap",
 						},
 					},
+					createEdge() {
+						return g.createEdge(edgeConnectorRef.current);
+					}
 				},
 				keyboard: {
 					enabled: true,
 				},
+				interacting: {
+					edgeMovable: true,
+					arrowheadMovable: true,
+				},
 			});
-
-			// g.on("node:added", (e) => {
-			// 	handleGraphEvent(e, "add");
-			// });
 
 			graphStore.setGraph(g);
 		}
 	}, [graphStore, height, minimap, width]);
 
 	const getContainerSize = () => {
-    return {
-      width: document.body.offsetWidth - 581,
-      height: document.body.offsetHeight - 90,
-    }
-  }
+		return {
+			width: document.body.offsetWidth - 581,
+			height: document.body.offsetHeight - 90,
+		}
+	}
 
-  React.useEffect(() => {
-    const resizeFn = () => {
-      const { width, height } = getContainerSize()
+	React.useEffect(() => {
+		const resizeFn = () => {
+			const { width, height } = getContainerSize()
 			graphStore.graph?.resize(width, height)
-    }
-    resizeFn()
-    window.addEventListener('resize', resizeFn)
-    return () => {
-      window.removeEventListener('resize', resizeFn)
-    }
-  }, [graphStore.graph])
+		}
+		resizeFn()
+		window.addEventListener('resize', resizeFn)
+		return () => {
+			window.removeEventListener('resize', resizeFn)
+		}
+	}, [graphStore.graph])
 
 	React.useEffect(() => {
 		if (graphStore.graph && !callbacksBinded) {
@@ -116,6 +158,38 @@ export const Canvas = ({ children, view, width, height }) => {
 			});
 			graphStore.graph?.on("node:removed", (e) => {
 				layoutStore.sizeCalc(e, "remove");
+			});
+			graphStore.graph.on('edge:mouseenter', ({ cell }) => {
+				cell.addTools([
+					'circle-source-arrowhead', 'circle-target-arrowhead'
+				])
+			});
+
+			graphStore.graph.on('edge:mouseleave', ({ cell }) => {
+				cell.removeTools()
+			})
+
+			const connectKey = 'shift';
+			const setMagnet = (node: Node, active: boolean) => {
+				node.attr('body/magnet', active);
+				node.attr('fo/magnet', active);
+			}
+			graphStore.graph.bindKey(connectKey, () => {
+				(graphStore.graph as Graph).getNodes().forEach(node => {
+					if (edgeConnectorRef.current) {
+						setMagnet(node, true);
+					}
+				});
+			}, 'keydown');
+			graphStore.graph.bindKey(connectKey, () => {
+				(graphStore.graph as Graph).getNodes().forEach(node =>
+					setMagnet(node, false)
+				);
+			}, 'keyup');
+			graphStore.graph.on('edge:connected', () => {
+				(graphStore.graph as Graph).getNodes().forEach(node => {
+					setMagnet(node, false)
+				});
 			});
 
 			setCallbacksBinded(true);

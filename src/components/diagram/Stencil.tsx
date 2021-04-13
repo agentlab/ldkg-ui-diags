@@ -12,7 +12,7 @@ import styles from '../../Editor.module.css'
 export const Stencil = ({nodes = []}: any) => {
 	const refContainer = React.useRef<any>();
 	const { graphStore } = useGraph();
-	const [stencil, setStencil] = React.useState<any>();
+	const [stencil, setStencil] = React.useState<Addon.Stencil | null>(null);
 
 	React.useEffect(() => {
 		const s = new Addon.Stencil({
