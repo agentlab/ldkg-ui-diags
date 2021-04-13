@@ -1,5 +1,6 @@
 
-export const NodeShape = ({/*node,*/ text}) => {
+export const NodeShape = ({data = {}, text}: any) => {
+	const label = data?.subject?.title || text;
 	return (
 		<div
 			style={{
@@ -22,7 +23,7 @@ export const NodeShape = ({/*node,*/ text}) => {
 					textOverflow: "ellipsis",
 				}}
 			>
-				{text}
+				{label}
 			</div>
 		</div>
 	);

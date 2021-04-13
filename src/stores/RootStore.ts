@@ -4,7 +4,7 @@ import moment from "moment";
 import { Repository, rootModelInitialState, SparqlClientImpl } from "@agentlab/sparql-jsld-client";
 
 import { rdfServerUrl, rmRepositoryParam } from '../config';
-import { viewDataRootNodes, viewDataChildNodes, viewDataArrows, viewDescrCollConstr, viewDescrs } from './view';
+import { viewDataRootNodes, viewDataChildNodes, viewDataArrows, viewDescrCollConstr, viewDescrs, viewDescrCollConstr0, viewDescrs0 } from './view';
 //import { viewKindCollConstr, viewKinds } from "./viewKinds";
 
 const client = new SparqlClientImpl(rdfServerUrl);
@@ -70,15 +70,16 @@ rootStore.ns.reloadNs();
 	()=> Object.keys(rootStore.ns.currentJs).length > 5 && !rootStore.getColl(viewDescrCollConstr['@id']),
 	()=> {
 		const coll0 = rootStore.addColl(
-			viewDescrCollConstr,
+			viewDescrCollConstr0,
 			{
 				updPeriod: undefined,
 				lastSynced: moment.now(),
 			},
-			viewDescrs
+			viewDescrs0
 		);
 		if (!coll0) {
 		  console.warn('coll0 is undefined');
 		}
 	}
-);*/
+);
+*/

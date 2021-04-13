@@ -1,6 +1,6 @@
 
-export const NodeField = ({/*node,*/ text}) => {
-
+export const NodeField = ({data={}, text}: any) => {
+		const label = `${data?.subject?.name}: ${data?.subject?.datatype}` || text;
 		return (
 			<div
 				style={{
@@ -10,13 +10,14 @@ export const NodeField = ({/*node,*/ text}) => {
 					width: "100%",
 					height: "100%",
 					paddingLeft: 3,
+					fontSize: 10,
 
 					whiteSpace: "nowrap",
 					overflow: "hidden",
 					textOverflow: "ellipsis",
 				}}
 			>
-				{text}
+				{label}
 			</div>
 		);
 };

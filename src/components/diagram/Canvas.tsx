@@ -2,9 +2,10 @@ import React from "react";
 import { Graph } from "@antv/x6";
 import { ReactShape } from "@antv/x6-react-shape";
 import { useGraph } from '../../stores/graph'
+import { observer } from "mobx-react-lite";
 
 
-export const Canvas = ({ children, view, width, height }) => {
+export const Canvas = observer(({ children, view, width, height }: any) => {
 	const refContainer = React.useRef<any>();
 	const [callbacksBinded, setCallbacksBinded] = React.useState<boolean>(false);
 	const {graphStore, layoutStore, minimap} = useGraph();
@@ -25,7 +26,6 @@ export const Canvas = ({ children, view, width, height }) => {
 			catch (e) { // typically happens during recompilation
 				console.log(e);
 			}
-
 			const g = new Graph({
 				container: refContainer.current,
 				width: width,
@@ -70,8 +70,8 @@ export const Canvas = ({ children, view, width, height }) => {
 			// g.on("node:added", (e) => {
 			// 	handleGraphEvent(e, "add");
 			// });
-
 			graphStore.setGraph(g);
+			console.log('SET GRAPH');
 		}
 	}, [graphStore, height, minimap, width]);
 
@@ -88,6 +88,7 @@ export const Canvas = ({ children, view, width, height }) => {
 			graphStore.graph?.resize(width, height)
     }
     resizeFn()
+		console.log('canvas');
     window.addEventListener('resize', resizeFn)
     return () => {
       window.removeEventListener('resize', resizeFn)
@@ -119,6 +120,7 @@ export const Canvas = ({ children, view, width, height }) => {
 			});
 
 			setCallbacksBinded(true);
+			console.log('SET Dep');
 		}
 	}, [graphStore.graph, callbacksBinded, layoutStore]);
 
@@ -160,11 +162,10 @@ export const Canvas = ({ children, view, width, height }) => {
 			if (view.options.gridOptions.bgColor) graphStore.graph?.drawBackground({ color: view.options.gridOptions.bgColor });
 		}
 	}
-	const toRender = graphStore.graph ? children : <></>;
-
+	const toRender = callbacksBinded ? children : <></>;
 	return (
 		<div id="container" ref={refContainer} className="x6-graph">
 			{toRender}
 		</div>
 	);
-}
+})

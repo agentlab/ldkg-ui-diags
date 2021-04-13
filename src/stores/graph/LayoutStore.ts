@@ -7,10 +7,8 @@ export const layoutStoreConstr = () => ({
   sizeData: {},
   computedSize: {},
   sizeCalc(e: any, type: string) {
-    console.log(type, e);
     const node: Node = e.node;
     let changedIds = this.propogateUpdates(this.getRoot(node.id));
-
     if (type === "add") {
       this.addNode(node);
     }

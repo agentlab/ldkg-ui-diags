@@ -148,7 +148,7 @@ export const viewDataRootNodes = [
     //styles: 'string with css?',
   },
   {
-    '@id': 'rm:diagramNode_UserShape',
+    '@id': 'rm:diagramNode2',
     '@type': 'rm:UsedInDiagramAsRootNodeShape',
     x: 40,
     y: 20,
@@ -355,6 +355,7 @@ export const viewDataArrows = [
     width: 2,
     arrowFrom: 'rm:diagramNode1', // ref to the arrow-connected graph node at the "from" end
     arrowTo: 'rm:diagramNode2', // ref to the arrow-connected graph node at the "to" end
+    router: 'normal',
     subject: { // ref to the model object
       '@id': 'rm:creatorShape',
       '@type': 'sh:PropertyShape',
@@ -383,6 +384,7 @@ export const viewDataArrows = [
     width: 2,
     arrowFrom: 'rm:diagramNode1',
     arrowTo: 'rm:diagramNode2',
+    router: 'manhattan',
     subject: {
       '@id': 'rm:modifiedByShape',
       '@type': 'sh:PropertyShape',
@@ -402,4 +404,75 @@ export const viewDataArrows = [
     stencil: 'rm:AssociationArrowStencil',
     //styles: 'string with css?',
   },
+];
+
+/**
+ * OLD Samples
+ */
+
+export const viewDescrCollConstr0 = {
+	'@id': 'rm:Views_Coll',
+	entConstrs: [
+	  {
+		'@id': 'rm:Views_EntConstr0',
+		schema: ViewShapeSchema,
+	  }
+	],
+};
+
+export const viewDescrs0 = [
+	{
+		'@id': 'rm:DataModelView',
+		'@type': 'rm:View',
+		title: 'Модель данных',
+		description: 'Модель данных хранилища на основе SHACL Shapes',
+		//viewKind: viewKinds[0]['@id'],
+		type: 'VerticalLayout',
+		elements: [],
+		options: {
+			gridOptions: {
+				type: 'mesh',
+				size: 10,
+				color: '#e5e5e5',
+				thickness: 1,
+				colorSecond: '#d0d0d0',
+				thicknessSecond: 1,
+				factor: 4,
+				bgColor: 'transparent',
+			},
+		},
+		collsConstrs: [
+			{
+				'@id': 'rm:NodeShapes_CollConstr',
+				'@type': 'rm:CollConstr',
+				entConstrs: [
+				  {
+						'@id': 'rm:NodeShapes_EntConstr0',
+						'@type': 'rm:EntConstr',
+						schema: ArtifactShapeSchema['@id'],
+						conditions: {
+							'@id': 'rm:PropertyShapes_CollConstr_condition',
+							'@type': 'cond type',
+							property: '?eIri1',
+						},
+				  },
+				  {
+					  '@id': 'rm:PropertyShapes_CollConstr_1',
+						'@type': 'rm:CollConstr',
+						schema: PropertyShapeSchema['@id'],
+					},
+				],
+				limit: 1,
+			},
+		],
+	},
+	{
+		'@id': 'rm:GraphView',
+		'@type': 'rm:View',
+		title: 'Граф данных',
+		description: 'Граф данных хранилища на основе SHACL Shapes',
+		//viewKind: viewKinds[1]['@id'],
+		type: 'VerticalLayout',
+		elements: [],
+	}
 ];

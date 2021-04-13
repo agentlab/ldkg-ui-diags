@@ -1,20 +1,31 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Addon } from "@antv/x6";
 
 import { useGraph } from "../../stores/graph";
-import { NodeShape } from "./visualComponents/NodeShape";
-import { NodeField } from "./visualComponents/NodeField";
+import { NodeShape } from "./stencils/NodeShape";
+import { NodeField } from "./stencils/NodeField";
+import { observer } from "mobx-react-lite";
+import { Minimap } from "../diagram/visualComponents/minimap";
 
 import styles from '../../Editor.module.css'
+
+export const Stencils = observer(() => {
+	const { graphStore, isClassDiagram } = useGraph();
+	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;  
+	return (
+		<div id="stencil" className={styles.sider} >
+				{stencils}
+				<Minimap />
+			</div>
+	)
+}); 
 
 
 export const Stencil = ({nodes = []}: any) => {
 	const refContainer = React.useRef<any>();
 	const { graphStore } = useGraph();
-	const [stencil, setStencil] = React.useState<any>();
-
-	React.useEffect(() => {
+	useEffect(() => {
 		const s = new Addon.Stencil({
 			title: "Stencil",
 			target: graphStore.graph,
@@ -30,22 +41,20 @@ export const Stencil = ({nodes = []}: any) => {
 					title: "Components",
 				},
 			],
-		});
-		setStencil(s);		
-		refContainer.current.appendChild(s.container);
-	}, [graphStore.graph]);
-
-	React.useEffect(() => {
-		if (stencil) {
-			stencil.load(nodes, "group1");
+		});	
+	
+		if (s) {
+			s.load(nodes, "group1");
 		}
-	}, [nodes, stencil]);
+		refContainer.current?.appendChild(s.container);
+	},[graphStore, nodes])
 
-	return <div ref={refContainer} className={styles.stencil} />;
-}
+	return <div ref={refContainer} className={styles.stencil}/>
+};
 
 
 export const createStencils = (isClassDiagram: boolean) => {
+	console.log('CREATE');
 	const nodeShape = {
 		id: "Node Shape",
 		size: { width: 140, height: 40 },

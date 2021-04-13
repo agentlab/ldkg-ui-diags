@@ -15,9 +15,18 @@ import {
 import '@antv/x6-react-components/es/toolbar/style/index.css'
 import { useGraph } from '../../../stores/graph'
 import { observer } from "mobx-react-lite";
+import styles from '../../../Editor.module.css'
 
 const Item = Toolbar.Item
 const Group = Toolbar.Group
+
+export const GraphToolbar = () => {
+	return (
+<		div className={styles.toolbar}>
+			<EditorToolbar />
+		</div>
+	)
+}
 
 const EditorToolbar = observer(() => {
   const [canUndo, setCanUndo] = useState(false)
