@@ -175,12 +175,14 @@ export const Canvas = ({ children, view, width, height }) => {
 				node.attr('fo/magnet', active);
 			}
 			graphStore.graph.bindKey(connectKey, () => {
-				(graphStore.graph as Graph).getNodes().map(node =>
-					setMagnet(node, true)
-				);
+				(graphStore.graph as Graph).getNodes().forEach(node => {
+					if (edgeConnectorRef.current) {
+						setMagnet(node, true);
+					}
+				});
 			}, 'keydown');
 			graphStore.graph.bindKey(connectKey, () => {
-				(graphStore.graph as Graph).getNodes().map(node =>
+				(graphStore.graph as Graph).getNodes().forEach(node =>
 					setMagnet(node, false)
 				);
 			}, 'keyup');

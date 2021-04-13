@@ -21,8 +21,7 @@ const defOnSelect = (itemIdx: number) => console.log("Selected edge: ", itemIdx)
 
 export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: any) => {
 	const refContainer = React.useRef<HTMLDivElement | null>(null);
-	const [selectedIdx, setSelectedIdx] = React.useState<number>(0);
-	onSelect(0); // select on start
+	const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
 	const [graph, setGraph] = React.useState<Graph | null>(null);
 
 	const selectedBoundary = {
@@ -92,7 +91,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
 	}, [graph]);
 
 	React.useEffect(() => {
-		if (!graph) {
+		if (!graph || (selectedIdx === null)) {
 			return;
 		}
 
