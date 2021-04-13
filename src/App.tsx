@@ -1,96 +1,26 @@
-import React, {useState} from "react";
-import { applySnapshot, getSnapshot } from "mobx-state-tree";
-import { observer } from "mobx-react-lite";
-import moment from "moment";
-import cloneDeep from 'lodash/cloneDeep';
-import { Spin } from "antd";
-import EditorToolbar from './components/editor/Toolbar/EditorToolbar'
-import styles from './Editor.module.css'
-
+import React from "react";
+import { rootStore } from "./stores/RootStore";
+import { Provider } from 'react-redux';
+import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
+import { RootContextProvider } from './stores/RootContext';
+import { GraphEditor } from './components/GraphEditor';
+import { viewDescrCollConstr } from "./stores/view";
 import "./App.css";
 
-import { rmRepositoryParam } from "./config";
-import { rootStore, viewDescrCollConstr, viewDescrs } from "./components/diagram/getData";
-import { Graph } from "./components/diagram/Graph";
-import ConfigPanel from "./components/editor/ConfigPanel/ConfigPanel";
-import { useGraph } from "./stores/graph";
-import { Minimap } from "./components/diagram/visualComponents/minimap";
-import { createStencils } from "./components/diagram/Stencil";
 
+const store: any = asReduxStore(rootStore);
+connectReduxDevtools(require('remotedev'), rootStore);
 
-const App = observer(() => {
-	let view: any = {};
-	let shapesStore: any = {}
-	let shapes: any = [];
-	
-	let viewDescrObs: any = undefined;
-	const { graphStore, isClassDiagram } = useGraph();
-
-	if (Object.keys(rootStore.ns.currentJs).length < 5) {
-		rootStore.setId(rmRepositoryParam['Repository ID']);
-		rootStore.ns.reloadNs();
-		return <Spin />;
-	} else {
-		if (!rootStore.getColl(viewDescrCollConstr['@id'])) {
-			const coll0 = rootStore.addColl(viewDescrCollConstr, {updPeriod: undefined, lastSynced: moment.now()}, viewDescrs);
-			if (!coll0) {
-			  console.warn('coll0 is undefined');
-			}
-		} else {
-			// Should get ViewDescr data first to trigger ViewDescr.afterAttach() call
-			const collWithViewDescrsObs = rootStore.getColl(viewDescrCollConstr['@id']);
-			viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
-			if (viewDescrObs) {
-				view = getSnapshot(viewDescrObs);
-				shapesStore = rootStore.getColl('rm:NodeShapes_CollConstr');
-				shapes = shapesStore?.data				
-				if (shapes) {
-					shapes = (getSnapshot(shapes) as []);
-				} else {
-					shapes = [];
-				}
-			}
-		}
-	}
-	const stencils = graphStore.graph ? createStencils(isClassDiagram) : <></>;
-	return (
-		<div className={styles.wrap}>
-			{view.title &&
-				<div className={styles.header}>
-					<span>{view.title}</span>
-				</div>
-			}
-			<div className={styles.content}>
-				<div id="stencil" className={styles.sider} >
-					{stencils}
-					<Minimap />
-				</div>
-				<div className={styles.panel}>
-					<div className={styles.toolbar}>
-						<EditorToolbar />
-					</div>
-					{(shapes.length > 0)
-					?
-						( <Graph view={view} data={{shapes}} loadData={() => shapesStore.loadMore()} /> )
-					: 
-						( <Spin/> )}
-				</div>
-				<div className={styles.config}>
-					<ConfigPanel view={view} onChange={(val) => {
-						if (viewDescrObs) {
-							let viewDescr = cloneDeep(view);
-							if (!viewDescr.options) viewDescr.options = {};
-							viewDescr.options.gridOptions = {
-								...viewDescr.options?.gridOptions,
-								...val,
-							};
-							applySnapshot(viewDescrObs, viewDescr);
-						}
-					}}/>
-				</div>
-			</div>
-		</div>
+const App = () => {
+	return(
+		<React.StrictMode>
+			<Provider store={store}>
+				<RootContextProvider>
+					<GraphEditor viewDescrId={viewDescrCollConstr['@id']}/>
+				</RootContextProvider>
+			</Provider>
+		</React.StrictMode>
 	)
-});
+};
 
 export default App;

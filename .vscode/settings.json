@@ -1,0 +1,21 @@
+{
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "editor.tabSize": 2,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "prettier.endOfLine": "lf",
+  "versionlens.suggestions.showOnStartup": true,
+  "versionlens.suggestions.showPrereleasesOnStartup": true,
+  "jest.autoEnable": false,
+  "jest.runAllTestsFirst": false
+}
