@@ -2,114 +2,114 @@ import { ArtifactShapeSchema, PropertyShapeSchema, ViewShapeSchema } from '@agen
 import { viewKinds } from './viewKinds';
 
 export const viewDescrCollConstr = {
-	'@id': 'rm:Views_Coll',
-	entConstrs: [
-	  {
-		'@id': 'rm:Views_EntConstr0',
-		schema: ViewShapeSchema,
-	  }
-	],
+  '@id': 'rm:Views_Coll',
+  entConstrs: [
+    {
+      '@id': 'rm:Views_EntConstr0',
+      schema: ViewShapeSchema,
+    },
+  ],
 };
 
 export const viewDescrs = [
-	{
-		'@id': 'rm:DataModelView',
-		'@type': 'rm:View',
-		title: 'Модель данных',
-		description: 'Модель данных хранилища на основе SHACL Shapes',
-		//viewKind: viewKinds[0]['@id'],
-		type: 'DiagramEditor', // control type
-		elements: [],
-		options: {
-			gridOptions: {
-				type: 'mesh',
-				size: 10,
-				color: '#e5e5e5',
-				thickness: 1,
-				colorSecond: '#d0d0d0',
-				thicknessSecond: 1,
-				factor: 4,
-				bgColor: 'transparent',
-			},
-		},
-		collsConstrs: [
-			{
-				'@id': 'rm:RootNodes_CollConstr',
-				'@type': 'rm:CollConstr',
-				entConstrs: [
-				  {
-						'@id': 'rm:RootNodes_EntConstr_0',
-						'@type': 'rm:EntConstr',
-						schema: 'rm:UsedInDiagramAsRootNodeShape',
-						conditions: {
-							'@id': 'rm:RootNodes_EntConstr_0_Condition',
-							'@type': 'rm:EntConstrCondition',
-              subject: '?eIri1',
-							object: 'rm:DataModelView',
-						},
-				  },
-				  {
-					  '@id': 'rm:RootNodes_EntConstr_1',
-						'@type': 'rm:EntConstr',
-						schema: ArtifactShapeSchema['@id'],
-					},
-				],
-			},
+  {
+    '@id': 'rm:DataModelView',
+    '@type': 'rm:View',
+    title: 'Модель данных',
+    description: 'Модель данных хранилища на основе SHACL Shapes',
+    //viewKind: viewKinds[0]['@id'],
+    type: 'DiagramEditor', // control type
+    elements: [],
+    options: {
+      gridOptions: {
+        type: 'mesh',
+        size: 10,
+        color: '#e5e5e5',
+        thickness: 1,
+        colorSecond: '#d0d0d0',
+        thicknessSecond: 1,
+        factor: 4,
+        bgColor: 'transparent',
+      },
+    },
+    collsConstrs: [
       {
-				'@id': 'rm:ChildNodes_CollConstr',
-				'@type': 'rm:CollConstr',
-				entConstrs: [
+        '@id': 'rm:RootNodes_CollConstr',
+        '@type': 'rm:CollConstr',
+        entConstrs: [
           {
-						'@id': 'rm:ChildNodes_EntConstr_0',
-						'@type': 'rm:EntConstr',
-						schema: 'rm:UsedInDiagramAsChildNode',
-						conditions: {
-							'@id': 'rm:ChildNodes_EntConstr_0_Condition',
-							'@type': 'rm:EntConstrCondition',
+            '@id': 'rm:RootNodes_EntConstr_0',
+            '@type': 'rm:EntConstr',
+            schema: 'rm:UsedInDiagramAsRootNodeShape',
+            conditions: {
+              '@id': 'rm:RootNodes_EntConstr_0_Condition',
+              '@type': 'rm:EntConstrCondition',
               subject: '?eIri1',
-							object: 'rm:DataModelView',
-						},
-				  },
-				  {
-					  '@id': 'rm:ChildNodes_EntConstr_1',
-						'@type': 'rm:EntConstr',
-						schema: PropertyShapeSchema['@id'],
-					},
-				],
-			},
+              object: 'rm:DataModelView',
+            },
+          },
+          {
+            '@id': 'rm:RootNodes_EntConstr_1',
+            '@type': 'rm:EntConstr',
+            schema: ArtifactShapeSchema['@id'],
+          },
+        ],
+      },
       {
-				'@id': 'rm:Arrows_CollConstr',
-				'@type': 'rm:CollConstr',
-				entConstrs: [
+        '@id': 'rm:ChildNodes_CollConstr',
+        '@type': 'rm:CollConstr',
+        entConstrs: [
           {
-						'@id': 'rm:Arrows_EntConstr_0',
-						'@type': 'rm:EntConstr',
-						schema: 'rm:UsedInDiagramAsArrow',
-						conditions: {
-							'@id': 'rm:Arrows_EntConstr_0_Condition',
-							'@type': 'rm:EntConstrCondition',
+            '@id': 'rm:ChildNodes_EntConstr_0',
+            '@type': 'rm:EntConstr',
+            schema: 'rm:UsedInDiagramAsChildNode',
+            conditions: {
+              '@id': 'rm:ChildNodes_EntConstr_0_Condition',
+              '@type': 'rm:EntConstrCondition',
               subject: '?eIri1',
-							object: 'rm:DataModelView',
-						},
-				  },
-				  {
-					  '@id': 'rm:Arrows_EntConstr_1',
-						'@type': 'rm:CollConstr',
-						schema: PropertyShapeSchema['@id'],
-					},
-				],
-			},
-		],
-	},
-	{
-		'@id': 'rm:GraphView',
-		'@type': 'rm:View',
-		title: 'Граф данных',
-		description: 'Граф данных хранилища на основе SHACL Shapes',
-		//viewKind: viewKinds[1]['@id'],
-		type: 'DiagramEditor',
-		elements: [],
-	}
+              object: 'rm:DataModelView',
+            },
+          },
+          {
+            '@id': 'rm:ChildNodes_EntConstr_1',
+            '@type': 'rm:EntConstr',
+            schema: PropertyShapeSchema['@id'],
+          },
+        ],
+      },
+      {
+        '@id': 'rm:Arrows_CollConstr',
+        '@type': 'rm:CollConstr',
+        entConstrs: [
+          {
+            '@id': 'rm:Arrows_EntConstr_0',
+            '@type': 'rm:EntConstr',
+            schema: 'rm:UsedInDiagramAsArrow',
+            conditions: {
+              '@id': 'rm:Arrows_EntConstr_0_Condition',
+              '@type': 'rm:EntConstrCondition',
+              subject: '?eIri1',
+              object: 'rm:DataModelView',
+            },
+          },
+          {
+            '@id': 'rm:Arrows_EntConstr_1',
+            '@type': 'rm:CollConstr',
+            schema: PropertyShapeSchema['@id'],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    '@id': 'rm:GraphView',
+    '@type': 'rm:View',
+    title: 'Граф данных',
+    description: 'Граф данных хранилища на основе SHACL Shapes',
+    //viewKind: viewKinds[1]['@id'],
+    type: 'DiagramEditor',
+    elements: [],
+  },
 ];
 
 /**
@@ -122,10 +122,11 @@ export const viewDataRootNodes = [
     x: 10,
     y: 10,
     z: 0,
-    rotation:0,
+    rotation: 0,
     height: 60,
     width: 20,
-    subject: { // ref to the model object
+    subject: {
+      // ref to the model object
       '@id': 'rm:ArtifactShape',
       '@type': 'sh:NodeShape',
       title: 'Требование',
@@ -153,7 +154,7 @@ export const viewDataRootNodes = [
     x: 40,
     y: 20,
     z: 0,
-    rotation:0,
+    rotation: 0,
     height: 20,
     width: 20,
     subject: {
@@ -161,9 +162,7 @@ export const viewDataRootNodes = [
       '@type': 'sh:NodeShape',
       title: 'Пользователь',
       description: 'Пользователь системы',
-      property: [
-        'rm:nameShape',
-      ],
+      property: ['rm:nameShape'],
       targetClass: 'pporoles:User',
     },
     object: 'rm:DataModelView',
@@ -186,7 +185,8 @@ export const viewDataChildNodes = [
     height: 10,
     width: 20,
     parent: 'rm:diagramNode1', // ref to the parent node
-    subject: { // ref to the model object
+    subject: {
+      // ref to the model object
       '@id': 'rm:identifierShape',
       '@type': 'sh:PropertyShape',
       name: 'Идентификатор',
@@ -356,7 +356,8 @@ export const viewDataArrows = [
     arrowFrom: 'rm:diagramNode1', // ref to the arrow-connected graph node at the "from" end
     arrowTo: 'rm:diagramNode2', // ref to the arrow-connected graph node at the "to" end
     router: 'normal',
-    subject: { // ref to the model object
+    subject: {
+      // ref to the model object
       '@id': 'rm:creatorShape',
       '@type': 'sh:PropertyShape',
       name: 'Кем создан',
@@ -411,68 +412,68 @@ export const viewDataArrows = [
  */
 
 export const viewDescrCollConstr0 = {
-	'@id': 'rm:Views_Coll',
-	entConstrs: [
-	  {
-		'@id': 'rm:Views_EntConstr0',
-		schema: ViewShapeSchema,
-	  }
-	],
+  '@id': 'rm:Views_Coll',
+  entConstrs: [
+    {
+      '@id': 'rm:Views_EntConstr0',
+      schema: ViewShapeSchema,
+    },
+  ],
 };
 
 export const viewDescrs0 = [
-	{
-		'@id': 'rm:DataModelView',
-		'@type': 'rm:View',
-		title: 'Модель данных',
-		description: 'Модель данных хранилища на основе SHACL Shapes',
-		//viewKind: viewKinds[0]['@id'],
-		type: 'VerticalLayout',
-		elements: [],
-		options: {
-			gridOptions: {
-				type: 'mesh',
-				size: 10,
-				color: '#e5e5e5',
-				thickness: 1,
-				colorSecond: '#d0d0d0',
-				thicknessSecond: 1,
-				factor: 4,
-				bgColor: 'transparent',
-			},
-		},
-		collsConstrs: [
-			{
-				'@id': 'rm:NodeShapes_CollConstr',
-				'@type': 'rm:CollConstr',
-				entConstrs: [
-				  {
-						'@id': 'rm:NodeShapes_EntConstr0',
-						'@type': 'rm:EntConstr',
-						schema: ArtifactShapeSchema['@id'],
-						conditions: {
-							'@id': 'rm:PropertyShapes_CollConstr_condition',
-							'@type': 'cond type',
-							property: '?eIri1',
-						},
-				  },
-				  {
-					  '@id': 'rm:PropertyShapes_CollConstr_1',
-						'@type': 'rm:CollConstr',
-						schema: PropertyShapeSchema['@id'],
-					},
-				],
-				limit: 1,
-			},
-		],
-	},
-	{
-		'@id': 'rm:GraphView',
-		'@type': 'rm:View',
-		title: 'Граф данных',
-		description: 'Граф данных хранилища на основе SHACL Shapes',
-		//viewKind: viewKinds[1]['@id'],
-		type: 'VerticalLayout',
-		elements: [],
-	}
+  {
+    '@id': 'rm:DataModelView',
+    '@type': 'rm:View',
+    title: 'Модель данных',
+    description: 'Модель данных хранилища на основе SHACL Shapes',
+    //viewKind: viewKinds[0]['@id'],
+    type: 'VerticalLayout',
+    elements: [],
+    options: {
+      gridOptions: {
+        type: 'mesh',
+        size: 10,
+        color: '#e5e5e5',
+        thickness: 1,
+        colorSecond: '#d0d0d0',
+        thicknessSecond: 1,
+        factor: 4,
+        bgColor: 'transparent',
+      },
+    },
+    collsConstrs: [
+      {
+        '@id': 'rm:NodeShapes_CollConstr',
+        '@type': 'rm:CollConstr',
+        entConstrs: [
+          {
+            '@id': 'rm:NodeShapes_EntConstr0',
+            '@type': 'rm:EntConstr',
+            schema: ArtifactShapeSchema['@id'],
+            conditions: {
+              '@id': 'rm:PropertyShapes_CollConstr_condition',
+              '@type': 'cond type',
+              property: '?eIri1',
+            },
+          },
+          {
+            '@id': 'rm:PropertyShapes_CollConstr_1',
+            '@type': 'rm:CollConstr',
+            schema: PropertyShapeSchema['@id'],
+          },
+        ],
+        limit: 1,
+      },
+    ],
+  },
+  {
+    '@id': 'rm:GraphView',
+    '@type': 'rm:View',
+    title: 'Граф данных',
+    description: 'Граф данных хранилища на основе SHACL Shapes',
+    //viewKind: viewKinds[1]['@id'],
+    type: 'VerticalLayout',
+    elements: [],
+  },
 ];
