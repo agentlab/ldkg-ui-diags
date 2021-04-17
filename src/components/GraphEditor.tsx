@@ -1,17 +1,10 @@
 import { getSnapshot } from "mobx-state-tree";
-import { observer } from "mobx-react-lite";
 import { Spin } from "antd";
-import { GraphToolbar } from './editor/Toolbar/EditorToolbar'
-import styles from '../Editor.module.css'
-
 import { Graph } from "./diagram/Graph";
-import { GraphCongigPanel } from "./editor/ConfigPanel/ConfigPanel";
-import { Stencils } from "./diagram/Stencil";
 import { useRootStore } from '../stores/RootContext';
-import { GraphContextProvider } from "../stores/graph";
 
 
-export const GraphEditor = observer(({viewDescrId}: any) => {
+export const GraphEditor = ({viewDescrId}: any) => {
   const { rootStore } = useRootStore();
 
   const collWithViewDescrsObs = rootStore.getColl(viewDescrId);
@@ -31,26 +24,15 @@ export const GraphEditor = observer(({viewDescrId}: any) => {
 
 	const view: any = getSnapshot(viewDescrObs);
 
-	return (
-		<GraphContextProvider>
-			<div className={styles.wrap}>
-				{view.title &&
-					<div className={styles.header}>
-						<span>{view.title}</span>
-					</div>
-				}
-				<div className={styles.content}>
-					<Stencils />
-					<div className={styles.panel}>
-						<GraphToolbar />
-					  <Graph view={view} data={rootNodesData} сhildNodesData={childNodesData} arrowsData={arrowsData} loadData={() => rootNodes.loadMore()} /> )
-					</div>
-					<GraphCongigPanel view={view} viewDescrObs={viewDescrObs}/>
-				</div>
-			</div>
-		</GraphContextProvider>
-	)
-})
+	return <Graph 
+						view={view} 
+						viewDescrObs={viewDescrObs}
+						data={rootNodesData} 
+						сhildNodesData={childNodesData} 
+						arrowsData={arrowsData} 
+						loadData={() => rootNodes.loadMore()} 
+						/>;
+};
 
 
 
