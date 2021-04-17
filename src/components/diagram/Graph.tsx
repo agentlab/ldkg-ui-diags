@@ -9,30 +9,38 @@ import { GraphCongigPanel } from "../editor/ConfigPanel/ConfigPanel";
 import styles from '../../Editor.module.css'
 import { ConnectorTool, edgeExamples } from './ConnectorTool';
 
-const graphWidth = 800;
-const graphHeight = 600;
 
 export const Graph = (props: any) => {
 	const [ graph, setGraph ] = React.useState<any>(null);
-
 	const refContainer = React.useRef<any>();
+	const getContainerSize = () => {
+		return {
+			width: document.body.offsetWidth - 581,
+			height: document.body.offsetHeight - 90,
+		}
+	}
 	const minimapContainer = React.useRef<HTMLDivElement>(null);
 	const edgeConnectorRef = React.useRef<any>();
 	const [edgeConnector, setEdgeConnector] = React.useState<any>();
 	const onEdgeSelect = (idx) => setEdgeConnector(edgeExamples[idx]);
 
 	useEffect(() => {
-		const graph = createGraph({height: graphHeight, width: graphWidth, refContainer, minimapContainer, edgeConnectorRef});
+		const { width, height } = getContainerSize();
+		const graph = createGraph({height, width, refContainer, minimapContainer, edgeConnectorRef});
 		createGrid({graph, view: props.view});
 		addKiwiSolver({graph});
 		addNewParentNodes({graph, nodesData: props.data});
 		addNewChildNodes({graph, nodesData: props.сhildNodesData});
 		addNewEdges({graph, edgesData: props.arrowsData});
 		setGraph(graph);
+		// dispose attached HTML objects
+		return () => {
+			graph.dispose();
+		};
 	},[]);
 
 	React.useEffect(() => {
-		edgeConnectorRef.current = edgeConnector;
+		edgeConnectorRef.current = edgeConnector; 
 	}, [edgeConnector]);
 
 	return (
@@ -47,7 +55,6 @@ export const Graph = (props: any) => {
 					<div id="stencil" className={styles.sider} >
 						{createStencils(true, graph)}
 						<ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
-						<Minimap minimapContainer={minimapContainer} />
 					</div>
 					<div className={styles.panel}>
 						<GraphToolbar graph={graph}/>
@@ -57,6 +64,7 @@ export const Graph = (props: any) => {
 						</React.Fragment>					
 					</div>
 					<GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs}/>
+					<Minimap minimapContainer={minimapContainer} />
 				</div>
 			</div>
 		</React.Fragment>

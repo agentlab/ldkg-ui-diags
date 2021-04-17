@@ -1,7 +1,8 @@
 import ConfigGrid from './ConfigGrid'
 import cloneDeep from 'lodash/cloneDeep';
 import { applySnapshot } from "mobx-state-tree";
-import styles from './ConfigPanel.module.css'
+import editorStyles from '../../../Editor.module.css'
+import panelStyles from './ConfigPanel.module.css'
 
 export const GraphCongigPanel = ({view, viewDescrObs}: any) => {
 	const onChange = (val) => {
@@ -16,14 +17,14 @@ export const GraphCongigPanel = ({view, viewDescrObs}: any) => {
 		}
 	}
 	return (
-		<div className={styles.config}>
+		<div className={editorStyles.config}>
 		<ConfigPanel view={view} onChange={onChange}/>
 	</div>
 	)
 }
 
 const ConfigPanel = ({view, onChange}) => (
-  <div className={styles.config}>
+  <div className={panelStyles.config}>
     <ConfigGrid view={view} onChange={onChange} />
   </div>
 );

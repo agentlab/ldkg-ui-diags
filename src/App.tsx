@@ -7,7 +7,6 @@ import { GraphEditor } from './components/GraphEditor';
 import { viewDescrCollConstr } from "./stores/view";
 import "./App.css";
 
-//let step = 0;
 
 const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
