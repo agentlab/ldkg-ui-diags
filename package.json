@@ -56,8 +56,9 @@
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "format": "./node_modules/.bin/prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "lint-staged": "lint-staged"
+    "format": "./node_modules/.bin/prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,less,scss,md}\"",
+    "lint-staged": "lint-staged",
+    "prepare": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -81,7 +82,7 @@
     ]
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "src/**/*.{js,jsx,ts,tsx,json,css,less,scss,md}": [
       "prettier --write"
     ]
   }

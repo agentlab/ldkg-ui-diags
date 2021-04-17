@@ -12,7 +12,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.endOfLine": "lf",
   "versionlens.suggestions.showOnStartup": true,
   "versionlens.suggestions.showPrereleasesOnStartup": true,

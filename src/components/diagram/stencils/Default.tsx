@@ -1,3 +1,3 @@
-export const Default = ({data}) => {
+export const Default = ({ data }) => {
   return <></>;
-}
+};
