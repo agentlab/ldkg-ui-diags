@@ -1,190 +1,72 @@
-import React from "react";
-import { observer } from "mobx-react-lite";
-import { v4 as uuidv4 } from 'uuid';
+import React, {useEffect} from "react";
 import { Button } from 'antd';
+import { createGraph, createGrid, addNewParentNodes, addNewChildNodes, addNewEdges } from './graphCore';
+import { addKiwiSolver } from './kiwiCore';
+import  { Minimap } from './visualComponents/Minimap';
+import  { createStencils } from './visualComponents/Stencil';
+import { GraphToolbar } from '../editor/Toolbar/EditorToolbar'
+import { GraphCongigPanel } from "../editor/ConfigPanel/ConfigPanel";
+import styles from '../../Editor.module.css'
+import { ConnectorTool, edgeExamples } from './ConnectorTool';
 
-import { NodeShape } from "./visualComponents/NodeShape";
-import { Compartment } from "./visualComponents/Compartment";
-import { NodeField } from "./visualComponents/NodeField";
-import { NodeBox } from "./NodeBox"
-import { EdgeBox } from "./EdgeBox";
-import { Canvas } from "./Canvas"
-import { useGraph } from "../../stores/graph";
-import { Spin } from "antd";
 
-const graphWidth = 800;
-const graphHeight = 600;
-
-const randPos = () => {
-	return {
-		x: Math.random() * (graphWidth - 100),
-		y: Math.random() * (graphHeight - 100),
-	};
-};
-
-const prepareArray = (obj: any) => {
-	if (!obj) {
-		return [];
+export const Graph = (props: any) => {
+	const [ graph, setGraph ] = React.useState<any>(null);
+	const refContainer = React.useRef<any>();
+	const getContainerSize = () => {
+		return {
+			width: document.body.offsetWidth - 581,
+			height: document.body.offsetHeight - 90,
+		}
 	}
-	if (Array.isArray(obj)) {
-		return obj;
-	}
-	else {
-		return [obj];
-	}
+	const minimapContainer = React.useRef<HTMLDivElement>(null);
+	const edgeConnectorRef = React.useRef<any>();
+	const [edgeConnector, setEdgeConnector] = React.useState<any>();
+	const onEdgeSelect = (idx) => setEdgeConnector(edgeExamples[idx]);
+
+	useEffect(() => {
+		const { width, height } = getContainerSize();
+		const graph = createGraph({height, width, refContainer, minimapContainer, edgeConnectorRef});
+		createGrid({graph, view: props.view});
+		addKiwiSolver({graph});
+		addNewParentNodes({graph, nodesData: props.data});
+		addNewChildNodes({graph, nodesData: props.сhildNodesData});
+		addNewEdges({graph, edgesData: props.arrowsData});
+		setGraph(graph);
+		// dispose attached HTML objects
+		return () => {
+			graph.dispose();
+		};
+	},[]);
+
+	React.useEffect(() => {
+		edgeConnectorRef.current = edgeConnector; 
+	}, [edgeConnector]);
+
+	return (
+		<React.Fragment>
+			<div className={styles.wrap}>
+				{props.view.title &&
+					<div className={styles.header}>
+						<span>{props.view.title}</span>
+					</div>
+				}
+				<div className={styles.content}>
+					<div id="stencil" className={styles.sider} >
+						{createStencils(true, graph)}
+						<ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
+					</div>
+					<div className={styles.panel}>
+						<GraphToolbar graph={graph}/>
+						<React.Fragment>
+					 	 	<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
+							<div id="container" ref={refContainer} className="x6-graph"/>
+						</React.Fragment>					
+					</div>
+					<GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs}/>
+					<Minimap minimapContainer={minimapContainer} />
+				</div>
+			</div>
+		</React.Fragment>
+	);
 }
-
-const DirectEdge = observer(({ targetId, label }: any) => {
-	const edge = {
-		id: uuidv4(),
-		target: targetId,
-		label: label,
-		router: {
-			name: 'normal'
-		}
-	};
-	return (
-		<EdgeBox edge={edge} />
-	);
-});
-
-const SquareEdge = observer(({ targetId, label, pId }: any) => {
-	const edge = {
-		id: pId + '/' + targetId,
-		target: targetId,
-		label: label,
-		router: {
-			name: 'manhattan'
-		}
-	};
-	return (
-		<EdgeBox edge={edge} />
-	);
-});
-
-const VericalBox = observer(({ data }: any) => {
-	const node = {
-		id: data["@id"],
-		size: { width: 140, height: 40 },
-		zIndex: 0,
-		position: randPos(),
-		shape: "group",
-		component(_) {
-			return (<NodeShape text={data["@id"]} />);
-		},
-	}
-	const generalFields = Object.entries(data)
-		.filter(([key,]) => (key !== 'property' && key !== '@id'));
-	const propertyFields = prepareArray(data['property'])
-		.map((prop) => ['sh:property', prop['@id']]);
-	const propertyShapes = () => {
-		if ( !data.property ) {
-			return null;
-		}
-		if (Array.isArray(data.property)) {
-			return data.property.map(shape =>
-				<VericalBox key={shape['@id']} data={shape} />) 
-		}
-		return <VericalBox key={data.property['@id']} data={data.property} />
-	}
-	return (
-		<React.Fragment>
-			<NodeBox node={node} edges={[]}>
-				{(generalFields.length > 0)
-					? <WrapBox header="General" data={generalFields} pId={data['@id']}/>
-					: <></>}
-				{(propertyFields.length > 0)
-					? [
-						<WrapBox header="Properties" data={propertyFields} pId={data['@id']}/>,
-						...propertyFields.map(([label, destId], idx) =>
-							<SquareEdge key={idx} targetId={destId} label={label} pId={data['@id']}/>)
-					]
-					: <></>}
-			</NodeBox>
-			
-			{propertyShapes()}
-		</React.Fragment>
-	);
-});
-
-const WrapBox = observer(({ header, data, pId }: any) => {
-	const node = {
-		id: pId + '/' + header,
-		size: { width: 200, height: 30 },
-		zIndex: 1,
-		shape: "compartment",
-		component(_) {
-			return <Compartment text={header} />;
-		},
-	}
-	return (
-		<NodeBox node={node}>
-			{data.map(([name, val], idx) => <FieldBox key={idx} text={`${name}:	${val}`} pId={node.id}/>)}
-		</NodeBox>
-	);
-});
-
-const FieldBox = observer(({ text, pId }: any) => {
-	const node = {
-		id: pId + '/' + text.split(':')[0],
-		size: { width: 200, height: 50 },
-		zIndex: 2,
-		shape: "field",
-		component(_) {
-			return <NodeField text={text} />
-		},
-	}
-	return (
-		<NodeBox node={node} />
-	);
-});
-
-const CircleNode = observer(({ data }: any) => {
-	const node = {
-		id: data["@id"],
-		size: { width: 80, height: 80 },
-		zIndex: 0,
-		position: randPos(),
-		shape: "circle",
-		label: data["@id"],
-		attrs: {
-			body: {
-				fill: '#efdbff',
-				stroke: '#9254de',
-			},
-		},
-	}
-	const propertyFields = prepareArray(data['property'])
-		.map((prop) => ['sh:property', prop['@id']]);
-	return (
-		<NodeBox node={node}>
-			{propertyFields.map(([label, destId], idx) =>
-				<DirectEdge key={idx} targetId={destId} label={label} />)}
-		</NodeBox>
-	);
-});
-
-export const Graph = observer((props: any) => {
-	const { isClassDiagram } = useGraph();
-	if (!props.data){
-		return <Spin/>
-	}
-	const renderChildren = (shapes) => {
-		if (isClassDiagram) {
-			return shapes.map(shape =>
-				<VericalBox key={shape['@id']} data={shape} />);
-		}
-		else {
-			return shapes.map(shape =>
-				<CircleNode key={shape['@id']} data={shape} />)
-		}
-	};
-	return (
-		<React.Fragment>
-			<Button type="primary" shape="round" onClick={props.loadData}>Load More</Button>
-			<Canvas view={props.view} width={graphWidth} height={graphHeight} >
-				{renderChildren(props.data)}
-			</Canvas>
-		</React.Fragment>
-	);
-});

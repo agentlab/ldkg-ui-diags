@@ -13,52 +13,54 @@ import {
   RetweetOutlined,
 } from '@ant-design/icons'
 import '@antv/x6-react-components/es/toolbar/style/index.css'
-import { useGraph } from '../../../stores/graph'
-import { observer } from "mobx-react-lite";
+import styles from '../../../Editor.module.css'
 
 const Item = Toolbar.Item
 const Group = Toolbar.Group
 
-const EditorToolbar = observer(() => {
+export const GraphToolbar = ({graph}) => {
+	return (
+<		div className={styles.toolbar}>
+			<EditorToolbar graph={graph} />
+		</div>
+	)
+}
+
+const EditorToolbar = ({graph}) => {
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
-  const {graphStore, switchShape} = useGraph();
 
   const copy = useCallback(() => {
-     const { graph } = graphStore
      const cells = graph.getSelectedCells()
     if (cells.length) {
        graph.copy(cells)
      }
     return false
-  }, [graphStore]);
+  }, [graph]);
 
   const cut = useCallback(() => {
-    const { graph } = graphStore
     const cells = graph.getSelectedCells()
     if (cells.length) {
       graph.cut(cells)
     }
     return false
-  }, [graphStore]);
+  }, [graph]);
 
   const paste = useCallback(() => {
-    const { graph } = graphStore
     if (!graph.isClipboardEmpty()) {
       const cells = graph.paste({ offset: 32 })
       graph.cleanSelection()
       graph.select(cells)
     }
     return false
-  }, [graphStore]);
+  }, [graph]);
 
   const switchShape2 = () => {
-    switchShape()
+    //switchShape()
     return false;
   }
 
   useEffect(() => {
-    const { graph } = graphStore
     if (graph) {
     const { history } = graph
     setCanUndo(history.canUndo())
@@ -99,10 +101,9 @@ const EditorToolbar = observer(() => {
     graph.bindKey('meta+v', paste)
     graph.bindKey('meta+x', cut)
   }
-  }, [graphStore.graph, graphStore, copy, cut, paste])
+  }, [graph, copy, cut, paste])
 
   const handleClick = (name: string) => {
-    const { graph } = graphStore
     switch (name) {
       case 'undo':
         graph.history.undo()
@@ -189,6 +190,6 @@ const EditorToolbar = observer(() => {
       </Toolbar>
     </div>
   )
-});
+};
 
 export default EditorToolbar;
