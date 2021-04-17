@@ -93,7 +93,6 @@ export const Canvas = ({ children, view, width, height }) => {
 				selecting: true,
 				connecting: {
 					dangling: false,
-					router: "manhattan",
 					connector: {
 						name: "jumpover",
 						args: {

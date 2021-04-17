@@ -4,17 +4,32 @@ import { Graph } from "@antv/x6";
 
 export const edgeExamples = [
 	{
-		label: 'square-edge',
-		router: {
-			name: 'manhattan'
+		label: 'default',
+	},
+	{
+		label: 'association',
+		attrs: {
+			line: {
+				targetMarker: {
+					name: 'block',
+					strokeWidth: 2,
+					open: true
+				},
+			}
 		}
 	},
 	{
-		label: 'direct-edge',
-		router: {
-			name: 'normal'
+		label: 'inheritance',
+		attrs: {
+			line: {
+				targetMarker: {
+					name: 'block',
+					strokeWidth: 2,
+					fill: 'white',
+				},
+			}
 		}
-	}
+	},
 ];
 
 const defOnSelect = (itemIdx: number) => console.log("Selected edge: ", itemIdx);
@@ -46,7 +61,8 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
 	};
 
 	const width = 200;
-	const height = 100;
+	const height = 200;
+	const itemHeight = 30;
 
 	React.useEffect(() => {
 		if (!refContainer || !refContainer.current) {
@@ -61,8 +77,8 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
 		edges.forEach((edge, idx) =>
 			g.addEdge({
 				id: String(idx),
-				source: [10, 10 + idx * 30 + 5],
-				target: [width - 10, 10 + (idx + 1) * 30 - 5],
+				source: [10, 10 + idx * itemHeight],
+				target: [width - 10, 10 + idx * itemHeight],
 				...edge
 			})
 		);
