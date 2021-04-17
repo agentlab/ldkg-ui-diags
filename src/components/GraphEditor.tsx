@@ -12,6 +12,7 @@ export const GraphEditor = ({ viewDescrId }: any) => {
   const viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
   if (!viewDescrObs) return <Spin />;
 
+  // Getting data
   const rootNodes = rootStore.getColl('rm:RootNodes_CollConstr');
   const rootNodesData: any = rootNodes?.data ? getSnapshot(rootNodes?.data) : [];
   const childNodes = rootStore.getColl('rm:ChildNodes_CollConstr');
