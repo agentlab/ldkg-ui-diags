@@ -65,17 +65,45 @@ class SimpleEdgeView extends EdgeView {
 	}
 };
 
-export const createGraph = ({ width, height, refContainer, minimapContainer}) => {
+export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef}) => {
 	try {
 		Graph.registerNode("group", {
 			inherit: ReactShape,
-		});
+		}, true);
 		Graph.registerNode("compartment", {
 			inherit: ReactShape,
-		});
+		}, true);
 		Graph.registerNode("field", {
 			inherit: ReactShape,
-		});
+		}, true);
+		
+		const circleArrowhead = {
+			tagName: 'circle',
+			attrs: {
+				r: 6,
+				fill: 'grey',
+				'fill-opacity': 0.3,
+				stroke: 'black',
+				'stroke-width': 1,
+				cursor: 'move',
+			},
+		};
+		Graph.registerEdgeTool(
+			'circle-source-arrowhead',
+			{
+				inherit: 'source-arrowhead',
+				...circleArrowhead,
+			},
+			true,
+		);
+		Graph.registerEdgeTool(
+			'circle-target-arrowhead',
+			{
+				inherit: 'target-arrowhead',
+				...circleArrowhead,
+			},
+			true,
+		)
 	}
 	catch (e) { // typically happens during recompilation
 		console.log(e);
@@ -119,6 +147,11 @@ export const createGraph = ({ width, height, refContainer, minimapContainer}) =>
 			pageBreak: false,
 			pannable: true,
 		},
+		mousewheel: {
+			enabled: true,
+			factor: 1.1,
+			modifiers: ['ctrl', 'meta'],
+		},
 		//minimap,
 		embedding: {
 			enabled: true,
@@ -134,15 +167,54 @@ export const createGraph = ({ width, height, refContainer, minimapContainer}) =>
 					type: "gap",
 				},
 			},
+			createEdge() {
+				return g.createEdge(edgeConnectorRef.current);
+			},
 		},
 		keyboard: {
 			enabled: true,
+		},
+		interacting: {
+			edgeMovable: true,
+			arrowheadMovable: true,
 		},
 	});
 
 	// g.on("node:added", (e) => {
 	// 	handleGraphEvent(e, "add");
 	// });
+	g.on('edge:mouseenter', ({ cell }) => {
+		cell.addTools([
+			'circle-source-arrowhead', 'circle-target-arrowhead'
+		])
+	});
+
+	g.on('edge:mouseleave', ({ cell }) => {
+		cell.removeTools()
+	})
+
+	const connectKey = 'shift';
+	const setMagnet = (node: any, active: boolean) => {
+		node.attr('body/magnet', active);
+		node.attr('fo/magnet', active);
+	}
+	g.bindKey(connectKey, () => {
+		(g as Graph).getNodes().forEach((node: any) => {
+			if (edgeConnectorRef.current) {
+				setMagnet(node, true);
+			}
+		});
+	}, 'keydown');
+	g.bindKey(connectKey, () => {
+		(g as Graph).getNodes().forEach((node: any) =>
+			setMagnet(node, false)
+		);
+	}, 'keyup');
+	g.on('edge:connected', () => {
+		(g as Graph).getNodes().forEach((node: any) => {
+			setMagnet(node, false)
+		});
+	});
 	return g;
 };
 

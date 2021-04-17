@@ -3,7 +3,6 @@ import { Spin } from "antd";
 import { Graph } from "./diagram/Graph";
 import { useRootStore } from '../stores/RootContext';
 
-
 export const GraphEditor = ({viewDescrId}: any) => {
   const { rootStore } = useRootStore();
 
