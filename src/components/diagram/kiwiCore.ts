@@ -113,6 +113,10 @@ export const calcNodeSize = (e: any, type: string, solver) => {
     solver.removeEditVariable(removed.height);
   }
   //changedIds = [...changedIds, ...this.propogateUpdates(this.getRoot(node.id))];
+  return changedNodes;
+};
+
+export const updateVariables = (changedNodes, solver) => {
   solver.updateVariables();
   for (const n of changedNodes) {
     const computedSize = {
