@@ -2,9 +2,30 @@ import React, { useEffect } from 'react';
 import { Addon } from '@antv/x6';
 import { NodeShape } from '../stencils/NodeShape';
 import { NodeField } from '../stencils/NodeField';
+import { nodeFromData } from '../graphCore';
 
 import styles from '../../../Editor.module.css';
 
+const nodeFieldData = {
+  '@id': 'Node Field',
+  x: 10,
+  y: 10,
+  z: 0,
+  rotation: 0,
+  height: 40,
+  width: 100,
+  subject: { name: 'Node Field' },
+};
+const nodeShapeData = {
+  '@id': 'Node Shape',
+  x: 10,
+  y: 10,
+  z: 0,
+  rotation: 0,
+  height: 40,
+  width: 100,
+  subject: { title: 'Node Shape' },
+};
 export const Stencil = ({ nodes = [], graph }: any) => {
   const refContainer = React.useRef<any>();
   useEffect(() => {
@@ -37,24 +58,8 @@ export const Stencil = ({ nodes = [], graph }: any) => {
 };
 
 export const createStencils = (isClassDiagram: boolean, graph: any) => {
-  const nodeShape = {
-    id: 'Node Shape',
-    size: { width: 140, height: 40 },
-    zIndex: 0,
-    shape: 'rm:ClassNodeStencil',
-    component(_) {
-      return <NodeShape text={'Node Shape'} />;
-    },
-  };
-  const nodeField = {
-    id: 'Node Field',
-    size: { width: 140, height: 40 },
-    zIndex: 2,
-    shape: 'rm:PropertyNodeStencil',
-    component(_) {
-      return <NodeField text={'Node Field'} />;
-    },
-  };
+  const nodeShape = nodeFromData({ data: nodeShapeData, Renderer: NodeShape, shape: 'rm:ClassNodeStencil' });
+  const nodeField = nodeFromData({ data: nodeFieldData, Renderer: NodeField, shape: 'rm:PropertyNodeStencil' });
   const nodeCircle = {
     id: 'Node Circle',
     size: { width: 80, height: 80 },

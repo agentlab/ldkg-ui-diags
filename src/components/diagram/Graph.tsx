@@ -8,8 +8,10 @@ import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
 import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool, edgeExamples } from './ConnectorTool';
+import { useRootStore } from '../../stores/RootContext';
 
 export const Graph = (props: any) => {
+  const { rootStore } = useRootStore();
   const [graph, setGraph] = React.useState<any>(null);
   const refContainer = React.useRef<any>();
   const getContainerSize = () => {
@@ -25,11 +27,11 @@ export const Graph = (props: any) => {
 
   useEffect(() => {
     const { width, height } = getContainerSize();
-    const graph = createGraph({ height, width, refContainer, minimapContainer, edgeConnectorRef });
+    const graph = createGraph({ height, width, refContainer, minimapContainer, edgeConnectorRef, rootStore });
     createGrid({ graph, view: props.view });
     addKiwiSolver({ graph });
-    addNewParentNodes({ graph, nodesData: props.data });
-    addNewChildNodes({ graph, nodesData: props.сhildNodesData });
+    addNewParentNodes({ graph, nodesData: props.data, rootStore });
+    addNewChildNodes({ graph, nodesData: props.сhildNodesData, rootStore });
     addNewEdges({ graph, edgesData: props.arrowsData });
     setGraph(graph);
     // dispose attached HTML objects
