@@ -35,6 +35,7 @@ export const Graph = (props: any) => {
     addNewEdges({ graph, edgesData: props.arrowsData });
     setGraph(graph);
     // dispose attached HTML objects
+    console.log('GRAPH', graph);
     return () => {
       graph.dispose();
     };
