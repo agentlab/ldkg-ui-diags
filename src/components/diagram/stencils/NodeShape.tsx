@@ -29,7 +29,7 @@ export const NodeShape = React.memo(
         ) : (
           <div
             onDoubleClick={() => {
-              setEditing(true);
+              if (setEditing) setEditing(true);
             }}
             style={inputStyle}>
             {label}
@@ -39,7 +39,7 @@ export const NodeShape = React.memo(
     );
   },
   (prev: any, next: any) => {
-    if (prev.data.editing != next.data.editing) {
+    if (prev.data?.editing !== next.data?.editing) {
       return false;
     }
     return true;
