@@ -92,10 +92,10 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     const circleArrowhead = {
       tagName: 'circle',
       attrs: {
-        r: 6,
+        r: 5,
         fill: 'white',
         stroke: 'black',
-        'stroke-width': 1,
+        'stroke-width': 0.5,
         cursor: 'move',
       },
     };
