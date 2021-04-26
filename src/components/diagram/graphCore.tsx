@@ -95,11 +95,10 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     const circleArrowhead = {
       tagName: 'circle',
       attrs: {
-        r: 6,
-        fill: 'grey',
-        'fill-opacity': 0.3,
+        r: 5,
+        fill: 'white',
         stroke: 'black',
-        'stroke-width': 1,
+        'stroke-width': 0.5,
         cursor: 'move',
       },
     };
@@ -204,15 +203,17 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     },
   });
 
-  // g.on("node:added", (e) => {
-  // 	handleGraphEvent(e, "add");
-  // });
-  g.on('edge:mouseenter', ({ cell }) => {
-    cell.addTools(['circle-source-arrowhead', 'circle-target-arrowhead']);
-  });
-
-  g.on('edge:mouseleave', ({ cell }) => {
-    cell.removeTools();
+  g.on('selection:changed', ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
+    added.forEach((cell) => {
+      if (cell.isEdge()) {
+        cell.addTools(['circle-source-arrowhead', 'circle-target-arrowhead']);
+      }
+    });
+    removed.forEach((cell) => {
+      if (cell.isEdge()) {
+        cell.removeTools();
+      }
+    });
   });
 
   const connectKey = 'shift';
