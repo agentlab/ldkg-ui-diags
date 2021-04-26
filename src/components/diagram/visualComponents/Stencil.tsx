@@ -41,7 +41,7 @@ export const createStencils = (isClassDiagram: boolean, graph: any) => {
     id: 'Node Shape',
     size: { width: 140, height: 40 },
     zIndex: 0,
-    shape: 'group',
+    shape: 'rm:ClassNodeStencil',
     component(_) {
       return <NodeShape text={'Node Shape'} />;
     },
@@ -50,7 +50,7 @@ export const createStencils = (isClassDiagram: boolean, graph: any) => {
     id: 'Node Field',
     size: { width: 140, height: 40 },
     zIndex: 2,
-    shape: 'field',
+    shape: 'rm:PropertyNodeStencil',
     component(_) {
       return <NodeField text={'Node Field'} />;
     },

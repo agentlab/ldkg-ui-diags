@@ -161,19 +161,19 @@ const addNode = (node: any, solver: any) => {
     new kiwi.Constraint(n.width, kiwi.Operator.Ge, 120, kiwi.Strength.required),
     new kiwi.Constraint(n.height, kiwi.Operator.Ge, 20, kiwi.Strength.required),
   ];
-  if (node.shape === 'field') {
+  if (node.shape === 'rm:PropertyNodeStencil') {
     solver.addEditVariable(n.top, kiwi.Strength.weak);
     solver.addEditVariable(n.left, kiwi.Strength.weak);
     solver.addEditVariable(n.width, kiwi.Strength.weak);
     solver.addEditVariable(n.height, kiwi.Strength.strong);
     n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
-  } else if (node.shape === 'compartment') {
+  } else if (node.shape === 'rm:CompartmentNodeStencil') {
     solver.addEditVariable(n.top, kiwi.Strength.medium);
     solver.addEditVariable(n.left, kiwi.Strength.medium);
     solver.addEditVariable(n.width, kiwi.Strength.weak);
     solver.addEditVariable(n.height, kiwi.Strength.weak);
     n.padding = { top: 20, bottom: 3, left: 3, right: 3 };
-  } else if (node.shape === 'group') {
+  } else if (node.shape === 'rm:ClassNodeStencil') {
     solver.addEditVariable(n.top, kiwi.Strength.strong);
     solver.addEditVariable(n.left, kiwi.Strength.strong);
     solver.addEditVariable(n.width, kiwi.Strength.strong);

@@ -4,7 +4,7 @@ import { Compartment } from './Compartment';
 import { Default } from './Default';
 
 export const stencils = {
-  compartment: Compartment,
+  'rm:CompartmentNodeStencil': Compartment,
   'rm:PropertyNodeStencil': NodeField,
   'rm:ClassNodeStencil': NodeShape,
   default: Default,
