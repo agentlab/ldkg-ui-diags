@@ -288,7 +288,7 @@ export const createGrid = ({ graph, view }) => {
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = createNode(graph, data, Renderer, 'group');
+    const node = nodeFromData({ data, Renderer, shape: 'group' });
     (graph as Graph).addNode(node);
   });
 };
@@ -296,7 +296,7 @@ export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
 export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
   const Renderer = stencils['rm:PropertyNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = createNode(graph, data, Renderer, 'field');
+    const node = nodeFromData({ data, Renderer, shape: 'field' });
     const child = (graph as Graph).addNode(node);
     const parent: Cell = (graph as Graph).getCell(data.parent);
     parent.addChild(child);
@@ -305,63 +305,53 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
 
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = {
-      id: data['@id'],
-      target: data.arrowTo,
-      source: data.arrowFrom,
-      label: {
-        markup: [{ ...Markup.getForeignObjectMarkup() }],
-        attrs: {
-          fo: {
-            label: data.subject.name,
-            width: 1,
-            height: 1,
-            x: 60,
-            y: -10,
-          },
-        },
-        position: {
-          distance: 0.3,
-          args: {
-            keepGradient: true,
-            ensureLegibility: true,
-          },
-        },
-      },
-      router: {
-        name: data.router || 'normal',
-      },
-    };
+    const edge = edgeFromData({ data });
     (graph as Graph).addEdge(edge);
   });
 };
 
-const nodeFromData = ({ data, shape, Renderer, setEditing, onSave }) => ({
+export const nodeFromData = ({ data, shape, Renderer }) => ({
   id: data['@id'],
   size: { width: data.width, height: data.height },
   position: { x: data.x, y: data.y },
   shape: shape,
   editing: false,
   component(_) {
+    const setEditing = (state: boolean) => {
+      _.setProp('editing', state);
+    };
+    const onSave = (t: string) => {
+      _.setProp('editing', false);
+      _.setProp('label', t);
+    };
     return <Renderer data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
   },
 });
 
-const createNode = (graph: any, data: any, Renderer: any, shape) => {
-  const setEditing = (state: boolean) => {
-    const cell = graph.getCell(data['@id']);
-    cell.setProp('editing', state);
-  };
-  const onSave = (t: string) => {
-    const cell = graph.getCell(data['@id']);
-    cell.setProp('editing', false);
-    cell.setProp('label', t);
-  };
-  return nodeFromData({
-    data,
-    shape,
-    Renderer,
-    setEditing,
-    onSave,
-  });
-};
+const edgeFromData = ({ data }) => ({
+  id: data['@id'],
+  target: data.arrowTo,
+  source: data.arrowFrom,
+  label: {
+    markup: [{ ...Markup.getForeignObjectMarkup() }],
+    attrs: {
+      fo: {
+        label: data.subject.name,
+        width: 1,
+        height: 1,
+        x: 60,
+        y: -10,
+      },
+    },
+    position: {
+      distance: 0.3,
+      args: {
+        keepGradient: true,
+        ensureLegibility: true,
+      },
+    },
+  },
+  router: {
+    name: data.router || 'normal',
+  },
+});

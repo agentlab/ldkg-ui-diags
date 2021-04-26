@@ -1,12 +1,34 @@
 import React from 'react';
-import { Graph } from '@antv/x6';
+import { Graph, Markup } from '@antv/x6';
 
 export const edgeExamples = [
   {
-    label: 'default',
+    label: {
+      markup: [{ ...Markup.getForeignObjectMarkup() }],
+      attrs: {
+        fo: {
+          label: 'Default',
+          width: 1,
+          height: 1,
+          x: 60,
+          y: -10,
+        },
+      },
+    },
   },
   {
-    label: 'association',
+    label: {
+      markup: [{ ...Markup.getForeignObjectMarkup() }],
+      attrs: {
+        fo: {
+          label: 'Association',
+          width: 1,
+          height: 1,
+          x: 60,
+          y: -10,
+        },
+      },
+    },
     attrs: {
       line: {
         targetMarker: {
@@ -18,7 +40,18 @@ export const edgeExamples = [
     },
   },
   {
-    label: 'inheritance',
+    label: {
+      markup: [{ ...Markup.getForeignObjectMarkup() }],
+      attrs: {
+        fo: {
+          label: 'Inheritance',
+          width: 1,
+          height: 1,
+          x: 60,
+          y: -10,
+        },
+      },
+    },
     attrs: {
       line: {
         targetMarker: {
@@ -59,7 +92,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
     },
   };
 
-  const width = 200;
+  const width = 100;
   const height = 200;
   const itemHeight = 30;
 
