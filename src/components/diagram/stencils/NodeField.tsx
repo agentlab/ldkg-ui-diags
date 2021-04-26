@@ -25,7 +25,7 @@ export const NodeField = React.memo(
     ) : (
       <div
         onDoubleClick={() => {
-          setEditing(true);
+          if (setEditing) setEditing(true);
         }}
         style={style}>
         {label}
@@ -33,7 +33,7 @@ export const NodeField = React.memo(
     );
   },
   (prev: any, next: any) => {
-    if (prev.data.editing != next.data.editing) {
+    if (prev.data?.editing !== next.data?.editing) {
       return false;
     }
     return true;
