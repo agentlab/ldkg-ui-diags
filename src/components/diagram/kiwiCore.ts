@@ -1,6 +1,38 @@
 import * as kiwi from 'kiwi.js';
 import { Graph, Node } from '@antv/x6';
 
+const nodeConfig: {
+  [name: string]: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    padding: { top: number; bottom: number; left: number; right: number };
+  };
+} = {
+  field: {
+    top: kiwi.Strength.weak,
+    left: kiwi.Strength.weak,
+    width: kiwi.Strength.weak,
+    height: kiwi.Strength.strong,
+    padding: { top: 0, bottom: 0, left: 0, right: 0 },
+  },
+  compartment: {
+    top: kiwi.Strength.medium,
+    left: kiwi.Strength.medium,
+    width: kiwi.Strength.weak,
+    height: kiwi.Strength.weak,
+    padding: { top: 20, bottom: 3, left: 3, right: 3 },
+  },
+  group: {
+    top: kiwi.Strength.strong,
+    left: kiwi.Strength.strong,
+    width: kiwi.Strength.strong,
+    height: kiwi.Strength.weak,
+    padding: { top: 30, bottom: 3, left: 3, right: 3 },
+  },
+};
+
 export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
   const solver = new kiwi.Solver();
   graph.on('node:resized', (e: any) => {
@@ -71,24 +103,13 @@ const addNode = (node: any, solver: kiwi.Solver) => {
     new kiwi.Constraint(n.width, kiwi.Operator.Ge, 120, kiwi.Strength.required),
     new kiwi.Constraint(n.height, kiwi.Operator.Ge, 20, kiwi.Strength.required),
   ];
-  if (node.shape === 'field') {
-    solver.addEditVariable(n.top, kiwi.Strength.weak);
-    solver.addEditVariable(n.left, kiwi.Strength.weak);
-    solver.addEditVariable(n.width, kiwi.Strength.weak);
-    solver.addEditVariable(n.height, kiwi.Strength.strong);
-    n.padding = { top: 0, bottom: 0, left: 0, right: 0 };
-  } else if (node.shape === 'compartment') {
-    solver.addEditVariable(n.top, kiwi.Strength.medium);
-    solver.addEditVariable(n.left, kiwi.Strength.medium);
-    solver.addEditVariable(n.width, kiwi.Strength.weak);
-    solver.addEditVariable(n.height, kiwi.Strength.weak);
-    n.padding = { top: 20, bottom: 3, left: 3, right: 3 };
-  } else if (node.shape === 'group') {
-    solver.addEditVariable(n.top, kiwi.Strength.strong);
-    solver.addEditVariable(n.left, kiwi.Strength.strong);
-    solver.addEditVariable(n.width, kiwi.Strength.strong);
-    solver.addEditVariable(n.height, kiwi.Strength.weak);
-    n.padding = { top: 30, bottom: 3, left: 3, right: 3 };
+  if (node.shape in nodeConfig) {
+    const config = nodeConfig[node.shape];
+    solver.addEditVariable(n.top, config.top);
+    solver.addEditVariable(n.left, config.left);
+    solver.addEditVariable(n.width, config.width);
+    solver.addEditVariable(n.height, config.height);
+    n.padding = config.padding;
   } else {
     solver.addEditVariable(n.top, kiwi.Strength.strong);
     solver.addEditVariable(n.left, kiwi.Strength.strong);
