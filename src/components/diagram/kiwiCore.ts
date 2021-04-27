@@ -24,7 +24,7 @@ const nodeConfig: {
     height: kiwi.Strength.weak,
     padding: { top: 20, bottom: 3, left: 3, right: 3 },
   },
-  group: {
+  class: {
     top: kiwi.Strength.strong,
     left: kiwi.Strength.strong,
     width: kiwi.Strength.strong,

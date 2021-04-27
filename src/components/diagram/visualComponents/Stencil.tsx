@@ -58,7 +58,7 @@ export const Stencil = ({ nodes = [], graph }: any) => {
 };
 
 export const createStencils = (isClassDiagram: boolean, graph: any) => {
-  const nodeShape = nodeFromData({ data: nodeShapeData, Renderer: NodeShape, shape: 'group' });
+  const nodeShape = nodeFromData({ data: nodeShapeData, Renderer: NodeShape, shape: 'class' });
   const nodeField = nodeFromData({ data: nodeFieldData, Renderer: NodeField, shape: 'field' });
   const nodeCircle = {
     id: 'Node Circle',

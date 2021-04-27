@@ -71,7 +71,7 @@ class SimpleEdgeView extends EdgeView {
 export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef, rootStore }) => {
   try {
     Graph.registerNode(
-      'group',
+      'class',
       {
         inherit: ReactShape,
       },
@@ -289,7 +289,7 @@ export const createGrid = ({ graph, view }) => {
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, Renderer, shape: 'group' });
+    const node = nodeFromData({ data, Renderer, shape: 'class' });
     (graph as Graph).addNode(node);
   });
 };
