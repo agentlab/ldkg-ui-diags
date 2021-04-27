@@ -6,113 +6,42 @@ export const addKiwiSolver = ({ graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    calcNodeSize(e, 'resize', solver);
+    handleGraphEvent(e, 'resize', solver);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    calcNodeSize(e, 'move', solver);
+    handleGraphEvent(e, 'move', solver);
   });
   graph.on('node:added', (e) => {
-    calcNodeSize(e, 'add', solver);
+    handleGraphEvent(e, 'add', solver);
   });
   graph.on('node:change:parent', (e) => {
-    calcNodeSize(e, 'embed', solver);
+    handleGraphEvent(e, 'embed', solver);
   });
   graph.on('node:removed', (e) => {
-    calcNodeSize(e, 'remove', solver);
+    handleGraphEvent(e, 'remove', solver);
   });
 };
 
-export const setCumputedSize = (node: any, size: any) => {
-  node.resize(size.width, size.height, {
-    ignore: true,
-  });
-  node.setPosition(size.left, size.top, {
-    ignore: true,
-  });
-};
-
-export const calcNodeSize = (e: any, type: string, solver) => {
+const handleGraphEvent = (e: any, type: string, solver) => {
   const node: any = e.node;
-  let changedNodes = new Set([node, ...propogateUpdates(getRoot(node))]);
+  let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
+
   if (type === 'add') {
     addNode(node, solver);
   } else if (type === 'embed') {
-    const child = node.store.data.kiwiProps;
-    const childId = node.store.data.id;
-    // remove from old parent
-    if (e.previous) {
-      const parentNode = node._model.graph.getCell(e.previous);
-      const parent = parentNode.store.data.kiwiProps;
-      solver.removeConstraint(parent.children.data[childId]);
-      delete parent.children.data[childId];
-      updateParent(parentNode, solver);
-      for (const constraint of child.parent.constraints) {
-        solver.removeConstraint(constraint);
-      }
-      child.parent = null;
-      changedNodes = new Set([...changedNodes, ...propogateUpdates(parentNode)]);
-    }
-    // add to new parent
-    if (e.current) {
-      child.parent = {
-        constraints: [],
-      };
-      const parentNode = node._parent;
-      const parent = node._parent.store.data.kiwiProps;
-      parent.children.data[childId] = null;
-      child.parent.constraints = [
-        new kiwi.Constraint(
-          child.width,
-          kiwi.Operator.Eq,
-          new kiwi.Expression(parent.width, -parent.padding.right, -parent.padding.left),
-          kiwi.Strength.required,
-        ),
-        new kiwi.Constraint(
-          child.left,
-          kiwi.Operator.Eq,
-          new kiwi.Expression(parent.left, parent.padding.left),
-          kiwi.Strength.required,
-        ),
-      ];
-      for (const constraint of child.parent.constraints) {
-        solver.addConstraint(constraint);
-      }
-      updateParent(parentNode, solver);
-    }
-    solver.suggestValue(child.left, node.position().x);
-    solver.suggestValue(child.top, node.position().y);
+    const changed = embedNode(e.previous, e.current, node, solver);
+    changedNodes = new Set<any>([...changedNodes, ...changed]);
   } else if (type === 'move') {
-    solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
-    solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
+    moveNode(node, solver);
   } else if (type === 'resize') {
-    solver.suggestValue(node.store.data.kiwiProps.width, node.size().width);
-    solver.suggestValue(node.store.data.kiwiProps.height, node.size().height);
-    solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
-    solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
+    resizeNode(node, solver);
   } else if (type === 'remove') {
-    const removed = node.store.data.kiwiProps;
-    if (node._parent) {
-      const parent = node._parent.store.data.kiwiProps;
-      solver.removeConstraint(parent.children.data[node.id]);
-      delete parent.children.data[node.id];
-      updateParent(node._parent, solver);
-      for (const constraint of removed.parent.constraints) {
-        solver.removeConstraint(constraint);
-      }
-    }
-    // embed events should've already removed children from `updated` component
-    for (const constraint of removed.constraints) {
-      solver.removeConstraint(constraint);
-    }
-    solver.removeEditVariable(removed.top);
-    solver.removeEditVariable(removed.left);
-    solver.removeEditVariable(removed.width);
-    solver.removeEditVariable(removed.height);
+    removeNode(node, solver);
   }
-  //changedIds = [...changedIds, ...this.propogateUpdates(this.getRoot(node.id))];
+
   solver.updateVariables();
   for (const n of changedNodes) {
     const computedSize = {
@@ -123,26 +52,6 @@ export const calcNodeSize = (e: any, type: string, solver) => {
     };
     setCumputedSize(n, computedSize);
   }
-};
-
-const propogateUpdates = (rootNode: any) => {
-  let changedNodes: any = new Set([rootNode]);
-  const current = rootNode;
-  if (!current || !current._children) {
-    return changedNodes;
-  }
-  for (const childNode of current._children) {
-    changedNodes = [...changedNodes, ...propogateUpdates(childNode)];
-  }
-  return changedNodes;
-};
-
-const getRoot = (node: any) => {
-  let current = node;
-  while (current._parent) {
-    current = current._parent;
-  }
-  return current;
 };
 
 const addNode = (node: any, solver: any) => {
@@ -191,6 +100,117 @@ const addNode = (node: any, solver: any) => {
   for (const constraint of n.constraints) {
     solver.addConstraint(constraint);
   }
+};
+
+const embedNode = (previous, current, node, solver) => {
+  const child = node.store.data.kiwiProps;
+  const childId = node.store.data.id;
+  let changedNodes = new Set<any>([]);
+  // remove from old parent
+  if (previous) {
+    const parentNode = node._model.graph.getCell(previous);
+    const parent = parentNode.store.data.kiwiProps;
+    solver.removeConstraint(parent.children.data[childId]);
+    delete parent.children.data[childId];
+    updateParent(parentNode, solver);
+    for (const constraint of child.parent.constraints) {
+      solver.removeConstraint(constraint);
+    }
+    child.parent = null;
+    changedNodes = new Set([...changedNodes, ...propogateUpdates(parentNode)]);
+  }
+  // add to new parent
+  if (current) {
+    child.parent = {
+      constraints: [],
+    };
+    const parentNode = node._parent;
+    const parent = node._parent.store.data.kiwiProps;
+    parent.children.data[childId] = null;
+    child.parent.constraints = [
+      new kiwi.Constraint(
+        child.width,
+        kiwi.Operator.Eq,
+        new kiwi.Expression(parent.width, -parent.padding.right, -parent.padding.left),
+        kiwi.Strength.required,
+      ),
+      new kiwi.Constraint(
+        child.left,
+        kiwi.Operator.Eq,
+        new kiwi.Expression(parent.left, parent.padding.left),
+        kiwi.Strength.required,
+      ),
+    ];
+    for (const constraint of child.parent.constraints) {
+      solver.addConstraint(constraint);
+    }
+    updateParent(parentNode, solver);
+  }
+  solver.suggestValue(child.left, node.position().x);
+  solver.suggestValue(child.top, node.position().y);
+  return changedNodes;
+};
+
+const moveNode = (node, solver) => {
+  solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
+  solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
+};
+
+const resizeNode = (node, solver) => {
+  solver.suggestValue(node.store.data.kiwiProps.width, node.size().width);
+  solver.suggestValue(node.store.data.kiwiProps.height, node.size().height);
+  solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
+  solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
+};
+
+const removeNode = (node, solver) => {
+  const removed = node.store.data.kiwiProps;
+  if (node._parent) {
+    const parent = node._parent.store.data.kiwiProps;
+    solver.removeConstraint(parent.children.data[node.id]);
+    delete parent.children.data[node.id];
+    updateParent(node._parent, solver);
+    for (const constraint of removed.parent.constraints) {
+      solver.removeConstraint(constraint);
+    }
+  }
+  // embed events should've already removed children from `updated` component
+  for (const constraint of removed.constraints) {
+    solver.removeConstraint(constraint);
+  }
+  solver.removeEditVariable(removed.top);
+  solver.removeEditVariable(removed.left);
+  solver.removeEditVariable(removed.width);
+  solver.removeEditVariable(removed.height);
+};
+
+const setCumputedSize = (node: any, size: any) => {
+  node.resize(size.width, size.height, {
+    ignore: true,
+  });
+  node.setPosition(size.left, size.top, {
+    ignore: true,
+  });
+};
+
+const propogateUpdates = (rootNode: any) => {
+  let changedNodes: any = new Set([rootNode]);
+  const current = rootNode;
+  if (!current || !current._children) {
+    return changedNodes;
+  }
+  for (const childNode of current._children) {
+    changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode)]);
+  }
+  return changedNodes;
+};
+
+const getRoot = (node: any) => {
+  let current = node;
+  while (current._parent) {
+    current = current._parent;
+  }
+  return current;
 };
 
 const updateParent = (parentNode: any, solver: any) => {
