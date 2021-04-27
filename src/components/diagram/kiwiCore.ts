@@ -1,6 +1,7 @@
 import * as kiwi from 'kiwi.js';
+import { Graph, Node } from '@antv/x6';
 
-export const addKiwiSolver = ({ graph }) => {
+export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
   const solver = new kiwi.Solver();
   graph.on('node:resized', (e: any) => {
     if (e.options && e.options.ignore) {
@@ -25,15 +26,15 @@ export const addKiwiSolver = ({ graph }) => {
   });
 };
 
-const handleGraphEvent = (e: any, type: string, solver) => {
-  const node: any = e.node;
+const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver) => {
+  const node: Node = e.node;
   let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
 
   if (type === 'add') {
     addNode(node, solver);
   } else if (type === 'embed') {
     const changed = embedNode(e.previous, e.current, node, solver);
-    changedNodes = new Set<any>([...changedNodes, ...changed]);
+    changedNodes = new Set([...changedNodes, ...changed]);
   } else if (type === 'move') {
     moveNode(node, solver);
   } else if (type === 'resize') {
@@ -54,7 +55,7 @@ const handleGraphEvent = (e: any, type: string, solver) => {
   }
 };
 
-const addNode = (node: any, solver: any) => {
+const addNode = (node: any, solver: kiwi.Solver) => {
   node.store.data.kiwiProps = {
     children: { data: {}, constraint: null },
     parent: null,
@@ -102,10 +103,10 @@ const addNode = (node: any, solver: any) => {
   }
 };
 
-const embedNode = (previous, current, node, solver) => {
+const embedNode = (previous, current, node, solver: kiwi.Solver) => {
   const child = node.store.data.kiwiProps;
   const childId = node.store.data.id;
-  let changedNodes = new Set<any>([]);
+  let changedNodes = new Set<Node>([]);
   // remove from old parent
   if (previous) {
     const parentNode = node._model.graph.getCell(previous);
@@ -151,19 +152,19 @@ const embedNode = (previous, current, node, solver) => {
   return changedNodes;
 };
 
-const moveNode = (node, solver) => {
+const moveNode = (node, solver: kiwi.Solver) => {
   solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
   solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
 };
 
-const resizeNode = (node, solver) => {
+const resizeNode = (node, solver: kiwi.Solver) => {
   solver.suggestValue(node.store.data.kiwiProps.width, node.size().width);
   solver.suggestValue(node.store.data.kiwiProps.height, node.size().height);
   solver.suggestValue(node.store.data.kiwiProps.left, node.position().x);
   solver.suggestValue(node.store.data.kiwiProps.top, node.position().y);
 };
 
-const removeNode = (node, solver) => {
+const removeNode = (node, solver: kiwi.Solver) => {
   const removed = node.store.data.kiwiProps;
   if (node._parent) {
     const parent = node._parent.store.data.kiwiProps;
@@ -184,7 +185,7 @@ const removeNode = (node, solver) => {
   solver.removeEditVariable(removed.height);
 };
 
-const setCumputedSize = (node: any, size: any) => {
+const setCumputedSize = (node: Node, size: any) => {
   node.resize(size.width, size.height, {
     ignore: true,
   });
@@ -194,7 +195,7 @@ const setCumputedSize = (node: any, size: any) => {
 };
 
 const propogateUpdates = (rootNode: any) => {
-  let changedNodes: any = new Set([rootNode]);
+  let changedNodes = new Set<Node>([rootNode]);
   const current = rootNode;
   if (!current || !current._children) {
     return changedNodes;
@@ -213,7 +214,7 @@ const getRoot = (node: any) => {
   return current;
 };
 
-const updateParent = (parentNode: any, solver: any) => {
+const updateParent = (parentNode: any, solver: kiwi.Solver) => {
   const parent = parentNode.store.data.kiwiProps;
   if (parent.children.constraint) {
     solver.removeConstraint(parent.children.constraint);
