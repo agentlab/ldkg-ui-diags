@@ -1,10 +1,12 @@
-import { Graph, Cell, Markup } from '@antv/x6';
-import { ReactShape } from '@antv/x6-react-shape';
-import { stencils } from './stencils/index';
-import { EdgeView, NodeView } from '@antv/x6';
-import { EditableCellTool } from './stencils/NodeField';
 import { cloneDeep } from 'lodash';
 import ReactDOM from 'react-dom';
+import { Graph, Cell, Markup } from '@antv/x6';
+import { ReactShape } from '@antv/x6-react-shape';
+import { EdgeView, NodeView } from '@antv/x6';
+
+import { stencils } from './stencils/index';
+import { EditableCellTool } from './stencils/NodeField';
+import { validate } from './interactionValidation';
 
 class SimpleNodeView extends NodeView {
   protected renderMarkup() {
@@ -180,6 +182,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     embedding: {
       enabled: true,
       findParent: 'center',
+      validate: validate,
     },
     selecting: true,
     connecting: {
