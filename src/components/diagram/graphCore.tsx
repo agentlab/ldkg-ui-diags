@@ -6,7 +6,7 @@ import { EdgeView, NodeView } from '@antv/x6';
 
 import { stencils } from './stencils/index';
 import { EditableCellTool } from './stencils/NodeField';
-import { validate } from './interactionValidation';
+import { validateEmbedding, validateConnection } from './interactionValidation';
 
 class SimpleNodeView extends NodeView {
   protected renderMarkup() {
@@ -182,7 +182,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     embedding: {
       enabled: true,
       findParent: 'center',
-      validate: validate,
+      validate: validateEmbedding,
     },
     selecting: true,
     connecting: {
@@ -196,6 +196,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       createEdge() {
         return g.createEdge(edgeConnectorRef.current);
       },
+      validateConnection: validateConnection,
     },
     keyboard: {
       enabled: true,
