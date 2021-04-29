@@ -42,7 +42,7 @@ const event = (id_, shape_) => {
 };
 
 // TODO: move helper functions to separate file
-function union(iterables) {
+const union = (iterables) => {
   const set = new Set();
   for (const iterable of iterables) {
     for (const item of iterable) {
@@ -50,7 +50,19 @@ function union(iterables) {
     }
   }
   return set;
-}
+};
+
+const median = (runList) => {
+  return [...Array(runList[0].length)].map((_, idx) => {
+    const numbers = runList.map((run) => run[idx]);
+    const sorted = numbers.slice().sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    if (sorted.length % 2 === 0) {
+      return (sorted[middle - 1] + sorted[middle]) / 2;
+    }
+    return sorted[middle];
+  });
+};
 
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
@@ -91,7 +103,7 @@ const perfTestAddComplexRoot = (length) => {
 
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
-    return [idx, round()];
+    return round();
   });
 };
 
@@ -110,20 +122,41 @@ const perfTestMove = (length) => {
 
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
-    return [idx, round()];
+    return round();
   });
 };
 
-const Benchmark = ({ perfTest }) => {
-  const results = perfTest(100);
+const perfTestAddSimpleRoot = (length) => {
+  const solver = new kiwi.Solver();
+  const round = () => {
+    const start = performance.now();
+    const root = event(uuidv4(), 'group');
+    const changed = calcNodeSize(root, 'add', solver);
+    updateVariables(changed, solver);
+    const end = performance.now();
 
-  console.log(results.length);
+    return end - start;
+  };
+
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return round();
+  });
+};
+
+const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
+  const results = [...Array(runs)].map((_, idx) => {
+    console.log('Run: ', idx);
+    return perfTest(length);
+  });
+  const aggregated = median(results);
+
   return (
     <Plot
       data={[
         {
-          x: results.map(([c, r]) => c),
-          y: results.map(([c, r]) => r),
+          x: Array.from(Array(length).keys()),
+          y: aggregated,
           type: 'scatter',
           mode: 'lines+markers',
           marker: { color: 'red' },
@@ -143,9 +176,19 @@ const Template = (args) => <Benchmark {...args} />;
 export const AddComplexRoot = Template.bind({});
 AddComplexRoot.args = {
   perfTest: perfTestAddComplexRoot,
+  length: 50,
+  runs: 10,
 };
 
 export const Move = Template.bind({});
 Move.args = {
   perfTest: perfTestMove,
+  length: 50,
+  runs: 10,
+};
+
+export const AddSimpleRoot = Template.bind({});
+AddSimpleRoot.args = {
+  perfTest: perfTestAddSimpleRoot,
+  runs: 10,
 };
