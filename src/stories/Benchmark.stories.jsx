@@ -144,6 +144,31 @@ const perfTestAddSimpleRoot = (length) => {
   });
 };
 
+const perfTestAddChildren = (length) => {
+  const solver = new kiwi.Solver();
+  const round = () => {
+    const start = performance.now();
+
+    let root = event(uuidv4(), 'group');
+    const c1 = calcNodeSize(root, 'add', solver);
+    const c2 = [...Array(3)].map(() => {
+      let [, c3] = embed(root, 'field', solver);
+      return c3;
+    });
+    const changed = union([c1, union(c2)]);
+    updateVariables(changed, solver);
+
+    const end = performance.now();
+
+    return end - start;
+  };
+
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return round();
+  });
+};
+
 const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
   const results = [...Array(runs)].map((_, idx) => {
     console.log('Run: ', idx);
@@ -190,5 +215,12 @@ Move.args = {
 export const AddSimpleRoot = Template.bind({});
 AddSimpleRoot.args = {
   perfTest: perfTestAddSimpleRoot,
+  runs: 10,
+};
+
+export const AddChildren = Template.bind({});
+AddChildren.args = {
+  perfTest: perfTestAddChildren,
+  length: 100,
   runs: 10,
 };
