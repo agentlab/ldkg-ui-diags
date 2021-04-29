@@ -146,16 +146,14 @@ const perfTestAddSimpleRoot = (length) => {
 
 const perfTestAddChildren = (length) => {
   const solver = new kiwi.Solver();
+  let root = event(uuidv4(), 'group');
+  const c1 = calcNodeSize(root, 'add', solver);
+  updateVariables(c1, solver);
+
   const round = () => {
     const start = performance.now();
 
-    let root = event(uuidv4(), 'group');
-    const c1 = calcNodeSize(root, 'add', solver);
-    const c2 = [...Array(3)].map(() => {
-      let [, c3] = embed(root, 'field', solver);
-      return c3;
-    });
-    const changed = union([c1, union(c2)]);
+    let [, changed] = embed(root, 'field', solver);
     updateVariables(changed, solver);
 
     const end = performance.now();
@@ -221,6 +219,6 @@ AddSimpleRoot.args = {
 export const AddChildren = Template.bind({});
 AddChildren.args = {
   perfTest: perfTestAddChildren,
-  length: 100,
-  runs: 10,
+  length: 50,
+  runs: 5,
 };
