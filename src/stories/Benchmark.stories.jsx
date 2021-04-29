@@ -41,6 +41,17 @@ const event = (id_, shape_) => {
   return e;
 };
 
+// TODO: move helper functions to separate file
+function union(iterables) {
+  const set = new Set();
+  for (const iterable of iterables) {
+    for (const item of iterable) {
+      set.add(item);
+    }
+  }
+  return set;
+}
+
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
   const c1 = calcNodeSize(e, 'add', solver);
@@ -50,45 +61,44 @@ const embed = (parent, type, solver) => {
   return [e, new Set([...c1, ...c2])];
 };
 
-const addRoot = (solver) => {
+const addComplexRoot = (solver) => {
   const rootId = uuidv4();
   let root = event(rootId, 'group');
   const c1 = calcNodeSize(root, 'add', solver);
+  const c2 = [...Array(2)].map(() => {
+    let [comp, c2] = embed(root, 'compartment', solver);
+    const c3 = [...Array(3)].map(() => {
+      let [, c3] = embed(comp, 'field', solver);
+      return c3;
+    });
+    return union([c2, union(c3)]);
+  });
+  const changed = union([c1, union(c2)]);
 
-  let [comp1, c2] = embed(root, 'compartment', solver);
-  let [comp2, c3] = embed(root, 'compartment', solver);
-  let [, c4] = embed(comp1, 'field', solver);
-  let [, c5] = embed(comp1, 'field', solver);
-  let [, c6] = embed(comp1, 'field', solver);
-  let [, c7] = embed(comp2, 'field', solver);
-  let [, c8] = embed(comp2, 'field', solver);
-  let [, c9] = embed(comp2, 'field', solver);
-  const changed = new Set([...c1, ...c2, ...c3, ...c4, ...c5, ...c6, ...c7, ...c8, ...c9]);
   updateVariables(changed, solver);
   return root;
 };
 
-const perfTestAdd = (roundsCount, setResult) => {
+const perfTestAddComplexRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
     const start = performance.now();
-    addRoot(solver);
+    addComplexRoot(solver);
     const end = performance.now();
 
     return end - start;
   };
-  [...Array(roundsCount)].forEach((_, idx) => {
-    setResult((old) => {
-      console.log(idx);
-      return [...old, [idx, round()]];
-    });
+
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return [idx, round()];
   });
 };
 
-const perfTestMove = (roundsCount, setResult) => {
+const perfTestMove = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
-    const root = addRoot(solver);
+    const root = addComplexRoot(solver);
     const start = performance.now();
     root.node.pos = { x: 100, y: 100 };
     const c = calcNodeSize(root, 'move', solver);
@@ -97,19 +107,15 @@ const perfTestMove = (roundsCount, setResult) => {
 
     return end - start;
   };
-  [...Array(roundsCount)].forEach((_, idx) => {
-    setResult((old) => {
-      console.log(idx);
-      return [...old, [idx, round()]];
-    });
+
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return [idx, round()];
   });
 };
 
 const Benchmark = ({ perfTest }) => {
-  const [results, setResult] = React.useState([]);
-  React.useEffect(() => {
-    perfTest(100, setResult);
-  }, [perfTest]);
+  const results = perfTest(100);
 
   console.log(results.length);
   return (
@@ -134,9 +140,9 @@ export default {
 
 const Template = (args) => <Benchmark {...args} />;
 
-export const Add = Template.bind({});
-Add.args = {
-  perfTest: perfTestAdd,
+export const AddComplexRoot = Template.bind({});
+AddComplexRoot.args = {
+  perfTest: perfTestAddComplexRoot,
 };
 
 export const Move = Template.bind({});
