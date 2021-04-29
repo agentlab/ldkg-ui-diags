@@ -6,22 +6,27 @@ export const addKiwiSolver = ({ graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    calcNodeSize(e, 'resize', solver);
+    const changedNodes = calcNodeSize(e, 'resize', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    calcNodeSize(e, 'move', solver);
+    const changedNodes = calcNodeSize(e, 'move', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:added', (e) => {
-    calcNodeSize(e, 'add', solver);
+    const changedNodes = calcNodeSize(e, 'add', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:change:parent', (e) => {
-    calcNodeSize(e, 'embed', solver);
+    const changedNodes = calcNodeSize(e, 'embed', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:removed', (e) => {
-    calcNodeSize(e, 'remove', solver);
+    const changedNodes = calcNodeSize(e, 'remove', solver);
+    updateVariables(changedNodes, solver);
   });
 };
 
