@@ -1,8 +1,10 @@
 import * as kiwi from 'kiwi.js';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
-import { calcNodeSize, updateVariables } from '../components/diagram/kiwiCore';
+import { calcNodeSize, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
+import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
 
 // for now use custom mocks
 const event = (id_, shape_) => {
@@ -167,11 +169,51 @@ const perfTestAddChildren = (length) => {
   });
 };
 
+const perfTestAddSimpleRootX6 = (length) => {
+  const container = document.createElement('div');
+  const minimap = document.createElement('div');
+  const graph = createGraph({
+    height: 100,
+    width: 100,
+    refContainer: { current: container },
+    minimapContainer: { current: minimap },
+  });
+  addKiwiSolver({ graph: graph });
+
+  const round = () => {
+    const start = performance.now();
+
+    addNewParentNodes({
+      graph: graph,
+      nodesData: [
+        {
+          '@id': uuidv4(),
+          height: 100,
+          width: 100,
+          x: 10,
+          y: 10,
+          shape: 'group',
+        },
+      ],
+    });
+
+    const end = performance.now();
+
+    return end - start;
+  };
+
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return round();
+  });
+};
+
 const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
   const results = [...Array(runs)].map((_, idx) => {
     console.log('Run: ', idx);
     return perfTest(length);
   });
+  console.log(results);
   const aggregated = median(results);
 
   return (
@@ -185,6 +227,11 @@ const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
           marker: { color: 'red' },
         },
       ]}
+      layout={{
+        yaxis: {
+          rangemode: 'tozero',
+        },
+      }}
     />
   );
 };
@@ -221,4 +268,11 @@ AddChildren.args = {
   perfTest: perfTestAddChildren,
   length: 50,
   runs: 5,
+};
+
+export const AddSimpleRootX6 = Template.bind({});
+AddSimpleRootX6.args = {
+  perfTest: perfTestAddSimpleRootX6,
+  runs: 20,
+  length: 100,
 };
