@@ -5,6 +5,7 @@ import { addKiwiSolver } from './kiwiCore';
 import { Minimap } from './visualComponents/Minimap';
 import { createStencils } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
+import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
 import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool, edgeExamples } from './ConnectorTool';
@@ -59,12 +60,13 @@ export const Graph = (props: any) => {
           </div>
           <div className={styles.panel}>
             <GraphToolbar graph={graph} />
-            <React.Fragment>
+            <div style={{ position: 'relative' }}>
               <Button type='primary' shape='round' onClick={props.loadData}>
                 Load More
               </Button>
+              <ZoomToolbar graph={graph} />
               <div id='container' ref={refContainer} className='x6-graph' />
-            </React.Fragment>
+            </div>
           </div>
           <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
           <Minimap minimapContainer={minimapContainer} />
