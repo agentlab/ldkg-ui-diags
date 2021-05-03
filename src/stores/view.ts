@@ -145,7 +145,7 @@ export const viewDataRootNodes = [
     },
     object: 'rm:DataModelView', // ref to the diagram
     //layout?
-    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:CardDiagramStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
     //styles: 'string with css?',
   },
   {
@@ -155,19 +155,20 @@ export const viewDataRootNodes = [
     y: 20,
     z: 0,
     rotation: 0,
-    height: 20,
-    width: 20,
+    height: 85,
+    width: 230,
     subject: {
       '@id': 'pporoles:UserShape',
       '@type': 'sh:NodeShape',
       title: 'Пользователь',
-      description: 'Пользователь системы',
+      description:
+        'Пользователь системы. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       property: ['rm:nameShape'],
       targetClass: 'pporoles:User',
     },
     object: 'rm:DataModelView',
     //layout?
-    stencil: 'rm:ClassNodeStencil',
+    stencil: 'rm:CardDiagramStencil',
     //styles: 'string with css?',
   },
 ];
@@ -182,8 +183,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 20,
     z: 2,
-    height: 10,
-    width: 20,
+    height: 85,
+    width: 230,
     parent: 'rm:diagramNode1', // ref to the parent node
     subject: {
       // ref to the model object

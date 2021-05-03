@@ -287,8 +287,8 @@ export const createGrid = ({ graph, view }) => {
 };
 
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
-  const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
+    const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
     const node = nodeFromData({ data, Renderer, shape: 'group' });
     (graph as Graph).addNode(node);
   });

@@ -48,14 +48,14 @@ const rootModelInitialState2 = {
       lastSynced: moment.now(),
       resolveCollConstrs: false,
     },
-    [viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
+    /*[viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[1]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[1]['@id'], // reference by @id
       dataIntrnl: viewDataChildNodes,
       updPeriod: undefined,
       lastSynced: moment.now(),
       resolveCollConstrs: false,
-    },
+    },*/
     [viewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[2]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
