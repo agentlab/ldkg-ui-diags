@@ -5,16 +5,13 @@ const wrapCss: React.CSSProperties = {
   width: '100%',
   height: '100%',
   overflow: 'hidden',
-  border: '2px solid black',
-  padding: '0px 0 1px 20px',
-  borderRadius: '8px',
-  backgroundColor: '#2dcfcf',
+  borderRight: ' 4px solid #2dcfcf',
+  boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
 };
 
 const contentCss: React.CSSProperties = {
   backgroundColor: 'white',
   height: '100%',
-  padding: '7px 7px 7px 5px',
   borderRadius: '0 8px 8px 0',
   overflow: 'hidden',
 };
@@ -28,13 +25,13 @@ export const CardDiagram = React.memo(
     return (
       <div style={wrapCss}>
         <div style={contentCss}>
-          <div style={{ float: 'left', padding: '0 10px 2px 5px' }}>
-            <Image width={40} src={image || 'error'} fallback={fallback} />
+          <div style={{ float: 'left', paddingRight: '2px' }}>
+            <Image width={60} src={image || 'error'} fallback={fallback} />
           </div>
-          <div style={{ textAlign: 'center', marginBottom: '2px' }}>
-            <span style={{ fontSize: '1.4em', fontWeight: 500 }}>{title}</span>
+          <div style={{ textAlign: 'left', marginBottom: '2px', paddingTop: '10px' }}>
+            <span style={{ font: '1.4em Lato Tahoma sans-serif', fontWeight: 500 }}>{title}</span>
           </div>
-          <p style={{ fontSize: '0.9em' }}>{description}</p>
+          <p style={{ font: '1em Lato Tahoma sans-serif' }}>{description}</p>
         </div>
       </div>
     );

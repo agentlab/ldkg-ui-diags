@@ -167,8 +167,8 @@ const addNode = (node: any, solver: any) => {
   };
   const n = node.store.data.kiwiProps;
   n.constraints = [
-    new kiwi.Constraint(n.width, kiwi.Operator.Ge, 230, kiwi.Strength.required),
-    new kiwi.Constraint(n.height, kiwi.Operator.Ge, 90, kiwi.Strength.required),
+    new kiwi.Constraint(n.width, kiwi.Operator.Ge, 220, kiwi.Strength.required),
+    new kiwi.Constraint(n.height, kiwi.Operator.Ge, 60, kiwi.Strength.required),
   ];
   if (node.shape === 'field') {
     solver.addEditVariable(n.top, kiwi.Strength.weak);
