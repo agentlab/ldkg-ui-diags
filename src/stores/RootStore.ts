@@ -68,7 +68,7 @@ const rootModelInitialState2 = {
   },
 };
 
-const rootModelInitialState3 = {
+export const rootModelInitialState3 = {
   ...rootModelInitialState,
   colls: {
     ...rootModelInitialState.colls,
@@ -106,6 +106,12 @@ export const rootStore = initialState;
 rootStore.setId(rmRepositoryParam['Repository ID']);
 rootStore.ns.reloadNs();
 
+export const createRootStoreFromState = (state: any) => {
+  const initinitialState = Repository.create(state, { client });
+  initinitialState.setId(rmRepositoryParam['Repository ID']);
+  initinitialState.ns.reloadNs();
+  return initinitialState;
+};
 /*when(
 	()=> Object.keys(rootStore.ns.currentJs).length > 5 && !rootStore.getColl(viewDescrCollConstr['@id']),
 	()=> {

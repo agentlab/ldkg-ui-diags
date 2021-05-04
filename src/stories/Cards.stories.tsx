@@ -4,12 +4,13 @@ import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 
 import { GraphEditor } from '../components/GraphEditor';
-import { rootStore } from '../stores/RootStore';
+import { createRootStoreFromState, rootModelInitialState3 } from '../stores/RootStore';
 import { RootContextProvider } from '../stores/RootContext';
 import { viewDescrCollConstr } from '../stores/view';
 import '../index.css';
 import '../App.css';
 
+const rootStore = createRootStoreFromState(rootModelInitialState3);
 const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
 
