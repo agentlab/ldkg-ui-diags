@@ -26,6 +26,18 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
   });
 };
 
+const applyProperties = (properties: { [key: string]: string | number }, node: Yoga.YogaNode) => {
+  Object.entries(properties).forEach(([key, value]) => {
+    // TODO: forbid position property
+    try {
+      // see https://github.com/facebook/yoga/blob/cbf6495d66a7a8066d1354daa14d3bb1af19f6ef/website/src/components/Playground/src/YogaNode.js#L144
+      node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
+    } catch (e) {
+      console.warn('Provided property-value pair is not supported - key: ' + key + ', value: ' + value);
+    }
+  });
+};
+
 const handleGraphEvent = (e: any, type: string) => {
   console.log(type, e);
   const node: X6Node = e.node;
@@ -118,9 +130,18 @@ const addNode = (node: any) => {
   const root = Node.create();
   root.setPosition(Yoga.EDGE_LEFT, node.position().x);
   root.setPosition(Yoga.EDGE_TOP, node.position().y);
-  root.setMinWidth(120);
-  root.setMinHeight(20);
+  // root.setMinWidth(120);
+  // root.setMinHeight(20);
   root.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
+
+  applyProperties(
+    {
+      minWidth: 120,
+      minHeight: 20,
+      test: 'auto',
+    },
+    root,
+  );
 
   node.store.data.yogaProps = root;
 };
