@@ -1,7 +1,7 @@
 import React from 'react';
-import { rootStore } from './stores/RootStore';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
+import { rootStore } from './stores/RootStore';
 import { RootContextProvider } from './stores/RootContext';
 import { GraphEditor } from './components/GraphEditor';
 import { viewDescrCollConstr } from './stores/view';
