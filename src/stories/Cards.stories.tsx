@@ -1,34 +1,37 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
+import { getSnapshot } from 'mobx-state-tree';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
+import { SparqlClientImpl } from '@agentlab/sparql-jsld-client';
 
+import { rdfServerUrl, rmRepositoryParam } from '../config';
 import { GraphEditor } from '../components/GraphEditor';
-import { createRootStoreFromState, rootModelInitialState3 } from '../stores/RootStore';
 import { RootContextProvider } from '../stores/RootContext';
+
+import { createRootStoreFromState } from '../stores/RootStore';
+import { rootModelInitialState3 } from '../stores/ViewCard';
 import { viewDescrCollConstr } from '../stores/view';
+
 import '../index.css';
 import '../App.css';
 
-const rootStore = createRootStoreFromState(rootModelInitialState3);
+const client = new SparqlClientImpl(rdfServerUrl);
+const rootStore = createRootStoreFromState(rmRepositoryParam, client, rootModelInitialState3);
 const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
+
+const cc = getSnapshot(rootStore);
+console.log(cc);
 
 export default {
   title: 'GraphEditor/Cards',
   component: GraphEditor,
-  //component: Button,
 } as Meta;
-
-/*const Template: Story<any> = (args: any) => (
-  <RootContextProvider>
-    <Button></Button>
-  </RootContextProvider>
-);*/
 
 const Template: Story<any> = (args: any) => (
   <Provider store={store}>
-    <RootContextProvider>
+    <RootContextProvider rootStore={rootStore}>
       <GraphEditor {...args} />
     </RootContextProvider>
   </Provider>
