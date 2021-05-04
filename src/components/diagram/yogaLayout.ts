@@ -1,5 +1,6 @@
 import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
+import { propogateUpdates, getRoot } from './kiwiCore';
 
 export const addYogaSolver = ({ graph }: { graph: Graph }) => {
   graph.on('node:resized', (e: any) => {
@@ -149,24 +150,4 @@ const setCumputedSize = (node: X6Node, size: any) => {
   node.setPosition(size.left, size.top, {
     ignore: true,
   });
-};
-
-const getRoot = (node: any) => {
-  let current = node;
-  while (current._parent) {
-    current = current._parent;
-  }
-  return current;
-};
-
-const propogateUpdates = (rootNode: any) => {
-  let changedNodes = new Set<Node>([rootNode]);
-  const current = rootNode;
-  if (!current || !current._children) {
-    return changedNodes;
-  }
-  for (const childNode of current._children) {
-    changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode)]);
-  }
-  return changedNodes;
 };

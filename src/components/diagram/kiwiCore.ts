@@ -134,7 +134,7 @@ export const updateVariables = (changedNodes, solver) => {
   }
 };
 
-const propogateUpdates = (rootNode: any) => {
+export const propogateUpdates = (rootNode: any) => {
   let changedNodes: any = new Set([rootNode]);
   const current = rootNode;
   if (!current || !current._children) {
@@ -146,7 +146,7 @@ const propogateUpdates = (rootNode: any) => {
   return changedNodes;
 };
 
-const getRoot = (node: any) => {
+export const getRoot = (node: any) => {
   let current = node;
   while (current._parent) {
     current = current._parent;
