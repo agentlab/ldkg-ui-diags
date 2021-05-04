@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import { createGraph, createGrid, addNewParentNodes, addNewChildNodes, addNewEdges } from './graphCore';
-import { addKiwiSolver } from './kiwiCore';
+// import { addKiwiSolver } from './kiwiCore';
+import { addYogaSolver } from './yogaLayout';
 import { Minimap } from './visualComponents/Minimap';
 import { createStencils } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
@@ -30,7 +31,7 @@ export const Graph = (props: any) => {
     const { width, height } = getContainerSize();
     const graph = createGraph({ height, width, refContainer, minimapContainer, edgeConnectorRef, rootStore });
     createGrid({ graph, view: props.view });
-    addKiwiSolver({ graph });
+    addYogaSolver({ graph });
     addNewParentNodes({ graph, nodesData: props.data, rootStore });
     addNewChildNodes({ graph, nodesData: props.сhildNodesData, rootStore });
     addNewEdges({ graph, edgesData: props.arrowsData });
