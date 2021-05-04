@@ -3,12 +3,12 @@ import { NodeField } from './NodeField';
 import { Compartment } from './Compartment';
 import { DefaultLabel } from './DefualtLabel';
 import { Default } from './Default';
-import { CardDiagram } from './CardDiagram';
+import { Card } from './Card';
 
 export const stencils = {
   compartment: Compartment,
   'rm:PropertyNodeStencil': NodeField,
-  'rm:CardDiagramStencil': CardDiagram,
+  'rm:CardStencil': Card,
   'rm:ClassNodeStencil': NodeShape,
   default: Default,
   'rm:AssociationArrowStencil': Default,

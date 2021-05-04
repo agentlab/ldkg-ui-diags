@@ -12,6 +12,7 @@ import {
   viewDescrs,
   viewDescrCollConstr0,
   viewDescrs0,
+  viewDataRootCardNodes,
 } from './view';
 //import { viewKindCollConstr, viewKinds } from "./viewKinds";
 
@@ -48,14 +49,45 @@ const rootModelInitialState2 = {
       lastSynced: moment.now(),
       resolveCollConstrs: false,
     },
-    /*[viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
+    [viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[1]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[1]['@id'], // reference by @id
       dataIntrnl: viewDataChildNodes,
       updPeriod: undefined,
       lastSynced: moment.now(),
       resolveCollConstrs: false,
-    },*/
+    },
+    [viewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[2]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
+      dataIntrnl: viewDataArrows,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+  },
+};
+
+const rootModelInitialState3 = {
+  ...rootModelInitialState,
+  colls: {
+    ...rootModelInitialState.colls,
+    [viewDescrCollConstr['@id']]: {
+      '@id': viewDescrCollConstr['@id'],
+      collConstr: viewDescrCollConstr,
+      dataIntrnl: viewDescrs,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    [viewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[0]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[0]['@id'], // reference by @id
+      dataIntrnl: viewDataRootCardNodes,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
     [viewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[2]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
@@ -68,7 +100,7 @@ const rootModelInitialState2 = {
 };
 
 //@ts-ignore
-let initialState = Repository.create(rootModelInitialState2, { client });
+let initialState = Repository.create(rootModelInitialState3, { client });
 export const rootStore = initialState;
 
 rootStore.setId(rmRepositoryParam['Repository ID']);
