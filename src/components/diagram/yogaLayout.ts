@@ -43,40 +43,33 @@ const handleGraphEvent = (e: any, type: string) => {
     removeNode(node);
   }
 
-  for (const n of changedNodes) {
-    if (!n._parent) {
-      // root node
-      const yogaNode: Yoga.YogaNode = n.store.data.yogaProps;
+  [...changedNodes]
+    .filter((node) => !node._parent)
+    .forEach((node) => {
+      const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
       yogaNode.calculateLayout();
+    });
+
+  changedNodes.forEach((node) => {
+    const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
+    const computedLayout = yogaNode.getComputedLayout();
+    if (!node._parent) {
+      // root n
+      console.log(node, computedLayout);
+      setCumputedSize(node, computedLayout); // set absolute position
+    } else {
+      const parentYogaNode: Yoga.YogaNode = node._parent.store.data.yogaProps;
+      // set position relative to parent
+      const computedSize = {
+        left: computedLayout.left + parentYogaNode.getComputedLeft(),
+        top: computedLayout.top + parentYogaNode.getComputedTop(),
+        width: computedLayout.width,
+        height: computedLayout.height,
+      };
+      console.log(node, computedSize);
+      setCumputedSize(node, computedSize);
     }
-  }
-
-  for (const n of changedNodes) {
-    updateNodeRecursive(n);
-  }
-};
-
-const updateNodeRecursive = (node: any) => {
-  const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
-  const computedLayout = yogaNode.getComputedLayout();
-  if (!node._parent) {
-    // root node
-    console.log(node, computedLayout);
-    setCumputedSize(node, computedLayout); // set absolute position
-  } else {
-    const parentYogaNode: Yoga.YogaNode = node._parent.store.data.yogaProps;
-    // set position relative to parent
-    const computedSize = {
-      left: computedLayout.left + parentYogaNode.getComputedLeft(),
-      top: computedLayout.top + parentYogaNode.getComputedTop(),
-      width: computedLayout.width,
-      height: computedLayout.height,
-    };
-    console.log(node, computedSize);
-    setCumputedSize(node, computedSize);
-  }
-  // console.log('children', node._children);
-  // node._children?.forEach((childNode: any) => updateNodeRecursive(childNode));
+  });
 };
 
 const embedNode = (previous: any, current: any, node: any) => {
@@ -98,6 +91,7 @@ const embedNode = (previous: any, current: any, node: any) => {
     parentYogaNode.insertChild(yogaNode, 0); // TODO: add to bottom?
   }
 
+  // update node position based on type
   if (node._parent) {
     yogaNode.setPosition(Yoga.EDGE_LEFT, 0);
     yogaNode.setPosition(Yoga.EDGE_TOP, 0);
