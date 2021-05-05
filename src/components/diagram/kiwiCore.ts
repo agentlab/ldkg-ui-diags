@@ -39,22 +39,27 @@ export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    handleGraphEvent(e, 'resize', solver);
+    const changedNodes = handleGraphEvent(e, 'resize', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    handleGraphEvent(e, 'move', solver);
+    const changedNodes = handleGraphEvent(e, 'move', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:added', (e) => {
-    handleGraphEvent(e, 'add', solver);
+    const changedNodes = handleGraphEvent(e, 'add', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:change:parent', (e) => {
-    handleGraphEvent(e, 'embed', solver);
+    const changedNodes = handleGraphEvent(e, 'embed', solver);
+    updateVariables(changedNodes, solver);
   });
   graph.on('node:removed', (e) => {
-    handleGraphEvent(e, 'remove', solver);
+    const changedNodes = handleGraphEvent(e, 'remove', solver);
+    updateVariables(changedNodes, solver);
   });
 };
 
@@ -74,7 +79,11 @@ const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver) => {
   } else if (type === 'remove') {
     removeNode(node, solver);
   }
+  //changedIds = [...changedIds, ...this.propogateUpdates(this.getRoot(node.id))];
+  return changedNodes;
+};
 
+export const updateVariables = (changedNodes, solver) => {
   solver.updateVariables();
   for (const n of changedNodes) {
     const computedSize = {
