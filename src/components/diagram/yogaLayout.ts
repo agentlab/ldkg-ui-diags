@@ -2,6 +2,22 @@ import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
 import { propogateUpdates, getRoot } from './kiwiCore';
 
+const defaultProperties = {
+  minWidth: 120,
+  minHeight: 20,
+  flexDirection: 'column',
+  test: 'auto', // should create warning
+};
+
+const nodeConfig = {
+  field: {},
+  compartment: {},
+  group: {
+    paddingTop: 25,
+    widthTop: 1, // should create warning
+  },
+};
+
 export const addYogaSolver = ({ graph }: { graph: Graph }) => {
   graph.on('node:resized', (e: any) => {
     if (e.options && e.options.ignore) {
@@ -26,12 +42,45 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
   });
 };
 
-const applyProperties = (properties: { [key: string]: string | number }, node: Yoga.YogaNode) => {
-  Object.entries(properties).forEach(([key, value]) => {
-    // TODO: forbid position property
+const properties = {
+  normalProperties: [
+    'width',
+    'height',
+    'minWidth',
+    'maxWidth',
+    'minHeight',
+    'maxHeight',
+    'justifyContent',
+    'alignItems',
+    'alignSelf',
+    'alignContent',
+    'flexGrow',
+    'flexShrink',
+    'positionType',
+    'aspectRatio',
+    'flexWrap',
+    'flexDirection',
+  ],
+  directionProperties: ['padding', 'margin', 'border'], // `position` is forbidden
+  directions: ['top', 'right', 'bottom', 'left'], // paddingTop, ...
+};
+
+const applyProperties = (props: { [key: string]: string | number }, node: Yoga.YogaNode) => {
+  (node as any)['setWidth'](Yoga.EDGE_TOP, 1);
+  Object.entries(props).forEach(([key, value]) => {
+    // see https://github.com/facebook/yoga/blob/cbf6495d66a7a8066d1354daa14d3bb1af19f6ef/website/src/components/Playground/src/YogaNode.js#L144
     try {
-      // see https://github.com/facebook/yoga/blob/cbf6495d66a7a8066d1354daa14d3bb1af19f6ef/website/src/components/Playground/src/YogaNode.js#L144
-      node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
+      if (properties.normalProperties.includes(key)) {
+        node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
+      } else {
+        const [prop, Direction] = key.replace(/([A-Z])/g, ' $1').split(' ');
+        const direction = `${Direction[0].toLowerCase()}${Direction.substr(1)}`;
+        if (properties.directionProperties.includes(prop) && properties.directions.includes(direction)) {
+          node[`set${prop[0].toUpperCase()}${prop.substr(1)}`](Yoga[`EDGE_${direction.toUpperCase()}`], value);
+        } else {
+          throw new Error('Property not available');
+        }
+      }
     } catch (e) {
       console.warn('Provided property-value pair is not supported - key: ' + key + ', value: ' + value);
     }
@@ -39,7 +88,6 @@ const applyProperties = (properties: { [key: string]: string | number }, node: Y
 };
 
 const handleGraphEvent = (e: any, type: string) => {
-  console.log(type, e);
   const node: X6Node = e.node;
   let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
 
@@ -68,7 +116,6 @@ const handleGraphEvent = (e: any, type: string) => {
     const computedLayout = yogaNode.getComputedLayout();
     if (!node._parent) {
       // root n
-      console.log(node, computedLayout);
       setCumputedSize(node, computedLayout); // set absolute position
     } else {
       const parentYogaNode: Yoga.YogaNode = node._parent.store.data.yogaProps;
@@ -79,7 +126,6 @@ const handleGraphEvent = (e: any, type: string) => {
         width: computedLayout.width,
         height: computedLayout.height,
       };
-      console.log(node, computedSize);
       setCumputedSize(node, computedSize);
     }
   });
@@ -101,7 +147,7 @@ const embedNode = (previous: any, current: any, node: any) => {
   if (current) {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
-    parentYogaNode.insertChild(yogaNode, 0); // TODO: add to bottom?
+    parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount()); // add to bottom
   }
 
   // update node position based on type
@@ -130,18 +176,11 @@ const addNode = (node: any) => {
   const root = Node.create();
   root.setPosition(Yoga.EDGE_LEFT, node.position().x);
   root.setPosition(Yoga.EDGE_TOP, node.position().y);
-  // root.setMinWidth(120);
-  // root.setMinHeight(20);
-  root.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
 
-  applyProperties(
-    {
-      minWidth: 120,
-      minHeight: 20,
-      test: 'auto',
-    },
-    root,
-  );
+  applyProperties(defaultProperties, root);
+  if (node.shape in nodeConfig) {
+    applyProperties(nodeConfig[node.shape], root);
+  }
 
   node.store.data.yogaProps = root;
 };
