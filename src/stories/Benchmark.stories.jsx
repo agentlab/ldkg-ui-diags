@@ -1,10 +1,9 @@
 import * as kiwi from 'kiwi.js';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
-import { calcNodeSize, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
 import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
 
 // for now use custom mocks
 const event = (id_, shape_) => {
@@ -68,17 +67,17 @@ const median = (runList) => {
 
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
-  const c1 = calcNodeSize(e, 'add', solver);
+  const c1 = handleGraphEvent(e, 'add', solver);
   parent.node._children.push(e.node);
   e.node._parent = parent.node;
-  const c2 = calcNodeSize(e, 'embed', solver);
+  const c2 = handleGraphEvent(e, 'embed', solver);
   return [e, new Set([...c1, ...c2])];
 };
 
 const addComplexRoot = (solver) => {
   const rootId = uuidv4();
   let root = event(rootId, 'group');
-  const c1 = calcNodeSize(root, 'add', solver);
+  const c1 = handleGraphEvent(root, 'add', solver);
   const c2 = [...Array(2)].map(() => {
     let [comp, c2] = embed(root, 'compartment', solver);
     const c3 = [...Array(3)].map(() => {
@@ -115,7 +114,7 @@ const perfTestMove = (length) => {
     const root = addComplexRoot(solver);
     const start = performance.now();
     root.node.pos = { x: 100, y: 100 };
-    const c = calcNodeSize(root, 'move', solver);
+    const c = handleGraphEvent(root, 'move', solver);
     updateVariables(c, solver);
     const end = performance.now();
 
@@ -133,7 +132,7 @@ const perfTestAddSimpleRoot = (length) => {
   const round = () => {
     const start = performance.now();
     const root = event(uuidv4(), 'group');
-    const changed = calcNodeSize(root, 'add', solver);
+    const changed = handleGraphEvent(root, 'add', solver);
     updateVariables(changed, solver);
     const end = performance.now();
 
@@ -149,7 +148,7 @@ const perfTestAddSimpleRoot = (length) => {
 const perfTestAddChildren = (length) => {
   const solver = new kiwi.Solver();
   let root = event(uuidv4(), 'group');
-  const c1 = calcNodeSize(root, 'add', solver);
+  const c1 = handleGraphEvent(root, 'add', solver);
   updateVariables(c1, solver);
 
   const round = () => {

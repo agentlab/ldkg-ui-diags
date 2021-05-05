@@ -1,7 +1,12 @@
-import { Graph, Cell } from '@antv/x6';
+import { cloneDeep } from 'lodash';
+import ReactDOM from 'react-dom';
+import { Graph, Cell, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
-import { stencils } from './stencils/index';
 import { EdgeView, NodeView } from '@antv/x6';
+
+import { stencils } from './stencils/index';
+import { EditableCellTool } from './stencils/NodeField';
+import { validateEmbedding, validateConnection } from './interactionValidation';
 
 class SimpleNodeView extends NodeView {
   protected renderMarkup() {
@@ -65,10 +70,10 @@ class SimpleEdgeView extends EdgeView {
   }
 }
 
-export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef }) => {
+export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef, rootStore }) => {
   try {
     Graph.registerNode(
-      'group',
+      'class',
       {
         inherit: ReactShape,
       },
@@ -92,11 +97,10 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     const circleArrowhead = {
       tagName: 'circle',
       attrs: {
-        r: 6,
-        fill: 'grey',
-        'fill-opacity': 0.3,
+        r: 5,
+        fill: 'white',
         stroke: 'black',
-        'stroke-width': 1,
+        'stroke-width': 0.5,
         cursor: 'move',
       },
     };
@@ -116,6 +120,8 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       },
       true,
     );
+    //Graph.registerEdgeTool('editableCell', EditableCellTool, true);
+    Graph.registerEdgeTool('editableCell', EditableCellTool, true);
   } catch (e) {
     // typically happens during recompilation
     console.log(e);
@@ -153,6 +159,14 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
         },
       },
     },
+    onEdgeLabelRendered: (args) => {
+      const { selectors, label } = args;
+      const Renderer = stencils['defaultLabel'];
+      const content = selectors.foContent as HTMLDivElement;
+      if (content) {
+        ReactDOM.render(<Renderer parent={selectors.fo} label={label?.attrs?.fo.label} onSave={() => {}} />, content);
+      }
+    },
     scroller: {
       enabled: true,
       pageVisible: true,
@@ -168,6 +182,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     embedding: {
       enabled: true,
       findParent: 'center',
+      validate: validateEmbedding,
     },
     selecting: true,
     connecting: {
@@ -181,6 +196,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       createEdge() {
         return g.createEdge(edgeConnectorRef.current);
       },
+      validateConnection: validateConnection,
     },
     keyboard: {
       enabled: true,
@@ -191,15 +207,17 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     },
   });
 
-  // g.on("node:added", (e) => {
-  // 	handleGraphEvent(e, "add");
-  // });
-  g.on('edge:mouseenter', ({ cell }) => {
-    cell.addTools(['circle-source-arrowhead', 'circle-target-arrowhead']);
-  });
-
-  g.on('edge:mouseleave', ({ cell }) => {
-    cell.removeTools();
+  g.on('selection:changed', ({ added, removed }: { added: Cell[]; removed: Cell[] }) => {
+    added.forEach((cell) => {
+      if (cell.isEdge()) {
+        cell.addTools(['circle-source-arrowhead', 'circle-target-arrowhead']);
+      }
+    });
+    removed.forEach((cell) => {
+      if (cell.isEdge()) {
+        cell.removeTools();
+      }
+    });
   });
 
   const connectKey = 'shift';
@@ -272,18 +290,18 @@ export const createGrid = ({ graph, view }) => {
   }
 };
 
-export const addNewParentNodes = ({ graph, nodesData }) => {
-  const renderer = stencils['rm:ClassNodeStencil'];
+export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
+  const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, shape: 'group', renderer: renderer({ data }) });
+    const node = nodeFromData({ data, Renderer, shape: 'class' });
     (graph as Graph).addNode(node);
   });
 };
 
-export const addNewChildNodes = ({ graph, nodesData }) => {
-  const renderer = stencils['rm:PropertyNodeStencil'];
+export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
+  const Renderer = stencils['rm:PropertyNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, shape: 'field', renderer: renderer({ data }) });
+    const node = nodeFromData({ data, Renderer, shape: 'field' });
     const child = (graph as Graph).addNode(node);
     const parent: Cell = (graph as Graph).getCell(data.parent);
     parent.addChild(child);
@@ -292,59 +310,53 @@ export const addNewChildNodes = ({ graph, nodesData }) => {
 
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = {
-      id: data['@id'],
-      target: data.arrowTo,
-      source: data.arrowFrom,
-      label: {
-        markup: [
-          {
-            tagName: 'rect',
-            selector: 'body',
-          },
-          {
-            tagName: 'text',
-            selector: 'label',
-          },
-        ],
-        attrs: {
-          text: {
-            text: data.subject.name,
-            fill: '#000',
-            fontSize: 10,
-            textAnchor: 'middle',
-            textVerticalAnchor: 'middle',
-            pointerEvents: 'none',
-          },
-          rect: {
-            ref: 'label',
-            fill: '#fff',
-            rx: 3,
-            ry: 3,
-            refWidth: 1,
-            refHeight: 1,
-            refX: 0,
-            refY: 0,
-          },
-        },
-        position: {
-          distance: 0.5,
-        },
-      },
-      router: {
-        name: data.router || 'normal',
-      },
-    };
+    const edge = edgeFromData({ data });
     (graph as Graph).addEdge(edge);
   });
 };
 
-const nodeFromData = ({ data, shape, renderer }) => ({
+export const nodeFromData = ({ data, shape, Renderer }) => ({
   id: data['@id'],
   size: { width: data.width, height: data.height },
   position: { x: data.x, y: data.y },
   shape: shape,
+  editing: false,
   component(_) {
-    return renderer;
+    const setEditing = (state: boolean) => {
+      _.setProp('editing', state);
+    };
+    const onSave = (t: string) => {
+      _.setProp('editing', false);
+      _.setProp('label', t);
+    };
+    return <Renderer data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
+  },
+});
+
+const edgeFromData = ({ data }) => ({
+  id: data['@id'],
+  target: data.arrowTo,
+  source: data.arrowFrom,
+  label: {
+    markup: [{ ...Markup.getForeignObjectMarkup() }],
+    attrs: {
+      fo: {
+        label: data.subject.name,
+        width: 1,
+        height: 1,
+        x: 60,
+        y: -10,
+      },
+    },
+    position: {
+      distance: 0.3,
+      args: {
+        keepGradient: true,
+        ensureLegibility: true,
+      },
+    },
+  },
+  router: {
+    name: data.router || 'normal',
   },
 });
