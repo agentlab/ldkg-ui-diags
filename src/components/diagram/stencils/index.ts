@@ -8,7 +8,7 @@ import { Association } from './Association';
 import { Inheritance } from './Inheritance';
 
 export const stencils = {
-  compartment: Compartment,
+  'rm:CompartmentNodeStencil': Compartment,
   'rm:PropertyNodeStencil': NodeField,
   'rm:CardStencil': Card,
   'rm:ClassNodeStencil': NodeShape,

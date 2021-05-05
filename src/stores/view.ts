@@ -6,7 +6,7 @@ import {
   ViewShapeSchema,
 } from '@agentlab/sparql-jsld-client';
 
-//import { viewKindCollConstr, viewKinds } from './viewKinds';
+import { viewKindCollConstr, viewKinds } from './viewKinds';
 
 export const viewDescrCollConstr = {
   '@id': 'rm:Views_Coll',
@@ -69,7 +69,7 @@ export const viewDescrs = [
           {
             '@id': 'rm:ChildNodes_EntConstr_0',
             '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsChildNode',
+            schema: 'rm:UsedInDiagramAsChildNodeShape',
             conditions: {
               '@id': 'rm:ChildNodes_EntConstr_0_Condition',
               '@type': 'rm:EntConstrCondition',
@@ -91,7 +91,7 @@ export const viewDescrs = [
           {
             '@id': 'rm:Arrows_EntConstr_0',
             '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsArrow',
+            schema: 'rm:UsedInDiagramAsArrowShape',
             conditions: {
               '@id': 'rm:Arrows_EntConstr_0_Condition',
               '@type': 'rm:EntConstrCondition',
@@ -185,7 +185,7 @@ export const viewDataRootNodes = [
  */
 export const viewDataChildNodes = [
   {
-    '@id': 'rm:diagramNode11',
+    '@id': 'rm:diagramNode10',
     '@type': 'rm:UsedInDiagramAsChildNode',
     x: 10,
     y: 20,
@@ -193,6 +193,21 @@ export const viewDataChildNodes = [
     height: 85,
     width: 230,
     parent: 'rm:diagramNode1', // ref to the parent node
+    object: 'rm:DataModelView', // ref to the diagram
+    //path?
+    //layout?
+    stencil: 'rm:CompartmentNodeStencil',
+    //styles: 'string with css?',
+  },
+  {
+    '@id': 'rm:diagramNode11',
+    '@type': 'rm:UsedInDiagramAsChildNode',
+    x: 10,
+    y: 20,
+    z: 2,
+    height: 10,
+    width: 20,
+    parent: 'rm:diagramNode10', // ref to the parent node
     subject: {
       // ref to the model object
       '@id': 'rm:identifierShape',
@@ -220,7 +235,7 @@ export const viewDataChildNodes = [
     z: 2,
     height: 10,
     width: 20,
-    parent: 'rm:diagramNode1',
+    parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:titleShape',
       '@type': 'sh:PropertyShape',
@@ -248,7 +263,7 @@ export const viewDataChildNodes = [
     z: 2,
     height: 10,
     width: 20,
-    parent: 'rm:diagramNode1',
+    parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:descriptionShape',
       '@type': 'sh:PropertyShape',
@@ -275,7 +290,7 @@ export const viewDataChildNodes = [
     z: 2,
     height: 10,
     width: 20,
-    parent: 'rm:diagramNode1',
+    parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:createdShape',
       '@type': 'sh:PropertyShape',
@@ -302,7 +317,7 @@ export const viewDataChildNodes = [
     z: 2,
     height: 10,
     width: 20,
-    parent: 'rm:diagramNode1',
+    parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:modifiedShape',
       '@type': 'sh:PropertyShape',
@@ -429,14 +444,14 @@ export const rootModelInitialState2 = {
       resolveCollConstrs: false,
     },
     // ViewKindDescr
-    //[viewKindCollConstr['@id']]: {
-    //	'@id': viewKindCollConstr['@id'],
-    //	collConstr: viewKindCollConstr,
-    //	dataIntrnl: viewKinds,
-    //	updPeriod: undefined,
-    //	lastSynced: moment.now(),
-    //	resolveCollConstrs: false,
-    //},
+    [viewKindCollConstr['@id']]: {
+      '@id': viewKindCollConstr['@id'],
+      collConstr: viewKindCollConstr,
+      dataIntrnl: viewKinds,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
 
     // Data
     [viewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
