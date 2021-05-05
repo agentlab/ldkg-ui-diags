@@ -306,7 +306,7 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
 
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = edgeFromData({ data });
+    const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
     (graph as Graph).addEdge(edge);
   });
 };

@@ -20,15 +20,22 @@ const fallback =
 
 export const Card = React.memo(
   ({ data = {}, text, setEditing, nodeData, onSave }: any) => {
-    const { image, title, description } = nodeData?.subject;
-
+    const { imageUrl, title, description } = nodeData?.subject;
     return (
       <div style={wrapCss}>
         <div style={contentCss}>
           <div style={{ float: 'left', paddingRight: '2px' }}>
-            <Image width={60} src={image || 'error'} fallback={fallback} />
+            <Image height={60} width={60} src={imageUrl || 'error'} fallback={fallback} />
           </div>
-          <div style={{ textAlign: 'left', marginBottom: '2px', paddingTop: '10px' }}>
+          <div
+            style={{
+              height: '4.6em',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              textAlign: 'left',
+              marginBottom: '2px',
+              paddingTop: '10px',
+            }}>
             <span style={{ font: '1.4em Lato Tahoma sans-serif', fontWeight: 500 }}>{title}</span>
           </div>
           <p style={{ font: '1em Lato Tahoma sans-serif' }}>{description}</p>
