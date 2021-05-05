@@ -25,7 +25,7 @@ export const viewKinds = [
         elements: [
           {
             // general fields
-            type: 'compartment',
+            type: 'rm:CompartmentNodeStencil',
             scope: '!= property',
             title: 'General',
             layout: {
@@ -35,7 +35,7 @@ export const viewKinds = [
             elements: [
               {
                 // без scope рендерит весь элемент
-                type: 'field',
+                type: 'rm:PropertyNodeStencil',
                 layout: {
                   horizontal: 'match_parent',
                 },
@@ -44,7 +44,7 @@ export const viewKinds = [
           },
           {
             // property fields
-            type: 'compartment',
+            type: 'rm:CompartmentNodeStencil',
             scope: 'property',
             title: 'Properties',
             layout: {
@@ -53,7 +53,7 @@ export const viewKinds = [
             },
             elements: [
               {
-                type: 'field',
+                type: 'rm:PropertyNodeStencil',
                 scope: '@id',
                 layout: {
                   horizontal: 'match_parent',
