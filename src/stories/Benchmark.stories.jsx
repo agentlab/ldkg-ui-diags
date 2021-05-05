@@ -2,7 +2,7 @@ import * as kiwi from 'kiwi.js';
 import React from 'react';
 import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
-import { calcNodeSize, updateVariables } from '../components/diagram/kiwiCore';
+import { handleGraphEvent, updateVariables } from '../components/diagram/kiwiCore';
 
 // for now use custom mocks
 const event = (id_, shape_) => {
@@ -43,17 +43,17 @@ const event = (id_, shape_) => {
 
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
-  const c1 = calcNodeSize(e, 'add', solver);
+  const c1 = handleGraphEvent(e, 'add', solver);
   parent.node._children.push(e.node);
   e.node._parent = parent.node;
-  const c2 = calcNodeSize(e, 'embed', solver);
+  const c2 = handleGraphEvent(e, 'embed', solver);
   return [e, new Set([...c1, ...c2])];
 };
 
 const addRoot = (solver) => {
   const rootId = uuidv4();
   let root = event(rootId, 'group');
-  const c1 = calcNodeSize(root, 'add', solver);
+  const c1 = handleGraphEvent(root, 'add', solver);
 
   let [comp1, c2] = embed(root, 'compartment', solver);
   let [comp2, c3] = embed(root, 'compartment', solver);
@@ -91,7 +91,7 @@ const perfTestMove = (roundsCount, setResult) => {
     const root = addRoot(solver);
     const start = performance.now();
     root.node.pos = { x: 100, y: 100 };
-    const c = calcNodeSize(root, 'move', solver);
+    const c = handleGraphEvent(root, 'move', solver);
     updateVariables(c, solver);
     const end = performance.now();
 
