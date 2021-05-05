@@ -13,7 +13,7 @@ import {
   viewDescrCollConstr0,
   viewDescrs0,
 } from './view';
-//import { viewKindCollConstr, viewKinds } from "./viewKinds";
+import { viewKindCollConstr, viewKinds } from './viewKinds';
 
 const client = new SparqlClientImpl(rdfServerUrl);
 const rootModelInitialState2 = {
@@ -30,14 +30,14 @@ const rootModelInitialState2 = {
       resolveCollConstrs: false,
     },
     // ViewKindDescr
-    //[viewKindCollConstr['@id']]: {
-    //	'@id': viewKindCollConstr['@id'],
-    //	collConstr: viewKindCollConstr,
-    //	dataIntrnl: viewKinds,
-    //	updPeriod: undefined,
-    //	lastSynced: moment.now(),
-    //	resolveCollConstrs: false,
-    //},
+    [viewKindCollConstr['@id']]: {
+      '@id': viewKindCollConstr['@id'],
+      collConstr: viewKindCollConstr,
+      dataIntrnl: viewKinds,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
 
     // Data
     [viewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
