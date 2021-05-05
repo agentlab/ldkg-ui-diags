@@ -63,7 +63,7 @@ export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
   });
 };
 
-const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver) => {
+export const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver) => {
   const node: Node = e.node;
   let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
 
