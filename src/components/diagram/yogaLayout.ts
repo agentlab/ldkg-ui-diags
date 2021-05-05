@@ -6,7 +6,7 @@ const defaultProperties = {
   minWidth: 120,
   minHeight: 20,
   flexDirection: 'column',
-  test: 'auto', // should create warning
+  // test: 'auto', // should create warning
 };
 
 const nodeConfig = {
@@ -14,7 +14,9 @@ const nodeConfig = {
   compartment: {},
   group: {
     paddingTop: 25,
-    widthTop: 1, // should create warning
+    paddingLeft: 3,
+    paddingRight: 3,
+    paddingBottom: 3,
   },
 };
 
@@ -43,35 +45,41 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
 };
 
 const properties = {
-  normalProperties: [
+  numberProperties: [
     'width',
     'height',
     'minWidth',
     'maxWidth',
     'minHeight',
     'maxHeight',
-    'justifyContent',
-    'alignItems',
-    'alignSelf',
-    'alignContent',
     'flexGrow',
     'flexShrink',
-    'positionType',
     'aspectRatio',
-    'flexWrap',
-    'flexDirection',
   ],
+  enumProperties: {
+    // property: keyword
+    justifyContent: 'justify',
+    alignItems: 'align',
+    alignSelf: 'align',
+    alignContent: 'align',
+    positionType: 'position',
+    flexWrap: 'wrap',
+    flexDirection: 'flex-direction',
+  },
   directionProperties: ['padding', 'margin', 'border'], // `position` is forbidden
   directions: ['top', 'right', 'bottom', 'left'], // paddingTop, ...
 };
 
 const applyProperties = (props: { [key: string]: string | number }, node: Yoga.YogaNode) => {
-  (node as any)['setWidth'](Yoga.EDGE_TOP, 1);
   Object.entries(props).forEach(([key, value]) => {
     // see https://github.com/facebook/yoga/blob/cbf6495d66a7a8066d1354daa14d3bb1af19f6ef/website/src/components/Playground/src/YogaNode.js#L144
     try {
-      if (properties.normalProperties.includes(key)) {
+      if (properties.numberProperties.includes(key)) {
         node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
+      } else if (key in properties.enumProperties) {
+        node[`set${key[0].toUpperCase()}${key.substr(1)}`](
+          Yoga[`${properties.enumProperties[key]}-${value}`.replaceAll('-', '_').toUpperCase()],
+        );
       } else {
         const [prop, Direction] = key.replace(/([A-Z])/g, ' $1').split(' ');
         const direction = `${Direction[0].toLowerCase()}${Direction.substr(1)}`;
