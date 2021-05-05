@@ -1,5 +1,4 @@
 import React from 'react';
-import { Image } from 'antd';
 
 const wrapCss: React.CSSProperties = {
   width: '100%',
@@ -25,7 +24,7 @@ export const Card = React.memo(
       <div style={wrapCss}>
         <div style={contentCss}>
           <div style={{ float: 'left', paddingRight: '2px' }}>
-            <Image height={60} width={60} src={imageUrl || 'error'} fallback={fallback} />
+            <img height={60} src={imageUrl || fallback} />
           </div>
           <div
             style={{
