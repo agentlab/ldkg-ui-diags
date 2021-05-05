@@ -73,21 +73,21 @@ class SimpleEdgeView extends EdgeView {
 export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef, rootStore }) => {
   try {
     Graph.registerNode(
-      'class',
+      'rm:ClassNodeStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'compartment',
+      'rm:CompartmentNodeStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'field',
+      'rm:PropertyNodeStencil',
       {
         inherit: ReactShape,
       },
@@ -291,17 +291,17 @@ export const createGrid = ({ graph, view }) => {
 };
 
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
-  const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, Renderer, shape: 'class' });
+    const Renderer = stencils[data.stencil];
+    const node = nodeFromData({ data, Renderer, shape: data.stencil });
     (graph as Graph).addNode(node);
   });
 };
 
 export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
-  const Renderer = stencils['rm:PropertyNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, Renderer, shape: 'field' });
+    const Renderer = stencils[data.stencil];
+    const node = nodeFromData({ data, Renderer, shape: data.stencil });
     const child = (graph as Graph).addNode(node);
     const parent: Cell = (graph as Graph).getCell(data.parent);
     parent.addChild(child);
