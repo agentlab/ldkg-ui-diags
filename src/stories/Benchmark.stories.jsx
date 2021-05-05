@@ -13,7 +13,6 @@ const event = (id_, shape_) => {
     _parent: null,
     _children: [],
     pos: { x: 10, y: 10 },
-
     store: {
       data: {
         id: id_,
@@ -87,7 +86,6 @@ const addComplexRoot = (solver) => {
     return union([c2, union(c3)]);
   });
   const changed = union([c1, union(c2)]);
-
   updateVariables(changed, solver);
   return root;
 };
@@ -98,10 +96,8 @@ const perfTestAddComplexRoot = (length) => {
     const start = performance.now();
     addComplexRoot(solver);
     const end = performance.now();
-
     return end - start;
   };
-
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
     return round();
@@ -117,10 +113,8 @@ const perfTestMove = (length) => {
     const c = handleGraphEvent(root, 'move', solver);
     updateVariables(c, solver);
     const end = performance.now();
-
     return end - start;
   };
-
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
     return round();
@@ -135,10 +129,8 @@ const perfTestAddSimpleRoot = (length) => {
     const changed = handleGraphEvent(root, 'add', solver);
     updateVariables(changed, solver);
     const end = performance.now();
-
     return end - start;
   };
-
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
     return round();
@@ -153,15 +145,11 @@ const perfTestAddChildren = (length) => {
 
   const round = () => {
     const start = performance.now();
-
     let [, changed] = embed(root, 'field', solver);
     updateVariables(changed, solver);
-
     const end = performance.now();
-
     return end - start;
   };
-
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
     return round();
@@ -178,10 +166,8 @@ const perfTestAddSimpleRootX6 = (length) => {
     minimapContainer: { current: minimap },
   });
   addKiwiSolver({ graph: graph });
-
   const round = () => {
     const start = performance.now();
-
     addNewParentNodes({
       graph: graph,
       nodesData: [
@@ -195,12 +181,9 @@ const perfTestAddSimpleRootX6 = (length) => {
         },
       ],
     });
-
     const end = performance.now();
-
     return end - start;
   };
-
   return [...Array(length)].map((_, idx) => {
     console.log(idx);
     return round();
@@ -214,7 +197,6 @@ const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
   });
   console.log(results);
   const aggregated = median(results);
-
   return (
     <Plot
       data={[
