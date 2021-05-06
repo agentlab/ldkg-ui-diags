@@ -93,6 +93,13 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       },
       true,
     );
+    Graph.registerNode(
+      'rm:CardStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
 
     const circleArrowhead = {
       tagName: 'circle',
@@ -292,7 +299,7 @@ export const createGrid = ({ graph, view }) => {
 
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
-    const Renderer = stencils[data.stencil];
+    const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
     const node = nodeFromData({ data, Renderer, shape: data.stencil });
     (graph as Graph).addNode(node);
   });
@@ -310,7 +317,7 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
 
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = edgeFromData({ data });
+    const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
     (graph as Graph).addEdge(edge);
   });
 };

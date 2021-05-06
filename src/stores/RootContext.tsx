@@ -1,5 +1,4 @@
 import React, { useContext, createContext, PropsWithChildren } from 'react';
-import { rootStore } from './RootStore';
 
 export const RootContext = createContext<any>({
   graphStore: {},
@@ -11,6 +10,6 @@ export const RootContext = createContext<any>({
 });
 export const useRootStore = () => useContext(RootContext);
 
-export const RootContextProvider = ({ children }: PropsWithChildren<any>) => {
+export const RootContextProvider = ({ rootStore, children }: PropsWithChildren<any>) => {
   return <RootContext.Provider value={{ rootStore }}>{children}</RootContext.Provider>;
 };

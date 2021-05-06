@@ -109,8 +109,8 @@ const addNode = (node: any, solver: kiwi.Solver) => {
   };
   const n = node.store.data.kiwiProps;
   n.constraints = [
-    new kiwi.Constraint(n.width, kiwi.Operator.Ge, 120, kiwi.Strength.required),
-    new kiwi.Constraint(n.height, kiwi.Operator.Ge, 20, kiwi.Strength.required),
+    new kiwi.Constraint(n.width, kiwi.Operator.Ge, 220, kiwi.Strength.required),
+    new kiwi.Constraint(n.height, kiwi.Operator.Ge, 60, kiwi.Strength.required),
   ];
   if (node.shape in nodeConfig) {
     const config = nodeConfig[node.shape];
