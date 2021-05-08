@@ -3,14 +3,20 @@ import { Spin } from 'antd';
 import { Graph } from './diagram/Graph';
 import { useRootStore } from '../stores/RootContext';
 
-export const GraphEditor = ({ viewDescrId }: any) => {
+export const GraphEditor = ({ viewDescrCollId, viewDescrId }: any) => {
   const { rootStore } = useRootStore();
 
-  const collWithViewDescrsObs = rootStore.getColl(viewDescrId);
-  if (!collWithViewDescrsObs) return <Spin />;
+  const collWithViewDescrsObs = rootStore.getColl(viewDescrCollId);
+  if (!collWithViewDescrsObs) {
+    console.log('!collWithViewDescrsObs', viewDescrCollId);
+    return <Spin />;
+  }
 
-  const viewDescrObs = collWithViewDescrsObs?.dataByIri('rm:DataModelView');
-  if (!viewDescrObs) return <Spin />;
+  const viewDescrObs = collWithViewDescrsObs?.dataByIri(viewDescrId);
+  if (!viewDescrObs) {
+    console.log('!viewDescrObs', viewDescrId);
+    return <Spin />;
+  }
 
   // Getting data
   const rootNodes = rootStore.getColl('rm:RootNodes_CollConstr');

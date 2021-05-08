@@ -10,7 +10,7 @@ import { GraphEditor } from '../components/GraphEditor';
 import { RootContextProvider } from '../stores/RootContext';
 
 import { createRootStoreFromState } from '../stores/RootStore';
-import { rootModelInitialState3 } from '../stores/ViewCard';
+import { rootModelInitialState3, viewDescrs } from '../stores/ViewCard';
 import { viewDescrCollConstr } from '../stores/view';
 
 import '../index.css';
@@ -39,5 +39,6 @@ const Template: Story<any> = (args: any) => (
 
 export const Add = Template.bind({});
 Add.args = {
-  viewDescrId: viewDescrCollConstr['@id'],
+  viewDescrCollId: viewDescrCollConstr['@id'],
+  viewDescrId: viewDescrs[0]['@id'],
 };

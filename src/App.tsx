@@ -8,7 +8,7 @@ import { rdfServerUrl, rmRepositoryParam } from './config';
 import { createRootStoreFromState } from './stores/RootStore';
 import { RootContextProvider } from './stores/RootContext';
 import { GraphEditor } from './components/GraphEditor';
-import { rootModelInitialState2, viewDescrCollConstr } from './stores/view';
+import { rootModelInitialState2, viewDescrCollConstr, viewDescrs } from './stores/view';
 
 import './App.css';
 
@@ -22,7 +22,7 @@ const App = () => {
     <React.StrictMode>
       <Provider store={store}>
         <RootContextProvider rootStore={rootStore}>
-          <GraphEditor viewDescrId={viewDescrCollConstr['@id']} />
+          <GraphEditor viewDescrCollId={viewDescrCollConstr['@id']} viewDescrId={viewDescrs[0]['@id']} />
         </RootContextProvider>
       </Provider>
     </React.StrictMode>
