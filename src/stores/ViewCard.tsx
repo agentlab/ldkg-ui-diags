@@ -6,7 +6,11 @@ import { viewKindCollConstr } from './viewKinds';
 
 // @prefix wbc: <https://www.wildberries.ru/catalog/>
 
-export const viewDataRootCardNodes = [
+/***************************************
+ * Diagram Nodes
+ ***************************************/
+
+export const viewDataCategoryNodes = [
   {
     '@id': 'mktp:diagramNode01',
     '@type': 'rm:UsedInDiagramAsRootNodeShape',
@@ -64,6 +68,9 @@ export const viewDataRootCardNodes = [
     },
     object: 'mktp:_kg67Sdfl', // ref to the diagram
   },
+];
+
+export const viewDataProductNodes = [
   {
     '@id': 'mktp:diagramNode11',
     '@type': 'rm:UsedInDiagramAsRootNodeShape',
@@ -100,6 +107,9 @@ export const viewDataRootCardNodes = [
     },
     object: 'mktp:_kg67Sdfl',
   },
+];
+
+export const viewDataProductCardNodes = [
   {
     '@id': 'mktp:diagramNode21',
     '@type': 'rm:UsedInDiagramAsRootNodeShape',
@@ -225,13 +235,14 @@ export const viewDataRootCardNodes = [
   },
 ];
 
+/***************************************
+ * Arrows
+ ***************************************/
+
 /**
- * Arrows (reference properties)
+ * Отношения между 3 категориями
  */
-export const viewDataCardArrows = [
-  /**
-   * Отношения между 3 категориями
-   */
+export const viewDataSubcatInCatArrows = [
   {
     '@id': 'mktp:diagramArrow01',
     '@type': 'rm:UsedInDiagramAsArrow',
@@ -264,9 +275,12 @@ export const viewDataCardArrows = [
     },
     object: 'mktp:_kg67Sdfl',
   },
-  /**
-   * 4 товара в категории 03
-   */
+];
+
+/**
+ * 4 товара в категории 03
+ */
+export const viewDataCardInCatArrows = [
   {
     '@id': 'mktp:diagramArrow11',
     '@type': 'rm:UsedInDiagramAsArrow',
@@ -327,9 +341,12 @@ export const viewDataCardArrows = [
     },
     object: 'mktp:_kg67Sdfl',
   },
-  /**
-   * 3 товара в продукте1 и 1 товар в продукте 2
-   */
+];
+
+/**
+ * 3 товара в продукте1 и 1 товар в продукте 2
+ */
+export const viewDataCardInProdArrows = [
   {
     '@id': 'mktp:diagramArrow21',
     '@type': 'rm:UsedInDiagramAsArrow',
@@ -392,6 +409,13 @@ export const viewDataCardArrows = [
   },
 ];
 
+/***************************************
+ * ViewKinds & ViewDescrs Data
+ ***************************************/
+
+/**
+ * ViewKinds
+ */
 export const viewKinds = [
   {
     '@id': 'mktp:_8g34sKh',
@@ -660,6 +684,9 @@ export const viewKinds = [
   },
 ];
 
+/**
+ * ViewDescrs
+ */
 export const viewDescrs = [
   {
     '@id': 'mktp:_kg67Sdfl',
@@ -800,6 +827,9 @@ export const viewDescrs = [
   },
 ];
 
+/**
+ * Initial Model State with all data
+ */
 export const rootModelInitialState3 = {
   ...rootModelInitialState,
   colls: {
@@ -822,11 +852,19 @@ export const rootModelInitialState3 = {
       lastSynced: moment.now(),
       resolveCollConstrs: false,
     },
-    // ViewData
+    // ViewData -- Nodes
     [viewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[0]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[0]['@id'], // reference by @id
-      dataIntrnl: viewDataRootCardNodes,
+      dataIntrnl: viewDataCategoryNodes,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    [viewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[1]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[1]['@id'], // reference by @id
+      dataIntrnl: viewDataProductNodes,
       updPeriod: undefined,
       lastSynced: moment.now(),
       resolveCollConstrs: false,
@@ -834,7 +872,32 @@ export const rootModelInitialState3 = {
     [viewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
       '@id': viewDescrs[0].collsConstrs?.[2]['@id'],
       collConstr: viewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
-      dataIntrnl: viewDataCardArrows,
+      dataIntrnl: viewDataProductCardNodes,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    // ViewData -- Arrows
+    [viewDescrs[0].collsConstrs?.[3]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[3]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[3]['@id'], // reference by @id
+      dataIntrnl: viewDataSubcatInCatArrows,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    [viewDescrs[0].collsConstrs?.[4]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[4]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[4]['@id'], // reference by @id
+      dataIntrnl: viewDataCardInCatArrows,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    [viewDescrs[0].collsConstrs?.[5]['@id'] || '']: {
+      '@id': viewDescrs[0].collsConstrs?.[5]['@id'],
+      collConstr: viewDescrs[0].collsConstrs?.[5]['@id'], // reference by @id
+      dataIntrnl: viewDataCardInProdArrows,
       updPeriod: undefined,
       lastSynced: moment.now(),
       resolveCollConstrs: false,
