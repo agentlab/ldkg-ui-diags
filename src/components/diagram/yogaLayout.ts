@@ -10,9 +10,9 @@ const defaultProperties = {
 };
 
 const nodeConfig = {
-  field: {},
-  compartment: {},
-  group: {
+  'rm:PropertyNodeStencil': {},
+  'rm:CompartmentNodeStencil': {},
+  'rm:ClassNodeStencil': {
     paddingTop: 25,
     paddingLeft: 3,
     paddingRight: 3,
@@ -25,22 +25,27 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    handleGraphEvent(e, 'resize');
+    const changed = handleGraphEvent(e, 'resize');
+    updateVariables(changed);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    handleGraphEvent(e, 'move');
+    const changed = handleGraphEvent(e, 'move');
+    updateVariables(changed);
   });
   graph.on('node:added', (e) => {
-    handleGraphEvent(e, 'add');
+    const changed = handleGraphEvent(e, 'add');
+    updateVariables(changed);
   });
   graph.on('node:change:parent', (e) => {
-    handleGraphEvent(e, 'embed');
+    const changed = handleGraphEvent(e, 'embed');
+    updateVariables(changed);
   });
   graph.on('node:removed', (e) => {
-    handleGraphEvent(e, 'remove');
+    const changed = handleGraphEvent(e, 'remove');
+    updateVariables(changed);
   });
 };
 
@@ -95,7 +100,7 @@ const applyProperties = (props: { [key: string]: string | number }, node: Yoga.Y
   });
 };
 
-const handleGraphEvent = (e: any, type: string) => {
+export const handleGraphEvent = (e: any, type: string) => {
   const node: X6Node = e.node;
   let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
 
@@ -112,6 +117,10 @@ const handleGraphEvent = (e: any, type: string) => {
     removeNode(node);
   }
 
+  return changedNodes;
+};
+
+export const updateVariables = (changedNodes: Set<any>) => {
   [...changedNodes]
     .filter((node) => !node._parent)
     .forEach((node) => {
