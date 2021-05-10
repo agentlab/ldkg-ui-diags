@@ -2,8 +2,10 @@ import { getSnapshot } from 'mobx-state-tree';
 import { Spin } from 'antd';
 import { Graph } from './diagram/Graph';
 import { useRootStore } from '../stores/RootContext';
+import moment from 'moment';
+import { viewKinds } from '../stores/viewKinds';
 
-export const GraphEditor = ({ viewDescrCollId, viewDescrId }: any) => {
+export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId }: any) => {
   const { rootStore } = useRootStore();
 
   const collWithViewDescrsObs = rootStore.getColl(viewDescrCollId);
@@ -18,24 +20,38 @@ export const GraphEditor = ({ viewDescrCollId, viewDescrId }: any) => {
     return <Spin />;
   }
 
-  // Getting data
-  const rootNodes = rootStore.getColl('rm:RootNodes_CollConstr');
-  const rootNodesData: any = rootNodes?.data ? getSnapshot(rootNodes?.data) : [];
-  const childNodes = rootStore.getColl('rm:ChildNodes_CollConstr');
-  const childNodesData: any = childNodes?.data ? getSnapshot(childNodes?.data) : [];
-  const arrows = rootStore.getColl('rm:Arrows_CollConstr');
-  const arrowsData: any = arrows?.data ? getSnapshot(arrows?.data) : [];
-
+  const collWithViewKindsObs = rootStore.getColl(viewKindCollId);
+  if (!collWithViewKindsObs) {
+    console.log('!collWithViewKindsObs', viewKindCollId);
+    return <Spin />;
+  }
+  const viewKindObs = collWithViewKindsObs?.dataIntrnl[0];
+  if (!viewKindObs) {
+    console.log('!viewKindObs', viewKindId);
+    return <Spin />;
+  }
+  const viewKind: any = getSnapshot(viewKindObs);
   const view: any = getSnapshot(viewDescrObs);
+
+  const viewKindStencils = viewKind?.elements.reduce((acc, e) => {
+    acc[e['@id']] = e;
+    return acc;
+  }, {});
+
+  const dataSource = viewKind?.elements.reduce((acc, e) => {
+    const dataUri = view.collsConstrs.filter((el) => el['@parent'] === e.resultsScope);
+    const graphData = rootStore.getColl(dataUri[0]);
+    acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
+    return acc;
+  }, {});
 
   return (
     <Graph
       view={view}
       viewDescrObs={viewDescrObs}
-      data={rootNodesData}
-      сhildNodesData={childNodesData}
-      arrowsData={arrowsData}
-      loadData={() => rootNodes.loadMore()}
+      viewKindStencils={viewKindStencils}
+      viewKind={viewKind}
+      dataSource={dataSource}
     />
   );
 };

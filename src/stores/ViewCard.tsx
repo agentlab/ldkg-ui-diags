@@ -350,7 +350,7 @@ export const viewDataCardInProdArrows = [
   {
     '@id': 'mktp:diagramArrow21',
     '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'rm:CardToProductArrowStencil',
+    stencil: 'mktp:CardToProductArrowStencil',
     arrowFrom: 'mktp:diagramNode21',
     arrowTo: 'mktp:diagramNode11',
     subject: {
