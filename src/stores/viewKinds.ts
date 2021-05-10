@@ -14,20 +14,27 @@ export const viewKinds = [
   {
     '@id': 'rm:classViewKind',
     '@type': 'rm:ViewKind',
-    type: 'canvas',
+    type: 'DiagramEditor',
     elements: [
+      /**
+       * Nodes
+       */
       {
-        type: 'class',
-        scope: 'shapes',
+        '@id': 'rm:ClassNodeStencil',
+        type: 'DiagramNode',
+        protoStencil: 'rm:TitledRectNodeStencil',
+        title: 'Class',
+        resultsScope: 'rm:RootNodes_CollConstr',
         layout: {
           vertical: 'wrap_content',
         },
         elements: [
+          // general fields Compartment (key-value)
           {
-            // general fields
-            type: 'compartment',
-            scope: '!= property',
+            type: 'DiagramNode',
+            protoStencil: 'rm:CompartmentNodeStencil',
             title: 'General',
+            //scope: '!= property', // without scope
             layout: {
               vertical: 'wrap_content',
               horizontal: 'match_parent',
@@ -35,25 +42,27 @@ export const viewKinds = [
             elements: [
               {
                 // без scope рендерит весь элемент
-                type: 'field',
+                type: 'DiagramNode',
+                protoStencil: 'rm:RectWithText',
                 layout: {
                   horizontal: 'match_parent',
                 },
               },
             ],
           },
+          // properties Compartment (property-type)
           {
-            // property fields
-            type: 'compartment',
-            scope: 'property',
+            type: 'DiagramNode',
+            protoStencil: 'rm:CompartmentNodeStencil',
             title: 'Properties',
+            //scope: 'property',  // without scope
             layout: {
               vertical: 'wrap_content',
               horizontal: 'match_parent',
             },
             elements: [
               {
-                type: 'field',
+                type: 'rm:PropertyNodeStencil',
                 scope: '@id',
                 layout: {
                   horizontal: 'match_parent',
@@ -64,8 +73,21 @@ export const viewKinds = [
         ],
       },
       {
-        type: 'edge',
-        scope: '',
+        '@id': 'rm:PropertyNodeStencil',
+        type: 'DiagramNode',
+        protoStencil: 'rm:RectWithText',
+        resultsScope: 'rm:ChildNodes_CollConstr',
+        layout: {
+          vertical: 'wrap_content',
+        },
+      },
+      /**
+       * Edges (arrows)
+       */
+      {
+        '@id': 'rm:AssociationArrowStencil',
+        type: 'DiagramEdge',
+        resultsScope: 'rm:Arrows_CollConstr',
       },
     ],
   },

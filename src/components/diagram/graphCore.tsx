@@ -1,10 +1,12 @@
-import { Graph, Cell, Markup } from '@antv/x6';
-import { ReactShape } from '@antv/x6-react-shape';
-import { stencils } from './stencils/index';
-import { EdgeView, NodeView } from '@antv/x6';
-import { EditableCellTool } from './stencils/NodeField';
 import { cloneDeep } from 'lodash';
 import ReactDOM from 'react-dom';
+import { Graph, Cell, Markup } from '@antv/x6';
+import { ReactShape } from '@antv/x6-react-shape';
+import { EdgeView, NodeView } from '@antv/x6';
+
+import { stencils } from './stencils/index';
+import { EditableCellTool } from './stencils/NodeField';
+import { validateEmbedding, validateConnection } from './interactionValidation';
 
 class SimpleNodeView extends NodeView {
   protected renderMarkup() {
@@ -71,21 +73,28 @@ class SimpleEdgeView extends EdgeView {
 export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef, rootStore }) => {
   try {
     Graph.registerNode(
-      'group',
+      'rm:ClassNodeStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'compartment',
+      'rm:CompartmentNodeStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'field',
+      'rm:PropertyNodeStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
+      'rm:CardStencil',
       {
         inherit: ReactShape,
       },
@@ -180,6 +189,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
     embedding: {
       enabled: true,
       findParent: 'center',
+      validate: validateEmbedding,
     },
     selecting: true,
     connecting: {
@@ -193,6 +203,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       createEdge() {
         return g.createEdge(edgeConnectorRef.current);
       },
+      validateConnection: validateConnection,
     },
     keyboard: {
       enabled: true,
@@ -287,17 +298,17 @@ export const createGrid = ({ graph, view }) => {
 };
 
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
-  const Renderer = stencils['rm:ClassNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, Renderer, shape: 'group' });
+    const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
+    const node = nodeFromData({ data, Renderer, shape: data.stencil });
     (graph as Graph).addNode(node);
   });
 };
 
 export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
-  const Renderer = stencils['rm:PropertyNodeStencil'];
   nodesData.forEach((data: any) => {
-    const node = nodeFromData({ data, Renderer, shape: 'field' });
+    const Renderer = stencils[data.stencil];
+    const node = nodeFromData({ data, Renderer, shape: data.stencil });
     const child = (graph as Graph).addNode(node);
     const parent: Cell = (graph as Graph).getCell(data.parent);
     parent.addChild(child);
@@ -306,7 +317,7 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
 
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = edgeFromData({ data });
+    const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
     (graph as Graph).addEdge(edge);
   });
 };

@@ -7,9 +7,24 @@
         {
             "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch Chrome against localhost",
+            "name": "Launch App in Chrome",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Storybook in Chrome",
+            "breakOnLoad": true,
+            "url": "http://localhost:6006",
+            "sourceMaps": true,
+            "webRoot": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+                "webpack:///*": "${webRoot}/*",
+                "webpack:///./*": "${webRoot}/*",
+                "webpack:///src/*": "${webRoot}/*",
+                "webpack:///./~/*": "${webRoot}/node_modules/*"
+            }
         }
     ]
 }
