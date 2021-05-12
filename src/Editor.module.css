@@ -20,7 +20,7 @@
 }
 .sider {
   position: relative;
-  width: 290px;
+  width: 180px;
   height: 100%;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
   padding: 0;
@@ -29,8 +29,8 @@
 }
 
 .stencil {
-  width: 290px;
-  height: 50%;
+  width: 180px;
+  height: 70%;
   border: 1px solid #f0f0f0;
   position: relative;
 }

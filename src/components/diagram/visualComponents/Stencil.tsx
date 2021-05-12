@@ -36,7 +36,7 @@ export const Stencil = ({ nodes = [], graph }: any) => {
         title: 'Stencil',
         target: graph,
         collapsable: true,
-        stencilGraphWidth: 290,
+        stencilGraphWidth: 300,
         stencilGraphHeight: 380,
         layoutOptions: {
           columns: 1,
@@ -87,7 +87,7 @@ export const createStencils = (graph: any, viewKindStencils: AnyCnameRecord) => 
     if (viewKindStencils[e].type === 'DiagramNode') {
       const Renderer = StencilEditor({ options: viewKindStencils[e] });
       const node = nodeFromData({
-        data: { '@id': e + idx, height: 55, width: 150, x: 10, y: 10, z: 0, subject: {} },
+        data: { '@id': e + idx, height: 55, width: 150, subject: {} },
         Renderer,
         shape: e,
       });
