@@ -61,7 +61,7 @@ export const Graph = (props: any) => {
         )}
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
-            {createStencils(true, graph)}
+            {createStencils(graph, props.viewKindStencils)}
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel}>

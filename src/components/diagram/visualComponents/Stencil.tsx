@@ -3,8 +3,10 @@ import { Addon } from '@antv/x6';
 import { NodeShape } from '../stencils/NodeShape';
 import { NodeField } from '../stencils/NodeField';
 import { nodeFromData } from '../graphCore';
+import { StencilEditor } from '../stencils/StencilEditor';
 
 import styles from '../../../Editor.module.css';
+import { AnyCnameRecord } from 'node:dns';
 
 const nodeFieldData = {
   '@id': 'Node Field',
@@ -35,7 +37,7 @@ export const Stencil = ({ nodes = [], graph }: any) => {
         target: graph,
         collapsable: true,
         stencilGraphWidth: 290,
-        stencilGraphHeight: 180,
+        stencilGraphHeight: 380,
         layoutOptions: {
           columns: 1,
         },
@@ -57,7 +59,7 @@ export const Stencil = ({ nodes = [], graph }: any) => {
   return <div ref={refContainer} className={styles.stencil} />;
 };
 
-export const createStencils = (isClassDiagram: boolean, graph: any) => {
+/*export const createStencils = (isClassDiagram: boolean, graph: any, viewKindStencils: AnyCnameRecord) => {
   const nodeShape = nodeFromData({ data: nodeShapeData, Renderer: NodeShape, shape: 'rm:ClassNodeStencil' });
   const nodeField = nodeFromData({ data: nodeFieldData, Renderer: NodeField, shape: 'rm:PropertyNodeStencil' });
   const nodeCircle = {
@@ -78,4 +80,20 @@ export const createStencils = (isClassDiagram: boolean, graph: any) => {
   ) : (
     <Stencil nodes={[nodeCircle]} graph={graph} />
   );
+};*/
+
+export const createStencils = (graph: any, viewKindStencils: AnyCnameRecord) => {
+  const nodes = Object.keys(viewKindStencils).reduce((acc: any, e: string, idx: number) => {
+    if (viewKindStencils[e].type === 'DiagramNode') {
+      const Renderer = StencilEditor({ options: viewKindStencils[e] });
+      const node = nodeFromData({
+        data: { '@id': e + idx, height: 55, width: 150, x: 10, y: 10, z: 0, subject: {} },
+        Renderer,
+        shape: e,
+      });
+      acc.push(node);
+    }
+    return acc;
+  }, []);
+  return <Stencil nodes={nodes} graph={graph} />;
 };
