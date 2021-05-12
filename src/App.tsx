@@ -1,6 +1,5 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { when } from 'mobx';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import { SparqlClientImpl } from '@agentlab/sparql-jsld-client';
 
@@ -30,21 +29,3 @@ const App = () => {
 };
 
 export default App;
-
-/*when(
-	()=> Object.keys(rootStore.ns.currentJs).length > 5 && !rootStore.getColl(viewDescrCollConstr['@id']),
-	()=> {
-		const coll0 = rootStore.addColl(
-			viewDescrCollConstr0,
-			{
-				updPeriod: undefined,
-				lastSynced: moment.now(),
-			},
-			viewDescrs0
-		);
-		if (!coll0) {
-		  console.warn('coll0 is undefined');
-		}
-	}
-);
-*/

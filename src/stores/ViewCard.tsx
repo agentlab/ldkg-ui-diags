@@ -249,7 +249,7 @@ export const viewDataSubcatInCatArrows = [
     stencil: 'mktp:SubcategoryArrowStencil',
     arrowFrom: 'mktp:diagramNode02', // ref to the arrow-connected graph node at the "from" end
     arrowTo: 'mktp:diagramNode01', // ref to the arrow-connected graph node at the "to" end
-    router: 'manhattan',
+    //router: 'manhattan',
     // ref to the model object
     subject: {
       '@id': 'mktp:sc01',
@@ -264,8 +264,8 @@ export const viewDataSubcatInCatArrows = [
     '@id': 'mktp:diagramArrow02',
     '@type': 'rm:UsedInDiagramAsArrow',
     stencil: 'mktp:SubcategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode02',
-    arrowTo: 'mktp:diagramNode03',
+    arrowFrom: 'mktp:diagramNode03',
+    arrowTo: 'mktp:diagramNode02',
     subject: {
       '@id': 'mktp:sc02',
       '@type': 'hs:SubcatInCatLink',

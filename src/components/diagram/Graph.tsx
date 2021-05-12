@@ -67,9 +67,9 @@ export const Graph = (props: any) => {
           <div className={styles.panel}>
             <GraphToolbar graph={graph} />
             <div style={{ position: 'relative' }}>
-              <Button type='primary' shape='round' onClick={props.loadData}>
+              {/*<Button type='primary' shape='round' onClick={props.loadData}>
                 Load More
-              </Button>
+              </Button>*/}
               <ZoomToolbar graph={graph} />
               <div id='container' ref={refContainer} className='x6-graph' />
             </div>
