@@ -2,8 +2,8 @@ import * as kiwi from 'kiwi.js';
 import React from 'react';
 import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
-import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
-import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
+import { addNewParentNodes, createGraph } from '../src/components/diagram/graphCore';
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/components/diagram/kiwiCore';
 
 // for now use custom mocks
 const event = (id_, shape_) => {
