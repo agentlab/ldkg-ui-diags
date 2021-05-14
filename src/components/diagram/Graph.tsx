@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
-import { createGraph, createGrid, addNewParentNodes, addNewChildNodes, addNewEdges } from './graphCore';
+import { createGraph, createGrid, addNewData } from './graphCore';
 import { addKiwiSolver } from './kiwiCore';
 import { Minimap } from './visualComponents/Minimap';
 import { createStencils } from './visualComponents/Stencil';
@@ -28,12 +28,18 @@ export const Graph = (props: any) => {
 
   useEffect(() => {
     const { width, height } = getContainerSize();
-    const graph = createGraph({ height, width, refContainer, minimapContainer, edgeConnectorRef, rootStore });
+    const graph = createGraph({
+      height,
+      width,
+      refContainer,
+      viewKindStencils: props.viewKindStencils,
+      minimapContainer,
+      edgeConnectorRef,
+      rootStore,
+    });
     createGrid({ graph, view: props.view });
     addKiwiSolver({ graph });
-    addNewParentNodes({ graph, nodesData: props.data, rootStore });
-    addNewChildNodes({ graph, nodesData: props.сhildNodesData, rootStore });
-    addNewEdges({ graph, edgesData: props.arrowsData });
+    addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, rootStore });
     setGraph(graph);
     // dispose attached HTML objects
     return () => {
@@ -55,7 +61,7 @@ export const Graph = (props: any) => {
         )}
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
-            {createStencils(true, graph)}
+            {createStencils(graph, props.viewKindStencils)}
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel}>
