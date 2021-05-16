@@ -1,6 +1,6 @@
 import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
-import { propogateUpdates, getRoot } from './kiwiCore';
+import { getRoot } from './kiwiCore';
 
 const defaultProperties = {
   minWidth: 120,
@@ -11,9 +11,14 @@ const defaultProperties = {
 
 const nodeConfig = {
   'rm:PropertyNodeStencil': {},
-  'rm:CompartmentNodeStencil': {},
+  'rm:CompartmentNodeStencil': {
+    paddingTop: 20,
+    paddingLeft: 1,
+    paddingRight: 1,
+    paddingBottom: 1,
+  },
   'rm:ClassNodeStencil': {
-    paddingTop: 25,
+    paddingTop: 28,
     paddingLeft: 3,
     paddingRight: 3,
     paddingBottom: 3,
@@ -39,8 +44,11 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
     const changed = handleGraphEvent(e, 'add');
     updateVariables(changed);
   });
-  graph.on('node:change:parent', (e) => {
-    const changed = handleGraphEvent(e, 'embed');
+  graph.on('node:change:parent', (e: any) => {
+    handleGraphEvent(e, 'embed');
+  });
+  graph.on('node:change:children', (e: any) => {
+    const changed = handleGraphEvent(e, 'embed_parent');
     updateVariables(changed);
   });
   graph.on('node:removed', (e) => {
@@ -102,8 +110,7 @@ const applyProperties = (props: { [key: string]: string | number }, node: Yoga.Y
 
 export const handleGraphEvent = (e: any, type: string) => {
   const node: X6Node = e.node;
-  let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
-
+  let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
   } else if (type === 'embed') {
@@ -115,37 +122,59 @@ export const handleGraphEvent = (e: any, type: string) => {
     resizeNode(node);
   } else if (type === 'remove') {
     removeNode(node);
+  } else if (type === 'embed_parent') {
+    const changed = embedNode2(e.previous || [], e.current || [], node);
+    changedNodes = new Set([...changedNodes, ...changed]);
   }
 
   return changedNodes;
 };
 
-export const updateVariables = (changedNodes: Set<any>) => {
-  [...changedNodes]
-    .filter((node) => !node._parent)
-    .forEach((node) => {
-      const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
-      yogaNode.calculateLayout();
-    });
+const embedNode2 = (previous: string[], current: string[], node: any) => {
+  const removed = previous.filter((x) => !current.includes(x));
+  const added = current.filter((x) => !previous.includes(x));
 
-  changedNodes.forEach((node) => {
+  const changedIds = [...removed, ...added];
+  const changedNodes = changedIds.map((nodeId) => (node._model.graph as Graph).getCell(nodeId));
+
+  return new Set(changedNodes.map((node) => getRoot(node)));
+};
+
+export const updateVariables = (changedNodes: Set<any>) => {
+  const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
     if (!node._parent) {
       // root n
       setCumputedSize(node, computedLayout); // set absolute position
     } else {
-      const parentYogaNode: Yoga.YogaNode = node._parent.store.data.yogaProps;
       // set position relative to parent
       const computedSize = {
-        left: computedLayout.left + parentYogaNode.getComputedLeft(),
-        top: computedLayout.top + parentYogaNode.getComputedTop(),
+        left: computedLayout.left + node._parent.position().x,
+        top: computedLayout.top + node._parent.position().y,
         width: computedLayout.width,
         height: computedLayout.height,
       };
       setCumputedSize(node, computedSize);
     }
-  });
+  };
+
+  const updateNodeTree = (parent) => {
+    updateNode(parent);
+    const children = parent._children || [];
+    children.forEach(updateNodeTree);
+  };
+
+  [...changedNodes]
+    .filter((node) => !node._parent)
+    .forEach((node) => {
+      const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
+      yogaNode.calculateLayout();
+
+      updateNodeTree(node);
+    });
+
+  // changedNodes.forEach(updateNode);
 };
 
 const embedNode = (previous: any, current: any, node: any) => {
@@ -157,7 +186,7 @@ const embedNode = (previous: any, current: any, node: any) => {
     const previousParentNode = node._model.graph.getCell(previous);
     const previousParentYogaNode: Yoga.YogaNode = previousParentNode.store.data.yogaProps;
     previousParentYogaNode.removeChild(yogaNode);
-    changedNodes = new Set([...changedNodes, ...propogateUpdates(previousParentNode)]);
+    changedNodes = new Set([...changedNodes, getRoot(previousParentNode)]);
   }
 
   // add to new parent
