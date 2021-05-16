@@ -25,6 +25,8 @@ const nodeConfig = {
   },
 };
 
+type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
+
 export const addYogaSolver = ({ graph }: { graph: Graph }) => {
   graph.on('node:resized', (e: any) => {
     if (e.options && e.options.ignore) {
@@ -45,10 +47,12 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
     updateVariables(changed);
   });
   graph.on('node:change:parent', (e: any) => {
-    handleGraphEvent(e, 'embed');
+    handleGraphEvent(e, 'changeParent');
+    // do not update variables, at this point parent node has outdated children array
+    // following `node:change:children` event will do the job
   });
   graph.on('node:change:children', (e: any) => {
-    const changed = handleGraphEvent(e, 'embed_parent');
+    const changed = handleGraphEvent(e, 'changeChildren');
     updateVariables(changed);
   });
   graph.on('node:removed', (e) => {
@@ -108,13 +112,13 @@ const applyProperties = (props: { [key: string]: string | number }, node: Yoga.Y
   });
 };
 
-export const handleGraphEvent = (e: any, type: string) => {
+export const handleGraphEvent = (e: any, type: Event) => {
   const node: X6Node = e.node;
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
-  } else if (type === 'embed') {
-    const changed = embedNode(e.previous, e.current, node);
+  } else if (type === 'changeParent') {
+    const changed = changeParent(e.previous, e.current, node);
     changedNodes = new Set([...changedNodes, ...changed]);
   } else if (type === 'move') {
     moveNode(node);
@@ -122,22 +126,12 @@ export const handleGraphEvent = (e: any, type: string) => {
     resizeNode(node);
   } else if (type === 'remove') {
     removeNode(node);
-  } else if (type === 'embed_parent') {
-    const changed = embedNode2(e.previous || [], e.current || [], node);
+  } else if (type === 'changeChildren') {
+    const changed = changeChildren(e.previous || [], e.current || [], node);
     changedNodes = new Set([...changedNodes, ...changed]);
   }
 
   return changedNodes;
-};
-
-const embedNode2 = (previous: string[], current: string[], node: any) => {
-  const removed = previous.filter((x) => !current.includes(x));
-  const added = current.filter((x) => !previous.includes(x));
-
-  const changedIds = [...removed, ...added];
-  const changedNodes = changedIds.map((nodeId) => (node._model.graph as Graph).getCell(nodeId));
-
-  return new Set(changedNodes.map((node) => getRoot(node)));
 };
 
 export const updateVariables = (changedNodes: Set<any>) => {
@@ -161,8 +155,7 @@ export const updateVariables = (changedNodes: Set<any>) => {
 
   const updateNodeTree = (parent) => {
     updateNode(parent);
-    const children = parent._children || [];
-    children.forEach(updateNodeTree);
+    (parent._children || []).forEach(updateNodeTree);
   };
 
   [...changedNodes]
@@ -170,14 +163,11 @@ export const updateVariables = (changedNodes: Set<any>) => {
     .forEach((node) => {
       const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
       yogaNode.calculateLayout();
-
       updateNodeTree(node);
     });
-
-  // changedNodes.forEach(updateNode);
 };
 
-const embedNode = (previous: any, current: any, node: any) => {
+const changeParent = (previous: any, current: any, node: any) => {
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
   let changedNodes = new Set<Node>([]);
 
@@ -206,6 +196,16 @@ const embedNode = (previous: any, current: any, node: any) => {
   }
 
   return changedNodes;
+};
+
+const changeChildren = (previous: string[], current: string[], node: any) => {
+  const removed = previous.filter((x) => !current.includes(x));
+  const added = current.filter((x) => !previous.includes(x));
+
+  const changedIds = [...removed, ...added];
+  const changedNodes = changedIds.map((nodeId) => (node._model.graph as Graph).getCell(nodeId));
+
+  return new Set(changedNodes.map((node) => getRoot(node)));
 };
 
 const removeNode = (node: any) => {
