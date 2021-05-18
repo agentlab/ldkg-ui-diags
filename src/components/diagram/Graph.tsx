@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button } from 'antd';
 import { createGraph, createGrid, addNewParentNodes, addNewChildNodes, addNewEdges } from './graphCore';
-// import { addKiwiSolver } from './kiwiCore';
-import { addYogaSolver } from './yogaLayout';
+import { addYogaSolver } from './layout/yoga';
 import { Minimap } from './visualComponents/Minimap';
 import { createStencils } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';

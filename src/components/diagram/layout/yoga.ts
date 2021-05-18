@@ -1,6 +1,6 @@
 import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
-import { getRoot } from './kiwiCore';
+import { getRoot } from './kiwi';
 
 const defaultProperties = {
   minWidth: 120,

@@ -1,7 +1,7 @@
 import * as kiwi from 'kiwi.js';
 import { v4 as uuidv4 } from 'uuid';
 import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
-import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/layout/kiwi';
 import { Benchmark, event, union } from './benchmarkCommon';
 
 const embed = (parent, type, solver) => {

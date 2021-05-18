@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { handleGraphEvent, updateVariables } from '../components/diagram/yogaLayout';
+import { handleGraphEvent, updateVariables } from '../components/diagram/layout/yoga';
 import { Benchmark, event, union } from './benchmarkCommon';
 
 const embed = (parent, type) => {
