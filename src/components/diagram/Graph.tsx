@@ -15,10 +15,11 @@ export const Graph = (props: any) => {
   const { rootStore } = useRootStore();
   const [graph, setGraph] = React.useState<any>(null);
   const refContainer = React.useRef<any>();
+  const refWrap = React.useRef<any>();
   const getContainerSize = () => {
     return {
-      width: document.body.offsetWidth - 581,
-      height: document.body.offsetHeight - 90,
+      width: refWrap.current.clientWidth,
+      height: refWrap.current.clientHeight - 37,
     };
   };
   const minimapContainer = React.useRef<HTMLDivElement>(null);
@@ -41,9 +42,17 @@ export const Graph = (props: any) => {
     addKiwiSolver({ graph });
     addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, rootStore });
     setGraph(graph);
+    const resizeFn = () => {
+      const { width, height } = getContainerSize();
+      graph.resize(width, height);
+    };
+    resizeFn();
+
+    window.addEventListener('resize', resizeFn);
     // dispose attached HTML objects
     return () => {
       graph.dispose();
+      window.removeEventListener('resize', resizeFn);
     };
   }, []);
 
@@ -64,18 +73,22 @@ export const Graph = (props: any) => {
             {createStencils(graph, props.viewKindStencils)}
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
-          <div className={styles.panel}>
+          <div className={styles.panel} ref={refWrap}>
             <GraphToolbar graph={graph} />
             <div style={{ position: 'relative' }}>
-              <Button type='primary' shape='round' onClick={props.loadData}>
-                Load More
-              </Button>
               <ZoomToolbar graph={graph} />
-              <div id='container' ref={refContainer} className='x6-graph' />
+              <div
+                id='container'
+                style={{ position: 'absolute', top: 0, left: 0 }}
+                ref={refContainer}
+                className='x6-graph'
+              />
             </div>
           </div>
-          <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
-          <Minimap minimapContainer={minimapContainer} />
+          <div style={{ position: 'relative' }}>
+            <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
+            <Minimap minimapContainer={minimapContainer} />
+          </div>
         </div>
       </div>
     </React.Fragment>
