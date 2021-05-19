@@ -3,9 +3,9 @@ import { Story, Meta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
+import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
-import { RootContextProvider } from '../src/stores/RootContext';
 
 import { rootModelInitialState3, viewDescrs, viewKinds } from '../src/stores/ViewCard';
 import { viewDescrCollConstr } from '../src/stores/view';
@@ -29,9 +29,9 @@ export default {
 
 const Template: Story<any> = (args: any) => (
   <Provider store={store}>
-    <RootContextProvider rootStore={rootStore}>
+    <MstContextProvider rootStore={rootStore}>
       <GraphEditor {...args} />
-    </RootContextProvider>
+    </MstContextProvider>
   </Provider>
 );
 

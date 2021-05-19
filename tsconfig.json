@@ -1,9 +1,11 @@
 {
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
   "include": ["src", "types"],
+  "exclude": ["node_modules/"],
   "compilerOptions": {
     "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "esnext",
+    "lib": ["dom", "esnext"],
     "allowJs": true,
     "importHelpers": true,
     // output .d.ts declaration files for consumers
@@ -24,11 +26,11 @@
     // use Node's module resolution algorithm, instead of the legacy TS one
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "experimentalDecorators": true,
     // transpile JSX to React.createElement
-    "jsx": "react-jsx",
+    "jsx": "react",
     // interop between ESM and CJS modules. Recommended by TS
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     // significant perf increase by skipping checking .d.ts files, particularly those in node_modules. Recommended by TS
     "skipLibCheck": true,
@@ -36,11 +38,11 @@
     "forceConsistentCasingInFileNames": true,
     // `tsdx build` ignores this option, but it is commonly used when type-checking separately with `tsc`
     "noEmit": true,
+    "noEmitOnError": true,
     "plugins": [
       {
         "name": "typescript-plugin-css-modules"
       }
-    ],
-    "types": ["jest"]
+    ]
   }
 }
