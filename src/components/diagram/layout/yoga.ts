@@ -95,7 +95,7 @@ const applyProperties = (props: { [key: string]: string | number }, node: Yoga.Y
         node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
       } else if (key in properties.enumProperties) {
         node[`set${key[0].toUpperCase()}${key.substr(1)}`](
-          Yoga[`${properties.enumProperties[key]}-${value}`.replaceAll('-', '_').toUpperCase()],
+          Yoga[`${properties.enumProperties[key]}-${value}`.replace(/-/g, '_').toUpperCase()],
         );
       } else {
         const [prop, Direction] = key.replace(/([A-Z])/g, ' $1').split(' ');
@@ -107,7 +107,7 @@ const applyProperties = (props: { [key: string]: string | number }, node: Yoga.Y
         }
       }
     } catch (e) {
-      console.warn('Provided property-value pair is not supported - key: ' + key + ', value: ' + value);
+      console.warn('Provided property-value pair is not supported - key: ' + key + ', value: ' + value, e);
     }
   });
 };

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { handleGraphEvent, updateVariables } from '../components/diagram/layout/yoga';
-import { Benchmark, event, union } from './benchmarkCommon';
+import { Benchmark, union } from './benchmarkCommon';
+import { event } from '../test/node.mock';
 
 const embed = (parent, type) => {
   let e = event(uuidv4(), type);

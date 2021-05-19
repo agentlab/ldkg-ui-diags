@@ -2,7 +2,8 @@ import * as kiwi from 'kiwi.js';
 import { v4 as uuidv4 } from 'uuid';
 import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
 import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/layout/kiwi';
-import { Benchmark, event, union } from './benchmarkCommon';
+import { Benchmark, union } from './benchmarkCommon';
+import { event } from '../test/node.mock';
 
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);

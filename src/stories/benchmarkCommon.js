@@ -1,41 +1,5 @@
 import Plot from 'react-plotly.js';
 
-// for now use custom mocks
-export const event = (id_, shape_) => {
-  let node = {
-    id: id_,
-    shape: shape_,
-    _parent: null,
-    _children: [],
-    pos: { x: 10, y: 10 },
-    store: {
-      data: {
-        id: id_,
-      },
-    },
-    _model: {
-      graph: {
-        getCell(childId) {
-          return node._children.find((child) => child.id === childId);
-        },
-      },
-    },
-    position() {
-      return node.pos;
-    },
-    size() {
-      return { width: 200, height: 40 };
-    },
-    resize() {},
-    setPosition() {},
-  };
-  const e = {
-    node: node,
-    current: 'not null',
-  };
-  return e;
-};
-
 export const union = (iterables) => {
   const set = new Set();
   for (const iterable of iterables) {

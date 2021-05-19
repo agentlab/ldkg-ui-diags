@@ -25,7 +25,7 @@ const cc = getSnapshot(rootStore);
 console.log(cc);
 
 export default {
-  title: 'GraphEditor/Cards',
+  title: 'Components/GraphEditor',
   component: GraphEditor,
 } as Meta;
 
@@ -37,7 +37,7 @@ const Template: Story<any> = (args: any) => (
   </Provider>
 );
 
-export const Add = Template.bind({});
-Add.args = {
+export const Cards = Template.bind({});
+Cards.args = {
   viewDescrId: viewDescrCollConstr['@id'],
 };

@@ -18,4 +18,13 @@ module.exports = {
       },
     },
   ],
+  jest: {
+    configure(config) {
+      config.transformIgnorePatterns = [
+        '/node_modules/(?!antd|@ant-design|rc-.+?|@babel/runtime|lodash-es)/.+\\.(js|jsx)$',
+        '/node_modules/yoga-layout-prebuilt',
+      ];
+      return config;
+    },
+  },
 };
