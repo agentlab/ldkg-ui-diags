@@ -1,11 +1,12 @@
 {
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
-  "include": ["src", "types"],
-  "exclude": ["node_modules/"],
+  "include": ["src"],
+  "exclude": ["es", "lib", "node_modules", "stories", "test"],
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
     "lib": ["dom", "esnext"],
+    "outDir": "./lib",
     "allowJs": true,
     "importHelpers": true,
     // output .d.ts declaration files for consumers
@@ -13,7 +14,7 @@
     // output .js.map sourcemap files for consumers
     "sourceMap": true,
     // match output dir to input dir. e.g. dist/index instead of dist/src/index
-    "rootDir": "./src",
+    ////"rootDir": "./src",
     // stricter type-checking for stronger correctness. Recommended by TS
     "strict": true,
     // linter checks for common issues
