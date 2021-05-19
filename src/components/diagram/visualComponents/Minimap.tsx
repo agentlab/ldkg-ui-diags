@@ -1,3 +1,5 @@
+import React from 'react';
+
 import styles from '../../../Editor.module.css';
 
 export const Minimap = ({ minimapContainer }) => {

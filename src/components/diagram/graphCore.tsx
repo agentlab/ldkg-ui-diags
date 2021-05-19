@@ -1,5 +1,6 @@
-import { cloneDeep } from 'lodash';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { cloneDeep } from 'lodash';
 import { Graph, Cell, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
 import { EdgeView, NodeView } from '@antv/x6';
