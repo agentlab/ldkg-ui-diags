@@ -10,6 +10,8 @@ import { Inheritance } from './Inheritance';
 export const stencils = {
   'rm:CompartmentNodeStencil': Compartment,
   'rm:PropertyNodeStencil': NodeField,
+  'rm:TitledRectNodeStencil': NodeShape,
+  'rm:RectWithText': NodeField,
   'rm:CardStencil': Card,
   'rm:ClassNodeStencil': NodeShape,
   default: Default,

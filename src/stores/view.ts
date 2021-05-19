@@ -43,6 +43,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:RootNodes_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:RootNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:RootNodes_EntConstr_0',
@@ -65,6 +66,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:ChildNodes_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:ChildNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:ChildNodes_EntConstr_0',
@@ -87,6 +89,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:Arrows_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:Arrows_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:Arrows_EntConstr_0',
