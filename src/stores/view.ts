@@ -188,6 +188,21 @@ export const viewDataRootNodes = [
  */
 export const viewDataChildNodes = [
   {
+    '@id': 'rm:diagramNode100',
+    '@type': 'rm:UsedInDiagramAsChildNode',
+    x: 10,
+    y: 20,
+    z: 2,
+    height: 85,
+    width: 230,
+    parent: 'rm:diagramNode1', // ref to the parent node
+    object: 'rm:DataModelView', // ref to the diagram
+    //path?
+    //layout?
+    stencil: 'rm:GeneralCompartmentNodeStencil',
+    //styles: 'string with css?',
+  },
+  {
     '@id': 'rm:diagramNode10',
     '@type': 'rm:UsedInDiagramAsChildNode',
     x: 10,
@@ -199,7 +214,7 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:CompartmentNodeStencil',
+    stencil: 'rm:PropertiesCompartmentNodeStencil',
     //styles: 'string with css?',
   },
   {

@@ -33,7 +33,18 @@ export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, view
   const viewKind: any = getSnapshot(viewKindObs);
   const view: any = getSnapshot(viewDescrObs);
 
+  const regStencils = (stencils, arr) => {
+    arr.forEach((e) => {
+      if (e.type === 'DiagramNode') {
+        stencils[e['@id']] = e;
+      }
+    });
+  };
+
   const viewKindStencils = viewKind?.elements.reduce((acc, e) => {
+    if (e.elements) {
+      regStencils(acc, e.elements);
+    }
     acc[e['@id']] = e;
     return acc;
   }, {});
