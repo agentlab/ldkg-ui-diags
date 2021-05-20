@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const Compartment = ({ /*node,*/ text }) => {
   return (
     <div

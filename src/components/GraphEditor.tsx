@@ -1,12 +1,16 @@
+import React, { useContext } from 'react';
 import { getSnapshot } from 'mobx-state-tree';
 import { Spin } from 'antd';
+import { MstContext } from '@agentlab/ldkg-ui-react';
+
 import { Graph } from './diagram/Graph';
-import { useRootStore } from '../stores/RootContext';
-import moment from 'moment';
-import { viewKinds } from '../stores/viewKinds';
 
 export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId }: any) => {
-  const { rootStore } = useRootStore();
+  const { rootStore } = useContext(MstContext);
+  if (!rootStore) {
+    console.log('!rootStore', rootStore);
+    return <Spin />;
+  }
 
   const collWithViewDescrsObs = rootStore.getColl(viewDescrCollId);
   if (!collWithViewDescrsObs) {

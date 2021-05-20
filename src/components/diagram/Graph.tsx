@@ -1,5 +1,7 @@
-import React, { useEffect } from 'react';
-import { Button } from 'antd';
+import React, { useContext, useEffect } from 'react';
+//import { Button } from 'antd';
+import { MstContext } from '@agentlab/ldkg-ui-react';
+
 import { createGraph, createGrid, addNewData } from './graphCore';
 import { addKiwiSolver } from './kiwiCore';
 import { Minimap } from './visualComponents/Minimap';
@@ -9,10 +11,9 @@ import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
 import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool, edgeExamples } from './ConnectorTool';
-import { useRootStore } from '../../stores/RootContext';
 
 export const Graph = (props: any) => {
-  const { rootStore } = useRootStore();
+  const { rootStore } = useContext(MstContext);
   const [graph, setGraph] = React.useState<any>(null);
   const refContainer = React.useRef<any>();
   const getContainerSize = () => {
@@ -67,9 +68,9 @@ export const Graph = (props: any) => {
           <div className={styles.panel}>
             <GraphToolbar graph={graph} />
             <div style={{ position: 'relative' }}>
-              <Button type='primary' shape='round' onClick={props.loadData}>
+              {/*<Button type='primary' shape='round' onClick={props.loadData}>
                 Load More
-              </Button>
+              </Button>*/}
               <ZoomToolbar graph={graph} />
               <div id='container' ref={refContainer} className='x6-graph' />
             </div>
