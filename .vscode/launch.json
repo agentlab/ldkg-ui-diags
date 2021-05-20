@@ -7,24 +7,16 @@
         {
             "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch App in Chrome",
-            "url": "http://localhost:3000",
+            "name": "Storybook1 in Chrome",
+            "url": "http://localhost:6006/?path=/story/datarenderer--time-series",
             "webRoot": "${workspaceFolder}",
         },
         {
-            "type": "chrome",
+            "type": "pwa-chrome",
             "request": "launch",
-            "name": "Launch Storybook in Chrome",
-            "breakOnLoad": true,
-            "url": "http://localhost:6006",
-            "sourceMaps": true,
+            "name": "Storybook2 in Chrome",
+            "url": "http://localhost:6006/?path=/story/remotedatarenderer--time-series",
             "webRoot": "${workspaceFolder}",
-            "sourceMapPathOverrides": {
-                "webpack:///*": "${webRoot}/*",
-                "webpack:///./*": "${webRoot}/*",
-                "webpack:///src/*": "${webRoot}/*",
-                "webpack:///./~/*": "${webRoot}/node_modules/*"
-            }
-        }
+        },
     ]
 }

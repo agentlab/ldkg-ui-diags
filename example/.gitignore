@@ -7,7 +7,7 @@
 /coverage
 
 # production
-/es
+/dist
 
 # misc
 .DS_Store
@@ -17,3 +17,6 @@
 .env.production.local
 .eslintcache
 *.log
+
+.cache
+.parcel-cache

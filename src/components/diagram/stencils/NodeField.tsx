@@ -54,7 +54,7 @@ export interface EditableCellToolOptions extends ToolsView.ToolItem.Options {
 }
 
 export class EditableCellTool extends ToolsView.ToolItem<EdgeView, EditableCellToolOptions> {
-  private editorContent: HTMLDivElement;
+  private editorContent: HTMLDivElement | undefined;
 
   render() {
     super.render();
@@ -107,13 +107,13 @@ export class EditableCellTool extends ToolsView.ToolItem<EdgeView, EditableCellT
     const cell = this.cell;
     if (cell.isNode()) {
       const value = cell.attr('text/textWrap/text') as string;
-      if (value) {
+      if (value && this.editorContent) {
         this.editorContent.innerText = value;
         cell.attr('text/style/display', 'none');
       }
     }
     setTimeout(() => {
-      this.editorContent.focus();
+      this.editorContent?.focus();
     });
     document.addEventListener('mousedown', this.onMouseDown);
   };
@@ -121,7 +121,7 @@ export class EditableCellTool extends ToolsView.ToolItem<EdgeView, EditableCellT
   onMouseDown = (e: MouseEvent) => {
     if (e.target !== this.editorContent) {
       const cell = this.cell;
-      const value = this.editorContent.innerText;
+      const value = this.editorContent?.innerText;
       cell.removeTools();
       if (cell.isNode()) {
         cell.attr('text/textWrap/text', value);

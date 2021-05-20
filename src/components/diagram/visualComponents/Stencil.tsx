@@ -6,7 +6,12 @@ import { nodeFromData } from '../graphCore';
 import { StencilEditor } from '../stencils/StencilEditor';
 
 import styles from '../../../Editor.module.css';
-import { AnyCnameRecord } from 'node:dns';
+//import { AnyCnameRecord } from 'node:dns';
+
+interface AnyCnameRecord {
+  type: 'CNAME';
+  value: string;
+}
 
 const nodeFieldData = {
   '@id': 'Node Field',

@@ -1,5 +1,6 @@
-import { cloneDeep } from 'lodash';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { cloneDeep } from 'lodash';
 import { Graph, Cell, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
 import { EdgeView, NodeView } from '@antv/x6';
@@ -182,6 +183,7 @@ export const createGraph = ({
           if (cell.isEdge()) {
             return SimpleEdgeView;
           }
+          return undefined;
         },
       },
     },
@@ -318,7 +320,7 @@ export const createGrid = ({ graph, view }) => {
 
 export const addNewData = ({ graph, data, viewKindStencils, rootStore }) => {
   const stash = {};
-  for (let key in data) {
+  for (const key in data) {
     data[key].forEach((e: any) => {
       if (!addGraphData(graph, e, key, viewKindStencils, rootStore)) {
         if (stash[key]) {
@@ -329,7 +331,7 @@ export const addNewData = ({ graph, data, viewKindStencils, rootStore }) => {
       }
     });
   }
-  for (let key in stash) {
+  for (const key in stash) {
     stash[key].forEach((e: any) => {
       addGraphData(graph, e, key, viewKindStencils, rootStore);
     });

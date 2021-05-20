@@ -1,3 +1,5 @@
+import React from 'react';
+
 import ConfigGrid from './ConfigGrid';
 import cloneDeep from 'lodash/cloneDeep';
 import { applySnapshot } from 'mobx-state-tree';
@@ -7,7 +9,7 @@ import panelStyles from './ConfigPanel.module.css';
 export const GraphCongigPanel = ({ view, viewDescrObs }: any) => {
   const onChange = (val) => {
     if (viewDescrObs) {
-      let viewDescr = cloneDeep(view);
+      const viewDescr = cloneDeep(view);
       if (!viewDescr.options) viewDescr.options = {};
       viewDescr.options.gridOptions = {
         ...viewDescr.options?.gridOptions,
