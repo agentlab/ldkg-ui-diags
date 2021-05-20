@@ -1,9 +1,10 @@
-import * as kiwi from 'kiwi.js';
+/* eslint-disable @typescript-eslint/naming-convention */
 import React from 'react';
+import * as kiwi from 'kiwi.js';
 import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
-import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
-import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/kiwiCore';
+import { addNewParentNodes, createGraph } from '../src/components/diagram/graphCore';
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/components/diagram/kiwiCore';
 
 // for now use custom mocks
 const event = (id_, shape_) => {
@@ -31,7 +32,9 @@ const event = (id_, shape_) => {
     size() {
       return { width: 200, height: 40 };
     },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     resize() {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     setPosition() {},
   };
   const e = {
