@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {
   ArtifactShapeSchema,
+  CollState,
   PropertyShapeSchema,
   rootModelInitialState,
   ViewShapeSchema,
@@ -498,3 +499,30 @@ export const rootModelInitialState2 = {
     },
   },
 };
+
+/**
+ * Collections Configs Data
+ */
+export const additionalColls: CollState[] = [
+  // ViewKinds Collection
+  {
+    constr: viewKindCollConstr,
+    data: viewKinds,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false, // disable data loading from the server for viewKinds.collConstrs
+    },
+  },
+  // ViewDescrs Collection
+  {
+    constr: viewDescrCollConstr,
+    data: viewDescrs,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      //resolveCollConstrs: false, // 'true' here (by default) triggers data loading from the server
+      // for viewDescrs.collConstrs (it loads lazily -- after the first access)
+    },
+  },
+];

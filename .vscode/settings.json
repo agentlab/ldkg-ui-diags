@@ -16,6 +16,5 @@
   "prettier.endOfLine": "lf",
   "versionlens.suggestions.showOnStartup": true,
   "versionlens.suggestions.showPrereleasesOnStartup": true,
-  "jest.autoEnable": false,
-  "jest.runAllTestsFirst": false
+  "jest.autoRun": "off"
 }
