@@ -1,4 +1,5 @@
 import Plot from 'react-plotly.js';
+import * as math from 'mathjs';
 
 export const union = (iterables) => {
   const set = new Set();
@@ -10,40 +11,42 @@ export const union = (iterables) => {
   return set;
 };
 
-export const median = (runList) => {
-  return [...Array(runList[0].length)].map((_, idx) => {
-    const numbers = runList.map((run) => run[idx]);
-    const sorted = numbers.slice().sort((a, b) => a - b);
-    const middle = Math.floor(sorted.length / 2);
-    if (sorted.length % 2 === 0) {
-      return (sorted[middle - 1] + sorted[middle]) / 2;
-    }
-    return sorted[middle];
-  });
+export const now = () => {
+  return performance.now();
 };
 
-export const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
+export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }) => {
   const results = [...Array(runs)].map((_, idx) => {
     console.log('Run: ', idx);
-    return perfTest(length);
+    return perfTest(length)
+      .map((p, idx) => ({ p, idx }))
+      .filter(({ idx }) => idx % step === 0);
   });
   console.log(results);
-  const aggregated = median(results);
+
+  const data = results[0].map((_, idx) => {
+    const y = results.map((run) => run[idx].p);
+    const mean = math.mean(y);
+    const std = math.std(y);
+    const yClear = y.filter((yi) => math.abs(yi - mean) < 2 * std);
+
+    return {
+      type: 'box',
+      y: yClear,
+      name: results[0][idx].idx,
+      boxpoints: false,
+      marker: { color: 'red' },
+    };
+  });
+
   return (
     <Plot
-      data={[
-        {
-          x: Array.from(Array(length).keys()),
-          y: aggregated,
-          type: 'scatter',
-          mode: 'lines+markers',
-          marker: { color: 'red' },
-        },
-      ]}
+      data={data}
       layout={{
         yaxis: {
           rangemode: 'tozero',
         },
+        showlegend: false,
       }}
     />
   );

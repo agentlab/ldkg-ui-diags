@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { handleGraphEvent, updateVariables } from '../components/diagram/layout/yoga';
-import { Benchmark, union } from './benchmarkCommon';
+import { Benchmark, union, now } from './benchmarkCommon';
 import { event } from '../test/node.mock';
 
 const embed = (parent, type) => {
@@ -31,9 +31,9 @@ const addComplexRoot = () => {
 
 const perfTestAddComplexRoot = (length) => {
   const round = () => {
-    const start = performance.now();
+    const start = now();
     addComplexRoot();
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -45,11 +45,11 @@ const perfTestAddComplexRoot = (length) => {
 const perfTestMove = (length) => {
   const round = () => {
     const root = addComplexRoot();
-    const start = performance.now();
+    const start = now();
     root.node.pos = { x: 100, y: 100 };
     const c = handleGraphEvent(root, 'move');
     updateVariables(c);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -60,11 +60,11 @@ const perfTestMove = (length) => {
 
 const perfTestAddSimpleRoot = (length) => {
   const round = () => {
-    const start = performance.now();
+    const start = now();
     const root = event(uuidv4(), 'rm:ClassNodeStencil');
     const changed = handleGraphEvent(root, 'add');
     updateVariables(changed);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -79,10 +79,10 @@ const perfTestAddChildren = (length) => {
   updateVariables(c1);
 
   const round = () => {
-    const start = performance.now();
+    const start = now();
     let [, changed] = embed(root, 'rm:PropertyNodeStencil');
     updateVariables(changed);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {

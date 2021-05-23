@@ -2,7 +2,7 @@ import * as kiwi from 'kiwi.js';
 import { v4 as uuidv4 } from 'uuid';
 import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
 import { handleGraphEvent, updateVariables, addKiwiSolver } from '../components/diagram/layout/kiwi';
-import { Benchmark, union } from './benchmarkCommon';
+import { Benchmark, union, now } from './benchmarkCommon';
 import { event } from '../test/node.mock';
 
 const embed = (parent, type, solver) => {
@@ -34,9 +34,9 @@ const addComplexRoot = (solver) => {
 const perfTestAddComplexRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
-    const start = performance.now();
+    const start = now();
     addComplexRoot(solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -49,11 +49,11 @@ const perfTestMove = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
     const root = addComplexRoot(solver);
-    const start = performance.now();
+    const start = now();
     root.node.pos = { x: 100, y: 100 };
     const c = handleGraphEvent(root, 'move', solver);
     updateVariables(c, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -65,11 +65,11 @@ const perfTestMove = (length) => {
 const perfTestAddSimpleRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
-    const start = performance.now();
+    const start = now();
     const root = event(uuidv4(), 'rm:ClassNodeStencil');
     const changed = handleGraphEvent(root, 'add', solver);
     updateVariables(changed, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -85,10 +85,10 @@ const perfTestAddChildren = (length) => {
   updateVariables(c1, solver);
 
   const round = () => {
-    const start = performance.now();
+    const start = now();
     let [, changed] = embed(root, 'rm:PropertyNodeStencil', solver);
     updateVariables(changed, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
@@ -108,7 +108,7 @@ const perfTestAddSimpleRootX6 = (length) => {
   });
   addKiwiSolver({ graph: graph });
   const round = () => {
-    const start = performance.now();
+    const start = now();
     addNewParentNodes({
       graph: graph,
       nodesData: [
@@ -122,7 +122,7 @@ const perfTestAddSimpleRootX6 = (length) => {
         },
       ],
     });
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
   return [...Array(length)].map((_, idx) => {
