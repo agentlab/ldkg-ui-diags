@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "sourceMap": true,
     "allowJs": true,
     "skipLibCheck": true,
@@ -16,9 +12,7 @@
     "strictPropertyInitialization": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "types": [
-      "jest"
-    ],
+    "types": ["jest", "cypress"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -31,7 +25,5 @@
     ],
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src", "cypress"]
 }
