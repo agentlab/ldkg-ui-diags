@@ -35,7 +35,7 @@ export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }) => {
       y: yClear,
       name: results[0][idx].idx,
       boxpoints: false,
-      marker: { color: 'red' },
+      marker: { color: 'darkblue' },
     };
   });
 
@@ -45,6 +45,10 @@ export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }) => {
       layout={{
         yaxis: {
           rangemode: 'tozero',
+          title: 'мс',
+        },
+        xaxis: {
+          title: 'число элементов',
         },
         showlegend: false,
       }}

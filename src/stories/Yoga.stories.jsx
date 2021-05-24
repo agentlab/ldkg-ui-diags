@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import { handleGraphEvent, updateVariables } from '../components/diagram/layout/yoga';
+import { handleGraphEvent, updateVariables, addYogaSolver } from '../components/diagram/layout/yoga';
+import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
 import { Benchmark, union, now } from './benchmarkCommon';
 import { event } from '../test/node.mock';
 
@@ -91,6 +92,40 @@ const perfTestAddChildren = (length) => {
   });
 };
 
+const perfTestAddSimpleRootX6 = (length) => {
+  const container = document.createElement('div');
+  const minimap = document.createElement('div');
+  const graph = createGraph({
+    height: 100,
+    width: 100,
+    refContainer: { current: container },
+    minimapContainer: { current: minimap },
+  });
+  addYogaSolver({ graph: graph });
+  const round = () => {
+    const start = now();
+    addNewParentNodes({
+      graph: graph,
+      nodesData: [
+        {
+          '@id': uuidv4(),
+          height: 100,
+          width: 100,
+          x: 10,
+          y: 10,
+          shape: 'rm:ClassNodeStencil',
+        },
+      ],
+    });
+    const end = now();
+    return end - start;
+  };
+  return [...Array(length)].map((_, idx) => {
+    console.log(idx);
+    return round();
+  });
+};
+
 export default {
   title: 'Benchmark/Yoga',
   component: Benchmark,
@@ -123,4 +158,11 @@ AddChildren.args = {
   perfTest: perfTestAddChildren,
   length: 50,
   runs: 5,
+};
+
+export const AddSimpleRootX6 = Template.bind({});
+AddSimpleRootX6.args = {
+  perfTest: perfTestAddSimpleRootX6,
+  runs: 20,
+  length: 100,
 };
