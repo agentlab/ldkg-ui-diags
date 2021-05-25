@@ -107,6 +107,41 @@ export const createGraph = ({
       true,
     );
     Graph.registerNode(
+      'ar:WindTurbineStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
+      'ar:HeaterStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
+      'ar:HouseStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
+      'ar:SubstationStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
+      'ar:GeneratorStencil',
+      {
+        inherit: ReactShape,
+      },
+      true,
+    );
+    Graph.registerNode(
       'rm:PropertyNodeStencil',
       {
         inherit: ReactShape,
@@ -444,25 +479,27 @@ const edgeFromData = ({ data }) => ({
   id: data['@id'],
   target: data.arrowTo,
   source: data.arrowFrom,
-  label: {
-    markup: [{ ...Markup.getForeignObjectMarkup() }],
-    attrs: {
-      fo: {
-        label: data.subject.name,
-        width: 1,
-        height: 1,
-        x: 60,
-        y: -10,
-      },
-    },
-    position: {
-      distance: 0.3,
-      args: {
-        keepGradient: true,
-        ensureLegibility: true,
-      },
-    },
-  },
+  label: data.subject.name
+    ? {
+        markup: [{ ...Markup.getForeignObjectMarkup() }],
+        attrs: {
+          fo: {
+            label: data.subject.name,
+            width: 1,
+            height: 1,
+            x: 60,
+            y: -10,
+          },
+        },
+        position: {
+          distance: 0.3,
+          args: {
+            keepGradient: true,
+            ensureLegibility: true,
+          },
+        },
+      }
+    : {},
   router: {
     name: data.router || 'normal',
   },
