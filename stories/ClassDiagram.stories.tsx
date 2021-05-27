@@ -1,4 +1,3 @@
-import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
@@ -7,22 +6,24 @@ import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
 
-import { rootModelInitialState3, viewDescrs, viewKinds } from '../src/stores/ViewCard';
-import { viewDescrCollConstr } from '../src/stores/view';
-import { viewKindCollConstr } from '../src/stores/viewKinds';
+import { viewDescrCollConstr, rootModelInitialState2, viewDescrs } from '../src/stores/view';
+import { viewKinds, viewKindCollConstr } from '../src/stores/viewKinds';
 
 import '../src/index.css';
 import '../src/App.css';
 
 const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
+// for remote data from server
+//const rootStore = createModelFromState('mktp', client, rootModelInitialState, additionalColls);
+// for local hardcoded data
 //@ts-ignore
-const rootStore = Repository.create(rootModelInitialState3, { client });
+const rootStore = Repository.create(rootModelInitialState2, { client });
 const store: any = asReduxStore(rootStore);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 connectReduxDevtools(require('remotedev'), rootStore);
 
 export default {
-  title: 'GraphEditor/Cards',
+  title: 'GraphEditor/ClassDiagram',
   component: GraphEditor,
 } as Meta;
 

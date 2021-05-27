@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {
   ArtifactShapeSchema,
+  CollState,
   PropertyShapeSchema,
   rootModelInitialState,
   ViewShapeSchema,
@@ -43,6 +44,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:RootNodes_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:RootNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:RootNodes_EntConstr_0',
@@ -65,6 +67,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:ChildNodes_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:ChildNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:ChildNodes_EntConstr_0',
@@ -87,6 +90,7 @@ export const viewDescrs = [
       {
         '@id': 'rm:Arrows_CollConstr',
         '@type': 'rm:CollConstr',
+        '@parent': 'rm:Arrows_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:Arrows_EntConstr_0',
@@ -185,6 +189,21 @@ export const viewDataRootNodes = [
  */
 export const viewDataChildNodes = [
   {
+    '@id': 'rm:diagramNode100',
+    '@type': 'rm:UsedInDiagramAsChildNode',
+    x: 10,
+    y: 20,
+    z: 2,
+    height: 85,
+    width: 230,
+    parent: 'rm:diagramNode1', // ref to the parent node
+    object: 'rm:DataModelView', // ref to the diagram
+    //path?
+    //layout?
+    stencil: 'rm:GeneralCompartmentNodeStencil',
+    //styles: 'string with css?',
+  },
+  {
     '@id': 'rm:diagramNode10',
     '@type': 'rm:UsedInDiagramAsChildNode',
     x: 10,
@@ -196,7 +215,7 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:CompartmentNodeStencil',
+    stencil: 'rm:PropertiesCompartmentNodeStencil',
     //styles: 'string with css?',
   },
   {
@@ -480,3 +499,30 @@ export const rootModelInitialState2 = {
     },
   },
 };
+
+/**
+ * Collections Configs Data
+ */
+export const additionalColls: CollState[] = [
+  // ViewKinds Collection
+  {
+    constr: viewKindCollConstr,
+    data: viewKinds,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false, // disable data loading from the server for viewKinds.collConstrs
+    },
+  },
+  // ViewDescrs Collection
+  {
+    constr: viewDescrCollConstr,
+    data: viewDescrs,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      //resolveCollConstrs: false, // 'true' here (by default) triggers data loading from the server
+      // for viewDescrs.collConstrs (it loads lazily -- after the first access)
+    },
+  },
+];

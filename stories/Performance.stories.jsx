@@ -81,7 +81,7 @@ const addComplexRoot = (solver) => {
   let root = event(rootId, 'rm:ClassNodeStencil');
   const c1 = handleGraphEvent(root, 'add', solver);
   const c2 = [...Array(2)].map(() => {
-    let [comp, c2] = embed(root, 'rm:CompartmentNodeStencil', solver);
+    let [comp, c2] = embed(root, 'rm:PropertiesCompartmentNodeStencil', solver);
     const c3 = [...Array(3)].map(() => {
       let [, c3] = embed(comp, 'rm:PropertyNodeStencil', solver);
       return c3;

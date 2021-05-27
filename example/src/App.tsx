@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
@@ -18,7 +17,9 @@ import '../../es/index.css';
 import './App.css';
 
 const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
-//const rootStore = createRootStoreFromState('mktp', client, rootModelInitialState3);
+// for remote data from server
+//const rootStore = createModelFromState('mktp', client, rootModelInitialState, additionalColls);
+// for local hardcoded data
 //@ts-ignore
 const rootStore = Repository.create(rootModelInitialState3, { client });
 const store: any = asReduxStore(rootStore);
