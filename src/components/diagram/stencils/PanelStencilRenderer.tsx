@@ -1,23 +1,13 @@
 import React, { useEffect } from 'react';
 import { stencils } from './';
 import { observer } from 'mobx-react-lite';
+import { createNewStencilProps } from './StencilEditor';
 import { get } from 'lodash';
 
 export const PanelStencilRenderer = ({ options, parent }: any) =>
   observer<any>(({ node, nodeData, ...props }: any) => {
     const Renderer = stencils[options.protoStencil];
-    const newProps = {};
-    for (let key in options) {
-      if (key == 'style') {
-        newProps[key] = options.style;
-      } else {
-        if (options[key].scope) {
-          const uri = options[key].scope.split('/').join('.');
-          newProps[key] = get(nodeData, uri) || options[key].default || options[key].fallback;
-        }
-        //newProps[key] = get(data, options[key].scope);
-      }
-    }
+    const newProps = createNewStencilProps(options, nodeData);
     const createChildren = (children: any) => {
       return children.map((child: any) => {
         const Renderer = PanelStencilRenderer({ options: child });
