@@ -71,7 +71,7 @@ export const Graph = (props: any) => {
         )}
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
-            {createStencils(graph, props.viewKindStencils)}
+            {createStencils(graph, props.stencilPanel)}
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>

@@ -12,7 +12,7 @@ export const validateEmbedding = ({ child, parent }: { child: Node; parent: Node
 };
 
 export const validateConnection = ({ sourceCell, targetCell }: Options.ValidateConnectionArgs): boolean => {
-  if (!sourceCell || !targetCell) {
+  /*if (!sourceCell || !targetCell) {
     return false;
   }
   if (sourceCell.shape !== 'rm:ClassNodeStencil' || targetCell.shape !== 'rm:ClassNodeStencil') {
@@ -20,6 +20,6 @@ export const validateConnection = ({ sourceCell, targetCell }: Options.ValidateC
   }
   if (sourceCell.id === targetCell.id) {
     return false;
-  }
+  }*/
   return true;
 };

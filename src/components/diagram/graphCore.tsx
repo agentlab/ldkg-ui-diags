@@ -416,7 +416,7 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
       _.setProp('editing', false);
       _.setProp('label', t);
     };
-    return <Renderer data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
+    return <Renderer node={_} data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
   },
 });
 

@@ -39,17 +39,21 @@ export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, view
 
   const regStencils = (stencils, arr) => {
     arr.forEach((e) => {
+      if (e.elements) {
+        regStencils(stencils, e.elements);
+      }
       if (e.type === 'DiagramNode') {
         stencils[e['@id']] = e;
       }
     });
   };
-
+  const stencilPanel: any = {};
   const viewKindStencils = viewKind?.elements.reduce((acc, e) => {
     if (e.elements) {
       regStencils(acc, e.elements);
     }
     acc[e['@id']] = e;
+    stencilPanel[e['@id']] = e;
     return acc;
   }, {});
 
@@ -65,6 +69,7 @@ export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, view
       view={view}
       viewDescrObs={viewDescrObs}
       viewKindStencils={viewKindStencils}
+      stencilPanel={stencilPanel}
       viewKind={viewKind}
       dataSource={dataSource}
     />

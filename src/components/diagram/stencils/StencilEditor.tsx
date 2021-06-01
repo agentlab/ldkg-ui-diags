@@ -18,5 +18,5 @@ export const StencilEditor = ({ options }: any) =>
         //newProps[key] = get(data, options[key].scope);
       }
     }
-    return <Renderer nodeData={nodeData} {...props} {...newProps} />;
+    return <Renderer nodeData={nodeData} {...props} {...newProps}></Renderer>;
   });

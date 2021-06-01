@@ -1,5 +1,6 @@
 import * as kiwi from 'kiwi.js';
 import { Graph, Node } from '@antv/x6';
+import { ContactsOutlined } from '@ant-design/icons';
 
 const nodeConfig: {
   [name: string]: {
@@ -46,38 +47,41 @@ export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    const changedNodes = handleGraphEvent(e, 'resize', solver);
+    const changedNodes = handleGraphEvent(e, 'resize', solver, graph);
     updateVariables(changedNodes, solver);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    const changedNodes = handleGraphEvent(e, 'move', solver);
+    const changedNodes = handleGraphEvent(e, 'move', solver, graph);
     updateVariables(changedNodes, solver);
   });
   graph.on('node:added', (e) => {
-    const changedNodes = handleGraphEvent(e, 'add', solver);
+    const changedNodes = handleGraphEvent(e, 'add', solver, graph);
     updateVariables(changedNodes, solver);
   });
   graph.on('node:change:parent', (e) => {
-    const changedNodes = handleGraphEvent(e, 'embed', solver);
+    const changedNodes = handleGraphEvent(e, 'embed', solver, graph);
     updateVariables(changedNodes, solver);
   });
   graph.on('node:removed', (e) => {
-    const changedNodes = handleGraphEvent(e, 'remove', solver);
+    const changedNodes = handleGraphEvent(e, 'remove', solver, graph);
     updateVariables(changedNodes, solver);
   });
 };
 
-export const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver) => {
+export const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver, graph) => {
   const node: Node = e.node;
-  let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node))]);
-
+  let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node), graph)]);
   if (type === 'add') {
     addNode(node, solver);
+    if (node.hasParent()) {
+      const changed = embedNode(null, node, node, solver, graph);
+      changedNodes = new Set([...changedNodes, ...changed]);
+    }
   } else if (type === 'embed') {
-    const changed = embedNode(e.previous, e.current, node, solver);
+    const changed = embedNode(e.previous, e.current, node, solver, graph);
     changedNodes = new Set([...changedNodes, ...changed]);
   } else if (type === 'move') {
     moveNode(node, solver);
@@ -140,7 +144,7 @@ const addNode = (node: any, solver: kiwi.Solver) => {
   }
 };
 
-const embedNode = (previous, current, node, solver: kiwi.Solver) => {
+const embedNode = (previous, current, node, solver: kiwi.Solver, graph) => {
   const child = node.store.data.kiwiProps;
   const childId = node.store.data.id;
   let changedNodes = new Set<Node>([]);
@@ -155,7 +159,7 @@ const embedNode = (previous, current, node, solver: kiwi.Solver) => {
       solver.removeConstraint(constraint);
     }
     child.parent = null;
-    changedNodes = new Set([...changedNodes, ...propogateUpdates(parentNode)]);
+    changedNodes = new Set([...changedNodes, ...propogateUpdates(parentNode, graph)]);
   }
   // add to new parent
   if (current) {
@@ -231,14 +235,16 @@ const setCumputedSize = (node: Node, size: any) => {
   });
 };
 
-const propogateUpdates = (rootNode: any) => {
+const propogateUpdates = (rootNode: any, graph: any) => {
   let changedNodes = new Set<Node>([rootNode]);
   const current = rootNode;
   if (!current || !current._children) {
     return changedNodes;
   }
   for (const childNode of current._children) {
-    changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode)]);
+    if (graph.hasCell(childNode)) {
+      changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode, graph)]);
+    }
   }
   return changedNodes;
 };
