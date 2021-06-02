@@ -35,6 +35,7 @@ export const viewKinds = [
             type: 'DiagramNode',
             protoStencil: 'rm:TitledRectNodeStencil',
             title: 'General',
+            height: 60,
             //scope: '!= property', // without scope
             layout: {
               vertical: 'wrap_content',
@@ -57,6 +58,7 @@ export const viewKinds = [
             type: 'DiagramNode',
             protoStencil: 'rm:TitledRectNodeStencil',
             title: 'Properties',
+            height: 60,
             //scope: 'property',  // without scope
             layout: {
               vertical: 'wrap_content',

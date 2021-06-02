@@ -13,7 +13,7 @@ const inputStyle: React.CSSProperties = {
 };
 
 export const NodeShape = React.memo(
-  ({ data = {}, text, setEditing, nodeData, onSave }: any) => {
+  ({ children = () => {}, data = {}, text, setEditing, nodeData, onSave }: any) => {
     const label = data.label || nodeData?.subject?.title || text;
     return (
       <div
@@ -35,6 +35,7 @@ export const NodeShape = React.memo(
             {label}
           </div>
         )}
+        {children()}
       </div>
     );
   },
