@@ -13,12 +13,15 @@ module.exports = {
       version: 'detect',
     },
   },
-  plugins: ['import', 'flowtype', 'jsx-a11y', 'react', 'react-hooks', 'prettier'],
+  plugins: ['import', 'flowtype', 'jsx-a11y', 'react', 'react-hooks', 'jest', 'prettier'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     //'airbnb-typescript',
     'react-app',
+    //'react-app/jest',
+    'plugin:jest/recommended',
+    'plugin:cypress/recommended',
     'prettier',
     'plugin:prettier/recommended',
   ],
@@ -54,4 +57,19 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['**/*.stories.*'],
+      rules: {
+        'import/no-anonymous-default-export': 'off',
+      },
+    },
+    {
+      files: ['*.spec.*'],
+      rules: {
+        'jest/valid-expect': 0,
+        'jest/valid-expect-in-promise': 0,
+      },
+    },
+  ],
 };

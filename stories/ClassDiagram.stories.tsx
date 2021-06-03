@@ -1,3 +1,4 @@
+import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';

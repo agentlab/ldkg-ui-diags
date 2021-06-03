@@ -107,6 +107,28 @@ export const updateVariables = (changedNodes, solver) => {
   }
 };
 
+export const propogateUpdates = (rootNode: any, graph: any) => {
+  let changedNodes = new Set<Node>([rootNode]);
+  const current = rootNode;
+  if (!current || !current._children) {
+    return changedNodes;
+  }
+  for (const childNode of current._children) {
+    if (graph.hasCell(childNode)) {
+      changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode, graph)]);
+    }
+  }
+  return changedNodes;
+};
+
+export const getRoot = (node: any) => {
+  let current = node;
+  while (current._parent) {
+    current = current._parent;
+  }
+  return current;
+};
+
 const addNode = (node: any, solver: kiwi.Solver) => {
   node.store.data.kiwiProps = {
     children: { data: {}, constraint: null },
@@ -233,28 +255,6 @@ const setCumputedSize = (node: Node, size: any) => {
   node.setPosition(size.left, size.top, {
     ignore: true,
   });
-};
-
-const propogateUpdates = (rootNode: any, graph: any) => {
-  let changedNodes = new Set<Node>([rootNode]);
-  const current = rootNode;
-  if (!current || !current._children) {
-    return changedNodes;
-  }
-  for (const childNode of current._children) {
-    if (graph.hasCell(childNode)) {
-      changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode, graph)]);
-    }
-  }
-  return changedNodes;
-};
-
-const getRoot = (node: any) => {
-  let current = node;
-  while (current._parent) {
-    current = current._parent;
-  }
-  return current;
 };
 
 const updateParent = (parentNode: any, solver: kiwi.Solver) => {

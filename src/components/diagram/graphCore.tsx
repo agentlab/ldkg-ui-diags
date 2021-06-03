@@ -192,7 +192,16 @@ export const createGraph = ({
       const Renderer = stencils['defaultLabel'];
       const content = selectors.foContent as HTMLDivElement;
       if (content) {
-        ReactDOM.render(<Renderer parent={selectors.fo} label={label?.attrs?.fo.label} onSave={() => {}} />, content);
+        ReactDOM.render(
+          <Renderer
+            parent={selectors.fo}
+            label={label?.attrs?.fo.label}
+            onSave={() => {
+              /*do nothing*/
+            }}
+          />,
+          content,
+        );
       }
     },
     scroller: {
@@ -342,10 +351,11 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
   const stencilId = data.stencil || key;
   const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
   switch (data['@type']) {
-    case 'rm:UsedInDiagramAsRootNodeShape':
+    case 'rm:UsedInDiagramAsRootNodeShape': {
       const node = nodeFromData({ data, Renderer, shape: data.stencil });
       (graph as Graph).addNode(node);
       break;
+    }
     case 'rm:UsedInDiagramAsChildNode':
       if (graph.hasCell(data.parent)) {
         const node = nodeFromData({ data, Renderer, shape: data.stencil });
@@ -377,6 +387,10 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
   }
   return true;
 };
+
+/**
+ * function @deprecated
+ */
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
@@ -385,6 +399,9 @@ export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   });
 };
 
+/**
+ * function @deprecated
+ */
 export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil];
@@ -395,6 +412,9 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
   });
 };
 
+/**
+ * function @deprecated
+ */
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
     const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
@@ -408,15 +428,15 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   position: { x: data.x, y: data.y },
   shape: shape,
   editing: false,
-  component(_) {
+  component(n) {
     const setEditing = (state: boolean) => {
-      _.setProp('editing', state);
+      n.setProp('editing', state);
     };
     const onSave = (t: string) => {
-      _.setProp('editing', false);
-      _.setProp('label', t);
+      n.setProp('editing', false);
+      n.setProp('label', t);
     };
-    return <Renderer node={_} data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
+    return <Renderer node={n} data={cloneDeep(n.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
   },
 });
 

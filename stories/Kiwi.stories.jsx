@@ -1,71 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import React from 'react';
 import * as kiwi from 'kiwi.js';
-import Plot from 'react-plotly.js';
 import { v4 as uuidv4 } from 'uuid';
 import { addNewParentNodes, createGraph } from '../src/components/diagram/graphCore';
-import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/components/diagram/kiwiCore';
-
-// for now use custom mocks
-const event = (id_, shape_) => {
-  let node = {
-    id: id_,
-    shape: shape_,
-    _parent: null,
-    _children: [],
-    pos: { x: 10, y: 10 },
-    store: {
-      data: {
-        id: id_,
-      },
-    },
-    _model: {
-      graph: {
-        getCell(childId) {
-          return node._children.find((child) => child.id === childId);
-        },
-      },
-    },
-    position() {
-      return node.pos;
-    },
-    size() {
-      return { width: 200, height: 40 };
-    },
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    resize() {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setPosition() {},
-  };
-  const e = {
-    node: node,
-    current: 'not null',
-  };
-  return e;
-};
-
-// TODO: move helper functions to separate file
-const union = (iterables) => {
-  const set = new Set();
-  for (const iterable of iterables) {
-    for (const item of iterable) {
-      set.add(item);
-    }
-  }
-  return set;
-};
-
-const median = (runList) => {
-  return [...Array(runList[0].length)].map((_, idx) => {
-    const numbers = runList.map((run) => run[idx]);
-    const sorted = numbers.slice().sort((a, b) => a - b);
-    const middle = Math.floor(sorted.length / 2);
-    if (sorted.length % 2 === 0) {
-      return (sorted[middle - 1] + sorted[middle]) / 2;
-    }
-    return sorted[middle];
-  });
-};
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/components/diagram/layout/kiwi';
+import { Benchmark, union, now } from './benchmarkCommon';
+import { event } from '../test/node.mock';
 
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
@@ -96,12 +34,12 @@ const addComplexRoot = (solver) => {
 const perfTestAddComplexRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
-    const start = performance.now();
+    const start = now();
     addComplexRoot(solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
@@ -111,14 +49,14 @@ const perfTestMove = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
     const root = addComplexRoot(solver);
-    const start = performance.now();
+    const start = now();
     root.node.pos = { x: 100, y: 100 };
     const c = handleGraphEvent(root, 'move', solver);
     updateVariables(c, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
@@ -127,14 +65,14 @@ const perfTestMove = (length) => {
 const perfTestAddSimpleRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
-    const start = performance.now();
+    const start = now();
     const root = event(uuidv4(), 'rm:ClassNodeStencil');
     const changed = handleGraphEvent(root, 'add', solver);
     updateVariables(changed, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
@@ -147,13 +85,13 @@ const perfTestAddChildren = (length) => {
   updateVariables(c1, solver);
 
   const round = () => {
-    const start = performance.now();
+    const start = now();
     let [, changed] = embed(root, 'rm:PropertyNodeStencil', solver);
     updateVariables(changed, solver);
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
@@ -170,7 +108,7 @@ const perfTestAddSimpleRootX6 = (length) => {
   });
   addKiwiSolver({ graph: graph });
   const round = () => {
-    const start = performance.now();
+    const start = now();
     addNewParentNodes({
       graph: graph,
       nodesData: [
@@ -184,44 +122,17 @@ const perfTestAddSimpleRootX6 = (length) => {
         },
       ],
     });
-    const end = performance.now();
+    const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
 };
 
-const Benchmark = ({ perfTest, length = 100, runs = 5 }) => {
-  const results = [...Array(runs)].map((_, idx) => {
-    console.log('Run: ', idx);
-    return perfTest(length);
-  });
-  console.log(results);
-  const aggregated = median(results);
-  return (
-    <Plot
-      data={[
-        {
-          x: Array.from(Array(length).keys()),
-          y: aggregated,
-          type: 'scatter',
-          mode: 'lines+markers',
-          marker: { color: 'red' },
-        },
-      ]}
-      layout={{
-        yaxis: {
-          rangemode: 'tozero',
-        },
-      }}
-    />
-  );
-};
-
 export default {
-  title: 'Test/Benchmark',
+  title: 'Benchmark/Kiwi',
   component: Benchmark,
 };
 

@@ -162,8 +162,8 @@ export const viewDataRootNodes = [
   {
     '@id': 'rm:diagramNode2',
     '@type': 'rm:UsedInDiagramAsRootNodeShape',
-    x: 40,
-    y: 20,
+    x: 250,
+    y: 150,
     z: 0,
     rotation: 0,
     height: 85,

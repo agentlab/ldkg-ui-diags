@@ -1,9 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-//import { Button } from 'antd';
 import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import { createGraph, createGrid, addNewData } from './graphCore';
-import { addKiwiSolver } from './kiwiCore';
+import { addYogaSolver } from './layout/yoga';
+//import { addKiwiSolver } from './layout/kiwi';
+
 import { Minimap } from './visualComponents/Minimap';
 import { createStencils } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
@@ -40,7 +41,7 @@ export const Graph = (props: any) => {
       rootStore,
     });
     createGrid({ graph, view: props.view });
-    addKiwiSolver({ graph });
+    addYogaSolver({ graph });
     addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, rootStore });
     setGraph(graph);
     const resizeFn = () => {

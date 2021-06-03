@@ -1,11 +1,11 @@
 {
   // see https://www.typescriptlang.org/tsconfig to better understand tsconfigs
-  "include": ["src"],
-  "exclude": ["es", "lib", "node_modules", "stories", "test"],
+  "include": ["src"], //, "cypress"
+  "exclude": ["cypress", "es", "lib", "node_modules", "stories", "test"],
   "compilerOptions": {
     "module": "esnext",
     "target": "esnext",
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "outDir": "./lib",
     "allowJs": true,
     "importHelpers": true,
@@ -20,6 +20,7 @@
     // linter checks for common issues
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    //"types": ["jest", "cypress"],
     "noImplicitAny": false,
     // noUnused* overlap with @typescript-eslint/no-unused-vars, can disable if duplicative
     //"noUnusedLocals": true,
