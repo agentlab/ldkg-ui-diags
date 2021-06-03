@@ -364,7 +364,7 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
           ...{
             attrs: {
               line: {
-                targetMarker: viewKindStencils[stencilId].targetMarker,
+                ...viewKindStencils[stencilId].line,
               },
             },
           },
