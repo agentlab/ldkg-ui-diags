@@ -645,10 +645,14 @@ export const viewKinds = [
         description: 'Подкатегория в категории',
         paletteOrder: 4,
         // styles for targetMarker
-        targetMarker: {
-          name: 'block',
+        line: {
+          stroke: '#808080',
           strokeWidth: 1,
-          fill: 'white',
+          targetMarker: {
+            name: 'block',
+            strokeWidth: 1,
+            fill: 'white',
+          },
         },
       },
       {
@@ -659,10 +663,14 @@ export const viewKinds = [
         title: 'в категории',
         description: 'Карточка товара состоит в категории',
         paletteOrder: 3,
-        targetMarker: {
-          name: 'block',
+        line: {
+          stroke: '#808080',
           strokeWidth: 1,
-          open: true,
+          targetMarker: {
+            name: 'block',
+            strokeWidth: 1,
+            open: true,
+          },
         },
       },
       {
@@ -674,10 +682,14 @@ export const viewKinds = [
         description: 'Карточка похожего товара объединена по сходству в один тоавр',
         paletteOrder: 4,
         // styles for targetMarker
-        targetMarker: {
-          name: 'block',
+        line: {
+          stroke: '#808080',
           strokeWidth: 1,
-          fill: 'black',
+          targetMarker: {
+            name: 'block',
+            strokeWidth: 1,
+            fill: '#808080',
+          },
         },
       },
     ],

@@ -15,6 +15,12 @@ export const edgeExamples = [
         },
       },
     },
+    attrs: {
+      line: {
+        stroke: '#808080',
+        strokeWidth: 1,
+      },
+    },
   },
   {
     label: {
@@ -31,6 +37,8 @@ export const edgeExamples = [
     },
     attrs: {
       line: {
+        stroke: '#808080',
+        strokeWidth: 1,
         targetMarker: {
           name: 'block',
           strokeWidth: 2,
@@ -54,6 +62,8 @@ export const edgeExamples = [
     },
     attrs: {
       line: {
+        stroke: '#808080',
+        strokeWidth: 1,
         targetMarker: {
           name: 'block',
           strokeWidth: 2,

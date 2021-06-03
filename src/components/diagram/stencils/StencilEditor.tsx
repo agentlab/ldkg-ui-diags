@@ -18,7 +18,7 @@ export const createNewStencilProps = (options, nodeData) => {
     } else {
       if (options[key].scope) {
         const uri = options[key].scope.split('/').join('.');
-        newProps[key] = get(nodeData, uri) || options[key].default || options[key].fallback;
+        newProps[key] = get(nodeData, uri) || options[key].default;
       }
       //newProps[key] = get(data, options[key].scope);
     }
