@@ -20,8 +20,8 @@ const ConfigGrid = observer((props: any) => {
     <Tabs defaultActiveKey='1'>
       <TabPane tab='Grid' key='1'>
         <Row align='middle'>
-          <Col span={10}>Grid Type</Col>
-          <Col span={12}>
+          <Col span={8}>Grid Type</Col>
+          <Col span={14}>
             <Select style={{ width: '100%' }} value={attrs.type} onChange={(val) => onChange({ type: val })}>
               <Select.Option value={GRID_TYPE.DOT}>Dot</Select.Option>
               <Select.Option value={GRID_TYPE.FIXED_DOT}>Fixed Dot</Select.Option>
@@ -31,8 +31,8 @@ const ConfigGrid = observer((props: any) => {
           </Col>
         </Row>
         <Row align='middle'>
-          <Col span={10}>Grid Size</Col>
-          <Col span={10}>
+          <Col span={8}>Grid Size</Col>
+          <Col span={12}>
             <Slider min={1} max={20} step={1} value={attrs.size} onChange={(val: number) => onChange({ size: val })} />
           </Col>
           <Col span={2}>
@@ -112,8 +112,8 @@ const ConfigGrid = observer((props: any) => {
         ) : (
           <React.Fragment>
             <Row align='middle'>
-              <Col span={10}>Grid Color</Col>
-              <Col span={12}>
+              <Col span={8}>Grid Color</Col>
+              <Col span={14}>
                 <Input
                   type='color'
                   value={attrs.color}
@@ -123,8 +123,8 @@ const ConfigGrid = observer((props: any) => {
               </Col>
             </Row>
             <Row align='middle'>
-              <Col span={10}>Thickness</Col>
-              <Col span={10}>
+              <Col span={8}>Thickness</Col>
+              <Col span={12}>
                 <Slider
                   min={0.5}
                   max={10}

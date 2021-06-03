@@ -1,92 +1,97 @@
+import * as kiwi from 'kiwi.js';
 import { v4 as uuidv4 } from 'uuid';
-import { handleGraphEvent, updateVariables, addYogaSolver } from '../components/diagram/layout/yoga';
-import { addNewParentNodes, createGraph } from '../components/diagram/graphCore';
+import { addNewParentNodes, createGraph } from '../src/components/diagram/graphCore';
+import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/components/diagram/layout/kiwi';
 import { Benchmark, union, now } from './benchmarkCommon';
 import { event } from '../test/node.mock';
 
-const embed = (parent, type) => {
+const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
-  const c1 = handleGraphEvent(e, 'add');
+  const c1 = handleGraphEvent(e, 'add', solver);
   parent.node._children.push(e.node);
   e.node._parent = parent.node;
-  const c2 = handleGraphEvent(e, 'embed');
+  const c2 = handleGraphEvent(e, 'embed', solver);
   return [e, new Set([...c1, ...c2])];
 };
 
-const addComplexRoot = () => {
+const addComplexRoot = (solver) => {
   const rootId = uuidv4();
   let root = event(rootId, 'rm:ClassNodeStencil');
-  const c1 = handleGraphEvent(root, 'add');
+  const c1 = handleGraphEvent(root, 'add', solver);
   const c2 = [...Array(2)].map(() => {
-    let [comp, c2] = embed(root, 'rm:CompartmentNodeStencil');
+    let [comp, c2] = embed(root, 'rm:PropertiesCompartmentNodeStencil', solver);
     const c3 = [...Array(3)].map(() => {
-      let [, c3] = embed(comp, 'rm:PropertyNodeStencil');
+      let [, c3] = embed(comp, 'rm:PropertyNodeStencil', solver);
       return c3;
     });
     return union([c2, union(c3)]);
   });
   const changed = union([c1, union(c2)]);
-  updateVariables(changed);
+  updateVariables(changed, solver);
   return root;
 };
 
 const perfTestAddComplexRoot = (length) => {
+  const solver = new kiwi.Solver();
   const round = () => {
     const start = now();
-    addComplexRoot();
+    addComplexRoot(solver);
     const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
 };
 
 const perfTestMove = (length) => {
+  const solver = new kiwi.Solver();
   const round = () => {
-    const root = addComplexRoot();
+    const root = addComplexRoot(solver);
     const start = now();
     root.node.pos = { x: 100, y: 100 };
-    const c = handleGraphEvent(root, 'move');
-    updateVariables(c);
+    const c = handleGraphEvent(root, 'move', solver);
+    updateVariables(c, solver);
     const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
 };
 
 const perfTestAddSimpleRoot = (length) => {
+  const solver = new kiwi.Solver();
   const round = () => {
     const start = now();
     const root = event(uuidv4(), 'rm:ClassNodeStencil');
-    const changed = handleGraphEvent(root, 'add');
-    updateVariables(changed);
+    const changed = handleGraphEvent(root, 'add', solver);
+    updateVariables(changed, solver);
     const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
 };
 
 const perfTestAddChildren = (length) => {
+  const solver = new kiwi.Solver();
   let root = event(uuidv4(), 'rm:ClassNodeStencil');
-  const c1 = handleGraphEvent(root, 'add');
-  updateVariables(c1);
+  const c1 = handleGraphEvent(root, 'add', solver);
+  updateVariables(c1, solver);
 
   const round = () => {
     const start = now();
-    let [, changed] = embed(root, 'rm:PropertyNodeStencil');
-    updateVariables(changed);
+    let [, changed] = embed(root, 'rm:PropertyNodeStencil', solver);
+    updateVariables(changed, solver);
     const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
@@ -101,7 +106,7 @@ const perfTestAddSimpleRootX6 = (length) => {
     refContainer: { current: container },
     minimapContainer: { current: minimap },
   });
-  addYogaSolver({ graph: graph });
+  addKiwiSolver({ graph: graph });
   const round = () => {
     const start = now();
     addNewParentNodes({
@@ -120,14 +125,14 @@ const perfTestAddSimpleRootX6 = (length) => {
     const end = now();
     return end - start;
   };
-  return [...Array(length)].map((_, idx) => {
+  return [...Array(length)].map((e, idx) => {
     console.log(idx);
     return round();
   });
 };
 
 export default {
-  title: 'Benchmark/Yoga',
+  title: 'Benchmark/Kiwi',
   component: Benchmark,
 };
 

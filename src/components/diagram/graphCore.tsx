@@ -1,10 +1,12 @@
-import { cloneDeep } from 'lodash';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { cloneDeep } from 'lodash';
 import { Graph, Cell, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
 import { EdgeView, NodeView } from '@antv/x6';
 
 import { stencils } from './stencils/index';
+import { StencilEditor } from './stencils/StencilEditor';
 import { EditableCellTool } from './stencils/NodeField';
 import { validateEmbedding, validateConnection } from './interactionValidation';
 
@@ -70,8 +72,26 @@ class SimpleEdgeView extends EdgeView {
   }
 }
 
-export const createGraph = ({ width, height, refContainer, minimapContainer, edgeConnectorRef, rootStore }) => {
+export const createGraph = ({
+  width,
+  height,
+  refContainer,
+  viewKindStencils,
+  minimapContainer,
+  edgeConnectorRef,
+  rootStore,
+}) => {
   try {
+    Object.keys(viewKindStencils).forEach((e) => {
+      Graph.registerNode(
+        e,
+        {
+          inherit: ReactShape,
+        },
+        true,
+      );
+    });
+
     Graph.registerNode(
       'rm:ClassNodeStencil',
       {
@@ -163,6 +183,7 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
           if (cell.isEdge()) {
             return SimpleEdgeView;
           }
+          return undefined;
         },
       },
     },
@@ -171,7 +192,16 @@ export const createGraph = ({ width, height, refContainer, minimapContainer, edg
       const Renderer = stencils['defaultLabel'];
       const content = selectors.foContent as HTMLDivElement;
       if (content) {
-        ReactDOM.render(<Renderer parent={selectors.fo} label={label?.attrs?.fo.label} onSave={() => {}} />, content);
+        ReactDOM.render(
+          <Renderer
+            parent={selectors.fo}
+            label={label?.attrs?.fo.label}
+            onSave={() => {
+              /*do nothing*/
+            }}
+          />,
+          content,
+        );
       }
     },
     scroller: {
@@ -297,6 +327,70 @@ export const createGrid = ({ graph, view }) => {
   }
 };
 
+export const addNewData = ({ graph, data, viewKindStencils, rootStore }) => {
+  const stash = {};
+  for (const key in data) {
+    data[key].forEach((e: any) => {
+      if (!addGraphData(graph, e, key, viewKindStencils, rootStore)) {
+        if (stash[key]) {
+          stash[key].push(e);
+        } else {
+          stash[key] = [e];
+        }
+      }
+    });
+  }
+  for (const key in stash) {
+    stash[key].forEach((e: any) => {
+      addGraphData(graph, e, key, viewKindStencils, rootStore);
+    });
+  }
+};
+
+const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
+  const stencilId = data.stencil || key;
+  const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
+  switch (data['@type']) {
+    case 'rm:UsedInDiagramAsRootNodeShape': {
+      const node = nodeFromData({ data, Renderer, shape: data.stencil });
+      (graph as Graph).addNode(node);
+      break;
+    }
+    case 'rm:UsedInDiagramAsChildNode':
+      if (graph.hasCell(data.parent)) {
+        const node = nodeFromData({ data, Renderer, shape: data.stencil });
+        const child = (graph as Graph).addNode(node);
+        const parent: Cell = (graph as Graph).getCell(data.parent);
+        parent.addChild(child);
+      } else {
+        return false;
+      }
+      break;
+    case 'rm:UsedInDiagramAsArrow':
+      if (graph.hasCell(data.arrowFrom) && graph.hasCell(data.arrowTo)) {
+        const edge = {
+          ...edgeFromData({ data }),
+          ...viewKindStencils[stencilId],
+          ...{
+            attrs: {
+              line: {
+                targetMarker: viewKindStencils[stencilId].targetMarker,
+              },
+            },
+          },
+        };
+        (graph as Graph).addEdge(edge);
+      } else {
+        return false;
+      }
+      break;
+  }
+  return true;
+};
+
+/**
+ * function @deprecated
+ */
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
@@ -305,6 +399,9 @@ export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   });
 };
 
+/**
+ * function @deprecated
+ */
 export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil];
@@ -315,6 +412,9 @@ export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
   });
 };
 
+/**
+ * function @deprecated
+ */
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
     const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
@@ -328,15 +428,15 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   position: { x: data.x, y: data.y },
   shape: shape,
   editing: false,
-  component(_) {
+  component(n) {
     const setEditing = (state: boolean) => {
-      _.setProp('editing', state);
+      n.setProp('editing', state);
     };
     const onSave = (t: string) => {
-      _.setProp('editing', false);
-      _.setProp('label', t);
+      n.setProp('editing', false);
+      n.setProp('label', t);
     };
-    return <Renderer data={cloneDeep(_.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
+    return <Renderer node={n} data={cloneDeep(n.store.data)} setEditing={setEditing} nodeData={data} onSave={onSave} />;
   },
 });
 

@@ -31,15 +31,17 @@ export const viewKinds = [
         elements: [
           // general fields Compartment (key-value)
           {
+            '@id': 'rm:GeneralCompartmentNodeStencil',
             type: 'DiagramNode',
-            protoStencil: 'rm:CompartmentNodeStencil',
+            protoStencil: 'rm:TitledRectNodeStencil',
             title: 'General',
+            height: 60,
             //scope: '!= property', // without scope
             layout: {
               vertical: 'wrap_content',
               horizontal: 'match_parent',
             },
-            elements: [
+            /*elements: [
               {
                 // без scope рендерит весь элемент
                 type: 'DiagramNode',
@@ -48,19 +50,21 @@ export const viewKinds = [
                   horizontal: 'match_parent',
                 },
               },
-            ],
+            ],*/
           },
           // properties Compartment (property-type)
           {
+            '@id': 'rm:PropertiesCompartmentNodeStencil',
             type: 'DiagramNode',
-            protoStencil: 'rm:CompartmentNodeStencil',
+            protoStencil: 'rm:TitledRectNodeStencil',
             title: 'Properties',
+            height: 60,
             //scope: 'property',  // without scope
             layout: {
               vertical: 'wrap_content',
               horizontal: 'match_parent',
             },
-            elements: [
+            /*elements: [
               {
                 type: 'rm:PropertyNodeStencil',
                 scope: '@id',
@@ -68,7 +72,7 @@ export const viewKinds = [
                   horizontal: 'match_parent',
                 },
               },
-            ],
+            ],*/
           },
         ],
       },
