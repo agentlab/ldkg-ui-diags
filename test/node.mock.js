@@ -31,6 +31,9 @@ export const event = (nodeId, nodeShape) => {
     setPosition(x, y) {
       node._pos = { x, y };
     },
+    hasParent() {
+      return node._parent !== null;
+    },
   };
   const e = {
     node: node,
