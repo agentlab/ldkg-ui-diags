@@ -1,12 +1,53 @@
 import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
+import { Record, List } from 'immutable';
 import { getRoot } from './kiwi';
 
-const defaultProperties = {
-  minWidth: 120,
-  minHeight: 20,
-  flexDirection: 'column',
-  // test: 'auto', // should create warning
+const PositionRecord: any = Record({
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+});
+
+const r: any = Record({
+  width: 'auto',
+  height: 'auto',
+  minWidth: 0,
+  minHeight: 0,
+  maxWidth: 'none',
+  maxHeight: 'none',
+  justifyContent: Yoga.JUSTIFY_FLEX_START,
+  alignItems: Yoga.ALIGN_STRETCH,
+  alignSelf: Yoga.ALIGN_AUTO,
+  alignContent: Yoga.ALIGN_STRETCH,
+  flexDirection: Yoga.FLEX_DIRECTION_ROW,
+  padding: PositionRecord(),
+  margin: PositionRecord(),
+  border: PositionRecord(),
+  position: PositionRecord({
+    left: NaN,
+    top: NaN,
+    right: NaN,
+    bottom: NaN,
+  }),
+  positionType: Yoga.POSITION_TYPE_RELATIVE,
+  flexWrap: Yoga.WRAP_NO_WRAP,
+  flexBasis: 'auto',
+  flexGrow: 0,
+  flexShrink: 1,
+  children: List(),
+  aspectRatio: 'auto',
+});
+
+const rehydrate = (node: any): any => {
+  let record = r(node);
+  record = record.set('padding', PositionRecord(record.padding));
+  record = record.set('border', PositionRecord(record.border));
+  record = record.set('margin', PositionRecord(record.margin));
+  record = record.set('position', PositionRecord(record.position));
+  record = record.set('children', List(record.children.map(rehydrate)));
+  return record;
 };
 
 const nodeConfig = {
@@ -17,11 +58,23 @@ const nodeConfig = {
     paddingRight: 1,
     paddingBottom: 1,
   },
+  'rm:PropertiesCompartmentNodeStencil': {
+    padding: {
+      top: 28,
+      left: 3,
+      right: 3,
+      bottom: 3,
+    },
+  },
   'rm:ClassNodeStencil': {
-    paddingTop: 28,
-    paddingLeft: 3,
-    paddingRight: 3,
-    paddingBottom: 3,
+    padding: {
+      top: 28,
+      left: 3,
+      right: 3,
+      bottom: 3,
+    },
+    flexDirection: 'row',
+    alignItems: 'stretch',
   },
 };
 
@@ -32,98 +85,135 @@ export const addYogaSolver = ({ graph }: { graph: Graph }) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    const changed = handleGraphEvent(e, 'resize');
-    updateVariables(changed);
+    const changed = handleGraphEvent(e, 'resize', graph);
+    updateVariables(changed, graph);
   });
   graph.on('node:moved', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
-    const changed = handleGraphEvent(e, 'move');
-    updateVariables(changed);
+    const changed = handleGraphEvent(e, 'move', graph);
+    updateVariables(changed, graph);
   });
   graph.on('node:added', (e) => {
-    const changed = handleGraphEvent(e, 'add');
-    updateVariables(changed);
+    const changed = handleGraphEvent(e, 'add', graph);
+    updateVariables(changed, graph);
   });
   graph.on('node:change:parent', (e: any) => {
-    handleGraphEvent(e, 'changeParent');
+    handleGraphEvent(e, 'changeParent', graph);
     // do not update variables, at this point parent node has outdated children array
     // following `node:change:children` event will do the job
   });
   graph.on('node:change:children', (e: any) => {
-    const changed = handleGraphEvent(e, 'changeChildren');
-    updateVariables(changed);
+    const changed = handleGraphEvent(e, 'changeChildren', graph);
+    updateVariables(changed, graph);
   });
   graph.on('node:removed', (e) => {
-    const changed = handleGraphEvent(e, 'remove');
-    updateVariables(changed);
+    const changed = handleGraphEvent(e, 'remove', graph);
+    updateVariables(changed, graph);
   });
 };
 
-const properties = {
-  numberProperties: [
+const defaultLayout = {
+  width: 'auto',
+  height: 'auto',
+  minWidth: 0,
+  minHeight: 0,
+  maxWidth: 'none',
+  maxHeight: 'none',
+  justifyContent: Yoga.JUSTIFY_FLEX_START,
+  alignItems: Yoga.ALIGN_STRETCH,
+  alignSelf: Yoga.ALIGN_AUTO,
+  alignContent: Yoga.ALIGN_STRETCH,
+  flexDirection: Yoga.FLEX_DIRECTION_COLUMN,
+  padding: {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  margin: {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  border: {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  position: {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  positionType: Yoga.POSITION_TYPE_RELATIVE,
+  flexWrap: Yoga.WRAP_NO_WRAP,
+  flexBasis: 'auto',
+  flexGrow: 0,
+  flexShrink: 1,
+  children: [],
+  aspectRatio: 'auto',
+};
+
+const applyProperties = (props: { [key: string]: string | number | null | any }, node: Yoga.YogaNode) => {
+  [
     'width',
     'height',
     'minWidth',
     'maxWidth',
     'minHeight',
     'maxHeight',
+    'justifyContent',
+    'alignItems',
+    'alignSelf',
+    'alignContent',
     'flexGrow',
     'flexShrink',
+    'positionType',
     'aspectRatio',
-  ],
-  enumProperties: {
-    // property: keyword
-    justifyContent: 'justify',
-    alignItems: 'align',
-    alignSelf: 'align',
-    alignContent: 'align',
-    positionType: 'position',
-    flexWrap: 'wrap',
-    flexDirection: 'flex-direction',
-  },
-  directionProperties: ['padding', 'margin', 'border'], // `position` is forbidden
-  directions: ['top', 'right', 'bottom', 'left'], // paddingTop, ...
-};
-
-const applyProperties = (props: { [key: string]: string | number }, node: Yoga.YogaNode) => {
-  Object.entries(props).forEach(([key, value]) => {
-    // see https://github.com/facebook/yoga/blob/cbf6495d66a7a8066d1354daa14d3bb1af19f6ef/website/src/components/Playground/src/YogaNode.js#L144
+    'flexWrap',
+    'flexDirection',
+  ].forEach((key) => {
     try {
-      if (properties.numberProperties.includes(key)) {
-        node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
-      } else if (key in properties.enumProperties) {
-        node[`set${key[0].toUpperCase()}${key.substr(1)}`](
-          Yoga[`${properties.enumProperties[key]}-${value}`.replace(/-/g, '_').toUpperCase()],
-        );
-      } else {
-        const [prop, Direction] = key.replace(/([A-Z])/g, ' $1').split(' ');
-        const direction = `${Direction[0].toLowerCase()}${Direction.substr(1)}`;
-        if (properties.directionProperties.includes(prop) && properties.directions.includes(direction)) {
-          node[`set${prop[0].toUpperCase()}${prop.substr(1)}`](Yoga[`EDGE_${direction.toUpperCase()}`], value);
-        } else {
-          throw new Error('Property not available');
-        }
-      }
-    } catch (e) {
-      console.warn('Provided property-value pair is not supported - key: ' + key + ', value: ' + value, e);
-    }
+      const value = props[key] === '' ? defaultLayout[key] : props[key];
+      node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
+    } catch (e) {}
   });
+
+  ['padding', 'margin', 'position', 'border'].forEach((key) => {
+    ['top', 'right', 'bottom', 'left'].forEach((direction) => {
+      try {
+        node[`set${key[0].toUpperCase()}${key.substr(1)}`](
+          Yoga[`EDGE_${direction.toUpperCase()}`],
+          props[key][direction],
+        );
+      } catch (e) {}
+    });
+  });
+
+  node.setDisplay(Yoga.DISPLAY_FLEX);
 };
 
-export const handleGraphEvent = (e: any, type: Event) => {
+export const handleGraphEvent = (e: any, type: Event, graph: any) => {
   const node: X6Node = e.node;
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
+    if (node.hasParent()) {
+      const changed = changeParent(null, node, node, graph);
+      changedNodes = new Set([...changedNodes, ...changed]);
+    }
   } else if (type === 'changeParent') {
-    const changed = changeParent(e.previous, e.current, node);
+    const changed = changeParent(e.previous, e.current, node, graph);
     changedNodes = new Set([...changedNodes, ...changed]);
   } else if (type === 'move') {
     moveNode(node);
   } else if (type === 'resize') {
-    resizeNode(node);
+    resizeNode(node, graph);
   } else if (type === 'remove') {
     removeNode(node);
   } else if (type === 'changeChildren') {
@@ -134,12 +224,16 @@ export const handleGraphEvent = (e: any, type: Event) => {
   return changedNodes;
 };
 
-export const updateVariables = (changedNodes: Set<any>) => {
+export const updateVariables = (changedNodes: Set<any>, graph: any) => {
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
+    if (yogaNode.getChildCount() === 0) {
+      yogaNode.setWidth(computedLayout.width);
+    } else {
+      yogaNode.setWidth('auto');
+    }
     if (!node._parent) {
-      // root n
       setCumputedSize(node, computedLayout); // set absolute position
     } else {
       // set position relative to parent
@@ -154,8 +248,10 @@ export const updateVariables = (changedNodes: Set<any>) => {
   };
 
   const updateNodeTree = (parent) => {
-    updateNode(parent);
-    (parent._children || []).forEach(updateNodeTree);
+    if (graph.hasCell(parent)) {
+      updateNode(parent);
+      (parent._children || []).forEach(updateNodeTree);
+    }
   };
 
   [...changedNodes]
@@ -167,7 +263,7 @@ export const updateVariables = (changedNodes: Set<any>) => {
     });
 };
 
-const changeParent = (previous: any, current: any, node: any) => {
+const changeParent = (previous: any, current: any, node: any, graph: any) => {
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
   let changedNodes = new Set<Node>([]);
 
@@ -176,6 +272,10 @@ const changeParent = (previous: any, current: any, node: any) => {
     const previousParentNode = node._model.graph.getCell(previous);
     const previousParentYogaNode: Yoga.YogaNode = previousParentNode.store.data.yogaProps;
     previousParentYogaNode.removeChild(yogaNode);
+    if (previousParentYogaNode.getChildCount() === 0) {
+      const width = previousParentYogaNode.getComputedLayout().width;
+      previousParentYogaNode.setWidth(width);
+    }
     changedNodes = new Set([...changedNodes, getRoot(previousParentNode)]);
   }
 
@@ -184,6 +284,7 @@ const changeParent = (previous: any, current: any, node: any) => {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
     parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount()); // add to bottom
+    setNodeRealative(parentYogaNode);
   }
 
   // update node position based on type
@@ -220,13 +321,19 @@ const removeNode = (node: any) => {
 
 const addNode = (node: any) => {
   const root = Node.create();
+  applyProperties(
+    rehydrate({
+      alignItems: 'stretch',
+      minHeight: 0,
+      ...node.store.data.size,
+      ...nodeConfig[node.shape],
+      ...node.store.data.layoutProp,
+    }),
+    root,
+  );
   root.setPosition(Yoga.EDGE_LEFT, node.position().x);
   root.setPosition(Yoga.EDGE_TOP, node.position().y);
-
-  applyProperties(defaultProperties, root);
-  if (node.shape in nodeConfig) {
-    applyProperties(nodeConfig[node.shape], root);
-  }
+  root.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
 
   node.store.data.yogaProps = root;
 };
@@ -239,8 +346,9 @@ const moveNode = (node: any) => {
   }
 };
 
-const resizeNode = (node: any) => {
+const resizeNode = (node: any, graph: any) => {
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
+  setChildrenRelative(node, graph);
   yogaNode.setWidth(node.size().width);
   yogaNode.setHeight(node.size().height);
   if (!node._parent) {
@@ -256,4 +364,21 @@ const setCumputedSize = (node: X6Node, size: any) => {
   node.setPosition(size.left, size.top, {
     ignore: true,
   });
+};
+
+const setNodeRealative = (yogaNode: any) => {
+  yogaNode.setWidth('auto');
+  yogaNode.setHeight('auto');
+};
+
+const setChildrenRelative = (node: any, graph: any) => {
+  if (node._children) {
+    node._children.forEach((child: any) => {
+      if (graph.hasCell(child)) {
+        const yogaChild = child.store.data.yogaProps;
+        yogaChild.setWidth('100%');
+        setChildrenRelative(child, graph);
+      }
+    });
+  }
 };

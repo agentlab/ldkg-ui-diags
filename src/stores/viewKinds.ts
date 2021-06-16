@@ -27,6 +27,12 @@ export const viewKinds = [
         resultsScope: 'rm:RootNodes_CollConstr',
         layout: {
           vertical: 'wrap_content',
+          padding: {
+            top: 8,
+            left: 3,
+            right: 3,
+            bottom: 3,
+          },
         },
         elements: [
           // general fields Compartment (key-value)

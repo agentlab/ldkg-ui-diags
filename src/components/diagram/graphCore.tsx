@@ -426,6 +426,7 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   id: data['@id'],
   size: { width: data.width, height: data.height },
   position: { x: data.x, y: data.y },
+  layoutProp: data.layout || {},
   shape: shape,
   editing: false,
   component(n) {

@@ -5,7 +5,8 @@ const inputStyle: React.CSSProperties = {
   backgroundColor: '#5c00b3',
   color: 'white',
   paddingLeft: 5,
-  height: 25,
+  height: '20%',
+  maxHeight: 25,
 
   whiteSpace: 'nowrap',
   overflow: 'hidden',
