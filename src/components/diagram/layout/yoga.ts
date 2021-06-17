@@ -80,7 +80,7 @@ const nodeConfig = {
 
 type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
 
-export const addYogaSolver = ({ graph }: { graph: Graph }) => {
+export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
   graph.on('node:resized', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
@@ -181,7 +181,9 @@ const applyProperties = (props: { [key: string]: string | number | null | any },
     try {
       const value = props[key] === '' ? defaultLayout[key] : props[key];
       node[`set${key[0].toUpperCase()}${key.substr(1)}`](value);
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   });
 
   ['padding', 'margin', 'position', 'border'].forEach((key) => {
@@ -191,14 +193,16 @@ const applyProperties = (props: { [key: string]: string | number | null | any },
           Yoga[`EDGE_${direction.toUpperCase()}`],
           props[key][direction],
         );
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
     });
   });
 
   node.setDisplay(Yoga.DISPLAY_FLEX);
 };
 
-export const handleGraphEvent = (e: any, type: Event, graph: any) => {
+export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> => {
   const node: X6Node = e.node;
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
@@ -224,7 +228,7 @@ export const handleGraphEvent = (e: any, type: Event, graph: any) => {
   return changedNodes;
 };
 
-export const updateVariables = (changedNodes: Set<any>, graph: any) => {
+export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();

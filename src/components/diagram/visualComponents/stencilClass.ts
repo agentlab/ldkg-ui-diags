@@ -3,7 +3,6 @@ import { addYogaSolver } from './../layout/yoga';
 import { grid } from '@antv/x6/lib//layout/grid';
 import { EventArgs } from '@antv/x6/lib/graph/events';
 import { Dnd } from '@antv/x6/lib/addon/dnd';
-import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 class myDND extends Addon.Dnd {
   protected drop(draggingNode: Node, pos: Point.PointLike) {
@@ -11,7 +10,7 @@ class myDND extends Addon.Dnd {
       const targetGraph = this.targetGraph;
       const targetModel = targetGraph.model;
       const local = targetGraph.clientToLocal(pos);
-      const sourceNode = this.sourceNode!;
+      const sourceNode = this.sourceNode || new Node({});
       const droppingNode = this.options.getDropNode(draggingNode, {
         sourceNode,
         draggingNode,
@@ -61,7 +60,7 @@ class myDND extends Addon.Dnd {
 }
 
 export class Stencil extends View {
-  public readonly options: Stencil.Options;
+  public readonly options: Options;
   public readonly dnd: Dnd;
   protected readonly graphs: { [groupName: string]: Graph };
   protected readonly $groups: { [groupName: string]: JQuery<HTMLElement> };
@@ -70,29 +69,29 @@ export class Stencil extends View {
   protected readonly popup: HTMLDivElement;
   protected readonly popupGraph: Graph;
 
-  protected get targetScroller() {
+  protected get targetScroller(): Addon.Scroller | null {
     const target = this.options.target;
     return Graph.isGraph(target) ? target.scroller.widget : target;
   }
 
-  protected get targetGraph() {
+  protected get targetGraph(): Graph {
     const target = this.options.target;
     return Graph.isGraph(target) ? target : target.graph;
   }
 
-  protected get targetModel() {
+  protected get targetModel(): Model {
     return this.targetGraph.model;
   }
 
-  constructor(options: Partial<Stencil.Options>) {
+  constructor(options: Partial<Options>) {
     super();
 
     this.graphs = {};
     this.$groups = {};
     this.options = {
-      ...Stencil.defaultOptions,
+      ...defaultOptions,
       ...options,
-    } as Stencil.Options;
+    } as Options;
 
     this.dnd = new myDND(this.options);
     this.onSearch = FunctionExt.debounce(this.onSearch, 200);
@@ -188,7 +187,7 @@ export class Stencil extends View {
     return this;
   }
 
-  protected renderSearch() {
+  protected renderSearch(): JQuery<HTMLDivElement> {
     return this.$('<div/>')
       .addClass(this.prefixClassName(ClassNames.search))
       .append(
@@ -201,7 +200,7 @@ export class Stencil extends View {
       );
   }
 
-  protected startListening() {
+  protected startListening(): void {
     const title = this.prefixClassName(ClassNames.title);
     const searchText = this.prefixClassName(ClassNames.searchText);
     const groupTitle = this.prefixClassName(ClassNames.groupTitle);
@@ -222,7 +221,7 @@ export class Stencil extends View {
     });
   }
 
-  protected stopListening() {
+  protected stopListening(): void {
     this.undelegateEvents();
     Object.keys(this.graphs).forEach((groupName) => {
       const graph = this.graphs[groupName];
@@ -232,7 +231,10 @@ export class Stencil extends View {
 
   load(groups: { [groupName: string]: (Node | Node.Metadata)[] }): this;
   load(nodes: (Node | Node.Metadata)[], groupName?: string): this;
-  load(data: { [groupName: string]: (Node | Node.Metadata)[] } | (Node | Node.Metadata)[], groupName?: string) {
+  load(
+    data: { [groupName: string]: (Node | Node.Metadata)[] } | (Node | Node.Metadata)[],
+    groupName?: string,
+  ): Stencil {
     if (Array.isArray(data)) {
       this.loadGroup(data, groupName);
     } else if (this.options.groups) {
@@ -245,7 +247,7 @@ export class Stencil extends View {
     return this;
   }
 
-  protected loadGroup(cells: (Node | Node.Metadata)[], groupName?: string) {
+  protected loadGroup(cells: (Node | Node.Metadata)[], groupName?: string): Stencil {
     const model = this.getModel(groupName);
     const group = this.getGroup(groupName);
     const graph = this.getGraph(groupName);
@@ -254,7 +256,7 @@ export class Stencil extends View {
         this.popup.style.visibility = 'visible';
         this.popup.style.top = e.e.pageY + 'px';
         this.popup.style.left = `${Number(e.e.pageX) + 100}px`;
-        const node = this.options.getPopupNode(e.node, {} as any);
+        const node = this.options.getPopupNode(e.node);
         if (!graph.hasCell('popup')) {
           this.popupGraph.addNode(node);
         }
@@ -274,7 +276,7 @@ export class Stencil extends View {
           ? cell
           : Node.create({
               ...cell,
-              resizeGraph: layout && model ? () => FunctionExt.call(layout, this, model, group) : () => {},
+              resizeGraph: layout && model ? () => FunctionExt.call(layout, this, model, group, graph) : () => null,
             }),
       );
       graph.addNodes(nodes);
@@ -285,7 +287,7 @@ export class Stencil extends View {
     }
 
     if (layout && model) {
-      FunctionExt.call(layout, this, model, group);
+      FunctionExt.call(layout, this, model, group, graph);
     }
 
     if (!height) {
@@ -300,12 +302,12 @@ export class Stencil extends View {
     return this;
   }
 
-  protected onDragStart(args: EventArgs['node:mousedown']) {
+  protected onDragStart(args: EventArgs['node:mousedown']): void {
     const { e, node } = args;
     this.dnd.start(node, e);
   }
 
-  protected filter(keyword: string, filter?: Stencil.Filter) {
+  protected filter(keyword: string, filter?: Filter): void {
     const found = Object.keys(this.graphs).reduce((memo, groupName) => {
       const graph = this.graphs[groupName];
       const name = groupName === Private.defaultGroupName ? null : groupName;
@@ -334,7 +336,7 @@ export class Stencil extends View {
       model.resetCells(items);
 
       if (options.layout) {
-        FunctionExt.call(options.layout, this, model, this.getGroup(groupName));
+        FunctionExt.call(options.layout, this, model, this.getGroup(groupName), graph);
       }
 
       if (this.$groups[groupName]) {
@@ -353,7 +355,7 @@ export class Stencil extends View {
     this.$container.toggleClass('not-found', !found);
   }
 
-  protected isCellMatched(cell: Cell, keyword: string, filters: Stencil.Filters | undefined, ignoreCase: boolean) {
+  protected isCellMatched(cell: Cell, keyword: string, filters: Filters | undefined, ignoreCase: boolean): boolean {
     if (keyword && filters) {
       return Object.keys(filters).some((shape) => {
         if (shape === '*' || cell.shape === shape) {
@@ -383,19 +385,19 @@ export class Stencil extends View {
     return true;
   }
 
-  protected onSearch(evt: JQuery.TriggeredEvent) {
+  protected onSearch(evt: JQuery.TriggeredEvent): void {
     this.filter(evt.target.value as string, this.options.search);
   }
 
-  protected onSearchFocusIn() {
+  protected onSearchFocusIn(): void {
     this.$container.addClass('is-focused');
   }
 
-  protected onSearchFocusOut() {
+  protected onSearchFocusOut(): void {
     this.$container.removeClass('is-focused');
   }
 
-  protected onTitleClick() {
+  protected onTitleClick(): void {
     if (this.options.collapsable) {
       this.$container.toggleClass('collapsed');
       if (this.$container.hasClass('collapsed')) {
@@ -406,7 +408,7 @@ export class Stencil extends View {
     }
   }
 
-  protected onGroupTitleClick(evt: JQuery.TriggeredEvent) {
+  protected onGroupTitleClick(evt: JQuery.TriggeredEvent): void {
     const $group = this.$(evt.target).closest(`.${this.prefixClassName(ClassNames.group)}`);
     this.toggleGroup($group.attr('data-name') || '');
 
@@ -419,16 +421,16 @@ export class Stencil extends View {
     this.$container.toggleClass('collapsed', allCollapsed);
   }
 
-  protected getModel(groupName?: string) {
+  protected getModel(groupName?: string): Model | null {
     const graph = this.getGraph(groupName);
     return graph ? graph.model : null;
   }
 
-  protected getGraph(groupName?: string) {
+  protected getGraph(groupName?: string): Graph {
     return this.graphs[groupName || Private.defaultGroupName];
   }
 
-  protected getGroup(groupName?: string) {
+  protected getGroup(groupName?: string): Group | null | undefined {
     const groups = this.options.groups;
     if (groupName != null && groups && groups.length) {
       return groups.find((group) => group.name === groupName);
@@ -436,7 +438,7 @@ export class Stencil extends View {
     return null;
   }
 
-  toggleGroup(groupName: string) {
+  toggleGroup(groupName: string): Stencil {
     if (this.isGroupCollapsed(groupName)) {
       this.expandGroup(groupName);
     } else {
@@ -445,7 +447,7 @@ export class Stencil extends View {
     return this;
   }
 
-  collapseGroup(groupName: string) {
+  collapseGroup(groupName: string): Stencil {
     if (this.isGroupCollapsable(groupName)) {
       const $group = this.$groups[groupName];
       if ($group && !this.isGroupCollapsed(groupName)) {
@@ -456,7 +458,7 @@ export class Stencil extends View {
     return this;
   }
 
-  expandGroup(groupName: string) {
+  expandGroup(groupName: string): Stencil {
     if (this.isGroupCollapsable(groupName)) {
       const $group = this.$groups[groupName];
       if ($group && this.isGroupCollapsed(groupName)) {
@@ -467,27 +469,27 @@ export class Stencil extends View {
     return this;
   }
 
-  isGroupCollapsable(groupName: string) {
+  isGroupCollapsable(groupName: string): boolean {
     const $group = this.$groups[groupName];
     return $group.hasClass('collapsable');
   }
 
-  isGroupCollapsed(groupName: string) {
+  isGroupCollapsed(groupName: string): boolean {
     const $group = this.$groups[groupName];
     return $group && $group.hasClass('collapsed');
   }
 
-  collapseGroups() {
+  collapseGroups(): Stencil {
     Object.keys(this.$groups).forEach((groupName) => this.collapseGroup(groupName));
     return this;
   }
 
-  expandGroups() {
+  expandGroups(): Stencil {
     Object.keys(this.$groups).forEach((groupName) => this.expandGroup(groupName));
     return this;
   }
 
-  onRemove() {
+  onRemove(): void {
     Object.keys(this.graphs).forEach((groupName) => {
       const graph = this.graphs[groupName];
       graph.view.remove();
@@ -499,85 +501,83 @@ export class Stencil extends View {
   }
 }
 
-export namespace Stencil {
-  export interface Options extends Dnd.Options {
-    title: string;
-    groups?: Group[];
-    getPopupNode: Function;
-    search?: Filter;
-    placeholder?: string;
-    notFoundText?: string;
-    collapsable?: boolean;
-    stencilGraphWidth: number;
-    stencilGraphHeight: number;
-    stencilGraphOptions?: Graph.Options;
-    stencilGraphPadding?: number;
-    layout?: (this: Stencil, model: Model, group?: Group | null) => any;
-    layoutOptions?: any;
-  }
-
-  export type Filter = Filters | FilterFn | boolean;
-  export type Filters = { [shape: string]: string | string[] | boolean };
-  export type FilterFn = (
-    this: Stencil,
-    cell: Node,
-    keyword: string,
-    groupName: string | null,
-    stencil: Stencil,
-  ) => boolean;
-
-  export interface Group {
-    name: string;
-    title?: string;
-    collapsed?: boolean;
-    collapsable?: boolean;
-    graphWidth?: number;
-    graphHeight?: number;
-    graphPadding?: number;
-    graphOptions?: Graph.Options;
-    layout?: (this: Stencil, model: Model, group?: Group | null) => any;
-    layoutOptions?: any;
-  }
-
-  export const defaultOptions: Partial<Options> = {
-    stencilGraphWidth: 200,
-    stencilGraphHeight: 800,
-    title: 'Stencil',
-    collapsable: false,
-    placeholder: 'Search',
-    notFoundText: 'No matches found',
-
-    layout(model, group) {
-      const options = {
-        columnWidth: (this.options.stencilGraphWidth as number) / 2 - 10,
-        columns: 2,
-        rowHeight: 80,
-        resizeToFit: false,
-        dx: 10,
-        dy: 10,
-      };
-
-      grid(model, {
-        ...options,
-        ...this.options.layoutOptions,
-        ...(group ? group.layoutOptions : {}),
-      });
-    },
-    ...Dnd.defaults,
-  };
+export interface Options extends Dnd.Options {
+  title: string;
+  groups?: Group[];
+  getPopupNode: (popupNode: Node) => Node;
+  search?: Filter;
+  placeholder?: string;
+  notFoundText?: string;
+  collapsable?: boolean;
+  stencilGraphWidth: number;
+  stencilGraphHeight: number;
+  stencilGraphOptions?: Graph.Options;
+  stencilGraphPadding?: number;
+  layout?: (this: Stencil, model: Model, group?: Group | null, graph?: Graph) => any;
+  layoutOptions?: any;
 }
 
-namespace ClassNames {
-  export const base = 'widget-stencil';
-  export const title = `${base}-title`;
-  export const search = `${base}-search`;
-  export const searchText = `${search}-text`;
-  export const content = `${base}-content`;
-  export const group = `${base}-group`;
-  export const groupTitle = `${group}-title`;
-  export const groupContent = `${group}-content`;
+export type Filter = Filters | FilterFn | boolean;
+export type Filters = { [shape: string]: string | string[] | boolean };
+export type FilterFn = (
+  this: Stencil,
+  cell: Node,
+  keyword: string,
+  groupName: string | null,
+  stencil: Stencil,
+) => boolean;
+
+export interface Group {
+  name: string;
+  title?: string;
+  collapsed?: boolean;
+  collapsable?: boolean;
+  graphWidth?: number;
+  graphHeight?: number;
+  graphPadding?: number;
+  graphOptions?: Graph.Options;
+  layout?: (this: Stencil, model: Model, group?: Group | null, graph?: Graph) => any;
+  layoutOptions?: any;
 }
 
-namespace Private {
-  export const defaultGroupName = '__default__';
+export const defaultOptions: Partial<Options> = {
+  stencilGraphWidth: 200,
+  stencilGraphHeight: 800,
+  title: 'Stencil',
+  collapsable: false,
+  placeholder: 'Search',
+  notFoundText: 'No matches found',
+
+  layout(model, group, graph) {
+    const options = {
+      columnWidth: (this.options.stencilGraphWidth as number) / 2 - 10,
+      columns: 2,
+      rowHeight: 80,
+      resizeToFit: false,
+      dx: 10,
+      dy: 10,
+    };
+
+    grid(model, {
+      ...options,
+      ...this.options.layoutOptions,
+      ...(group ? group.layoutOptions : {}),
+    });
+  },
+  ...Dnd.defaults,
+};
+
+export class ClassNames {
+  static readonly base = 'widget-stencil';
+  static readonly title = `${this.base}-title`;
+  static readonly search = `${this.base}-search`;
+  static readonly searchText = `${this.search}-text`;
+  static readonly content = `${this.base}-content`;
+  static readonly group = `${this.base}-group`;
+  static readonly groupTitle = `${this.group}-title`;
+  static readonly groupContent = `${this.group}-content`;
+}
+
+export class Private {
+  static readonly defaultGroupName = '__default__';
 }
