@@ -226,7 +226,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'ar:DoubleLine',
   },
   {
     '@id': 'mktp:diagramArrow5',
@@ -243,7 +243,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'ar:DoubleLine',
   },
 ];
 
