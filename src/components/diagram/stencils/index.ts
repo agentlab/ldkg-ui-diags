@@ -7,7 +7,7 @@ import { Card } from './Card';
 import { Association } from './Association';
 import { Inheritance } from './Inheritance';
 import { WindTurbine, Heater, House, Generator, Substation } from './Architecture';
-import { SingleLine, DoubleLine } from './SingleLine';
+import { SingleLine, DoubleLine } from './Lines';
 
 export const stencils = {
   'rm:GeneralCompartmentNodeStencil': Compartment,
