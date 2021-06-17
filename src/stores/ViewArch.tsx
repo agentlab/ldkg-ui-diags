@@ -21,7 +21,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:WindTurbineStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:WindTurbineStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode2',
@@ -40,7 +40,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode3',
@@ -59,7 +59,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:GeneratorStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:GeneratorStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode4',
@@ -78,7 +78,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:SubstationStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:SubstationStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode5',
@@ -97,7 +97,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not in
   },
   {
     '@id': 'mktp:diagramNode6',
@@ -116,7 +116,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
   },
   {
     '@id': 'mktp:diagramNode7',
@@ -135,7 +135,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
   },
 ];
 
@@ -158,7 +158,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'rm:Line',
   },
   {
     '@id': 'mktp:diagramArrow1',
@@ -175,7 +175,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'rm:Line',
   },
   {
     '@id': 'mktp:diagramArrow2',
@@ -192,7 +192,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'rm:Line',
   },
   {
     '@id': 'mktp:diagramArrow3',
@@ -209,7 +209,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:Line',
+    stencil: 'rm:Line',
   },
   {
     '@id': 'mktp:diagramArrow4',
@@ -226,7 +226,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:DoubleLine',
+    stencil: 'rm:DoubleLine',
   },
   {
     '@id': 'mktp:diagramArrow5',
@@ -243,7 +243,7 @@ export const viewDataArchArrows = [
       '@type': 'sh:PropertyShape',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'ar:DoubleLine',
+    stencil: 'rm:DoubleLine',
   },
 ];
 

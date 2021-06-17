@@ -7,7 +7,7 @@ import { Card } from './Card';
 import { Association } from './Association';
 import { Inheritance } from './Inheritance';
 import { WindTurbine, Heater, House, Generator, Substation } from './Architecture';
-import { DefaultArrow, DoubleArrow } from './DefaultArrow';
+import { SingleLine, DoubleLine } from './SingleLine';
 
 export const stencils = {
   'rm:GeneralCompartmentNodeStencil': Compartment,
@@ -22,11 +22,11 @@ export const stencils = {
   'rm:DefaultEdgeStencil': {},
   'rm:AssociationArrowStencil': Association,
   'rm:InheritanceArrowStencil': Inheritance,
-  'ar:WindTurbineStencil': WindTurbine,
-  'ar:HeaterStencil': Heater,
-  'ar:HouseStencil': House,
-  'ar:SubstationStencil': Substation,
-  'ar:GeneratorStencil': Generator,
-  'ar:Line': DefaultArrow,
-  'ar:DoubleLine': DoubleArrow,
+  'rm:WindTurbineStencil': WindTurbine,
+  'rm:HeaterStencil': Heater,
+  'rm:HouseStencil': House,
+  'rm:SubstationStencil': Substation,
+  'rm:GeneratorStencil': Generator,
+  'rm:Line': SingleLine,
+  'rm:DoubleLine': DoubleLine,
 };

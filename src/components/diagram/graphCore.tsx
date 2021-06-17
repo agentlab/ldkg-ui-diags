@@ -107,35 +107,35 @@ export const createGraph = ({
       true,
     );
     Graph.registerNode(
-      'ar:WindTurbineStencil',
+      'rm:WindTurbineStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'ar:HeaterStencil',
+      'rm:HeaterStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'ar:HouseStencil',
+      'rm:HouseStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'ar:SubstationStencil',
+      'rm:SubstationStencil',
       {
         inherit: ReactShape,
       },
       true,
     );
     Graph.registerNode(
-      'ar:GeneratorStencil',
+      'rm:GeneratorStencil',
       {
         inherit: ReactShape,
       },

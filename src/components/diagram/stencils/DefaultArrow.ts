@@ -1,4 +1,4 @@
-export const DefaultArrow = {
+export const SingleLine = {
   attrs: {
     line: {
       targetMarker: null,
@@ -6,7 +6,7 @@ export const DefaultArrow = {
   },
 };
 
-export const DoubleArrow = {
+export const DoubleLine = {
   shape: 'double-edge',
   attrs: {
     line: {
