@@ -1,10 +1,10 @@
 import { act, render } from '@testing-library/react';
 
-import { Compartment } from '../components/diagram/stencils/Compartment';
-import { NodeField } from '../components/diagram/stencils/NodeField';
-import { NodeShape } from '../components/diagram/stencils/NodeShape';
-import { Default } from '../components/diagram/stencils/Default';
-import { Card } from '../components/diagram/stencils/Card';
+import { Compartment } from '../src/components/diagram/stencils/Compartment';
+import { NodeField } from '../src/components/diagram/stencils/NodeField';
+import { NodeShape } from '../src/components/diagram/stencils/NodeShape';
+import { Default } from '../src/components/diagram/stencils/Default';
+import { Card } from '../src/components/diagram/stencils/Card';
 
 describe('Stencils', () => {
   it('renders Compartment without crashing', async () => {
