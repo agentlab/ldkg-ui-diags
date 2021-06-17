@@ -1,7 +1,7 @@
 import Plot from 'react-plotly.js';
 import * as math from 'mathjs';
 
-export const union = (iterables) => {
+export const union = (iterables: any): Set<any> => {
   const set = new Set();
   for (const iterable of iterables) {
     for (const item of iterable) {
@@ -11,12 +11,12 @@ export const union = (iterables) => {
   return set;
 };
 
-export const now = () => {
+export const now = (): number => {
   return performance.now();
 };
 
-export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }) => {
-  const results = [...Array(runs)].map((_, idx) => {
+export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }): any => {
+  const results = [...Array(runs)].map((item, idx) => {
     console.log('Run: ', idx);
     return perfTest(length)
       .map((p, idx) => ({ p, idx }))
@@ -24,7 +24,7 @@ export const Benchmark = ({ perfTest, length = 100, runs = 5, step = 1 }) => {
   });
   console.log(results);
 
-  const data = results[0].map((_, idx) => {
+  const data = results[0].map((item, idx) => {
     const y = results.map((run) => run[idx].p);
     const mean = math.mean(y);
     const std = math.std(y);
