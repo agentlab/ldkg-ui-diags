@@ -14,7 +14,7 @@ enum GRID_TYPE {
 const ConfigGrid = observer((props: any) => {
   const attrs = props.view.options?.gridOptions || {};
 
-  const onChange = props.onChange || (() => {});
+  const onChange = props.onChange || (() => null);
 
   return (
     <Tabs defaultActiveKey='1'>

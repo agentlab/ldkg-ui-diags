@@ -22,7 +22,7 @@ const store: any = asReduxStore(rootStore);
 connectReduxDevtools(require('remotedev'), rootStore);
 
 export default {
-  title: 'Components/GraphEditor',
+  title: 'GraphEditor/CardsDiagram',
   component: GraphEditor,
 } as Meta;
 
@@ -34,8 +34,8 @@ const Template: Story<any> = (args: any) => (
   </Provider>
 );
 
-export const Cards = Template.bind({});
-Cards.args = {
+export const LocalData = Template.bind({});
+LocalData.args = {
   viewDescrCollId: viewDescrCollConstr['@id'],
   viewDescrId: viewDescrs[0]['@id'],
   viewKindCollId: viewKindCollConstr['@id'],
