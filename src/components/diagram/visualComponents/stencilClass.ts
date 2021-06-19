@@ -569,13 +569,13 @@ export const defaultOptions: Partial<Options> = {
 
 export class ClassNames {
   static readonly base = 'widget-stencil';
-  static readonly title = `${this.base}-title`;
-  static readonly search = `${this.base}-search`;
-  static readonly searchText = `${this.search}-text`;
-  static readonly content = `${this.base}-content`;
-  static readonly group = `${this.base}-group`;
-  static readonly groupTitle = `${this.group}-title`;
-  static readonly groupContent = `${this.group}-content`;
+  static readonly title = `${ClassNames.base}-title`;
+  static readonly search = `${ClassNames.base}-search`;
+  static readonly searchText = `${ClassNames.search}-text`;
+  static readonly content = `${ClassNames.base}-content`;
+  static readonly group = `${ClassNames.base}-group`;
+  static readonly groupTitle = `${ClassNames.group}-title`;
+  static readonly groupContent = `${ClassNames.group}-content`;
 }
 
 export class Private {
