@@ -1,9 +1,11 @@
 module.exports = {
   verbose: true,
+  preset: 'ts-jest/presets/js-with-ts-esm',
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['/cypress/', '/es/', '/example/', '/lib/', '/node_modules/'],
   transformIgnorePatterns: ['node_modules/(?!(lodash-es)/)'],
-  preset: 'ts-jest/presets/js-with-ts-esm',
+  collectCoverageFrom: ['./src/**/*.{js,jsx,ts,tsx}'],
+  coverageProvider: 'v8',
   globals: {
     extensionsToTreatAsEsm: ['.ts', '.js'],
     'ts-jest': {

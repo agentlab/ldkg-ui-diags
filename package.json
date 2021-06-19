@@ -18,6 +18,7 @@
     "build": "yarn clean && yarn rollup -c",
     "build-tsc": "yarn tsc --project ./tsconfig-build.json",
     "test": "cross-env NODE_ENV=--experimental-vm-modules jest",
+    "test:ci": "cross-env NODE_ENV=--experimental-vm-modules jest --ci --coverage --maxWorkers=2",
     "cypress:open": "cypress open",
     "lint": "eslint \"{src,stories,test}**/*.{js,jsx,ts,tsx}\"",
     "prepare": "husky install && yarn build",
