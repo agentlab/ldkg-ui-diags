@@ -10,7 +10,7 @@
     "src"
   ],
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "scripts": {
     "clean": "rimraf dist es lib",
