@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ConfigGrid from './ConfigGrid';
-import cloneDeep from 'lodash/cloneDeep';
+import cloneDeep from 'lodash-es/cloneDeep';
 import { applySnapshot } from 'mobx-state-tree';
 import editorStyles from '../../../Editor.module.css';
 import panelStyles from './ConfigPanel.module.css';

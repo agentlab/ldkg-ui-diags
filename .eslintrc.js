@@ -21,7 +21,6 @@ module.exports = {
     'react-app',
     //'react-app/jest',
     'plugin:jest/recommended',
-    'plugin:cypress/recommended',
     'prettier',
     'plugin:prettier/recommended',
   ],
