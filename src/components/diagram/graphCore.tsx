@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash-es/cloneDeep';
 import { Graph, Cell, Markup } from '@antv/x6';
 import { ReactShape } from '@antv/x6-react-shape';
 import { EdgeView, NodeView } from '@antv/x6';
@@ -461,6 +461,7 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   id: data['@id'],
   size: { width: data.width, height: data.height },
   position: { x: data.x, y: data.y },
+  layoutProp: data.layout || {},
   shape: shape,
   editing: false,
   component(n) {

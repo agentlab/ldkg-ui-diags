@@ -36,8 +36,8 @@ const Template: Story<any> = (args: any) => (
   </Provider>
 );
 
-export const Add = Template.bind({});
-Add.args = {
+export const LocalData = Template.bind({});
+LocalData.args = {
   viewDescrCollId: viewDescrCollConstr['@id'],
   viewDescrId: viewDescrs[0]['@id'],
   viewKindCollId: viewKindCollConstr['@id'],

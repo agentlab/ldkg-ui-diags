@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { Addon, Node, FunctionExt, Cell, Util, Point } from '@antv/x6';
-import { grid } from '@antv/x6/lib/layout/grid';
+import { Node, Graph } from '@antv/x6';
+import { ReactShape } from '@antv/x6-react-shape';
+//import { grid } from '@antv/x6/lib/layout/grid';
 import { v4 as uuidv4 } from 'uuid';
 import { nodeFromData } from '../graphCore';
 import { StencilEditor } from '../stencils/StencilEditor';
-import { PanelStencilRenderer } from '../stencils/PanelStencilRenderer';
+import { Stencil as StencilX6 } from './stencilClass';
+import { grid } from './grid';
 
 import styles from '../../../Editor.module.css';
 //import { AnyCnameRecord } from 'node:dns';
@@ -14,111 +16,11 @@ interface AnyCnameRecord {
   value: string;
 }
 
-class myDND extends Addon.Dnd {
-  protected drop(draggingNode: Node, pos: Point.PointLike) {
-    if (this.isInsideValidArea(pos)) {
-      const targetGraph = this.targetGraph;
-      const targetModel = targetGraph.model;
-      const local = targetGraph.clientToLocal(pos);
-      const sourceNode = this.sourceNode!;
-      const droppingNode = this.options.getDropNode(draggingNode, {
-        sourceNode,
-        draggingNode,
-        targetGraph: this.targetGraph,
-        draggingGraph: this.draggingGraph,
-      });
-      const bbox = droppingNode.getBBox();
-      local.x += bbox.x - bbox.width / 2;
-      local.y += bbox.y - bbox.height / 2;
-      const gridSize = this.snapOffset ? 1 : targetGraph.getGridSize();
-
-      droppingNode.position(Util.snapToGrid(local.x, gridSize), Util.snapToGrid(local.y, gridSize));
-      droppingNode.eachChild((child: any) =>
-        child.position(Util.snapToGrid(local.x, gridSize), Util.snapToGrid(local.y, gridSize)),
-      );
-      droppingNode.removeZIndex();
-
-      const validateNode = this.options.validateNode;
-      const ret = validateNode
-        ? validateNode(droppingNode, {
-            sourceNode,
-            draggingNode,
-            droppingNode,
-            targetGraph,
-            draggingGraph: this.draggingGraph,
-          })
-        : true;
-
-      if (typeof ret === 'boolean') {
-        if (ret) {
-          targetModel.addCell(droppingNode, { stencil: this.cid });
-          return droppingNode;
-        }
-        return null;
-      }
-
-      return FunctionExt.toDeferredBoolean(ret).then((valid) => {
-        if (valid) {
-          targetModel.addCell(droppingNode, { stencil: this.cid });
-        }
-        return null;
-      });
-    }
-
-    return null;
-  }
-}
-class ComplexStencil extends Addon.Stencil {
-  public readonly dnd: myDND;
-  constructor(options: Partial<any>) {
-    super(options);
-    this.dnd = new myDND({
-      ...this.options,
-    });
-  }
-  protected loadGroup(cells: (Node | Node.Metadata)[], groupName?: string) {
-    const model = this.getModel(groupName);
-    const group = this.getGroup(groupName);
-    const layout = (group && group.layout) || this.options.layout;
-    if (model) {
-      const nodes = cells.map((cell) =>
-        Node.isNode(cell)
-          ? cell
-          : Node.create({
-              ...cell,
-              resizeGraph: layout && model ? () => FunctionExt.call(layout, this, model, group) : () => {},
-            }),
-      );
-      model.resetCells(nodes);
-    }
-
-    let height = this.options.stencilGraphHeight;
-    if (group && group.graphHeight != null) {
-      height = group.graphHeight;
-    }
-
-    if (layout && model) {
-      FunctionExt.call(layout, this, model, group);
-    }
-
-    if (!height) {
-      const graph = this.getGraph(groupName);
-      graph.fitToContent({
-        minWidth: graph.options.width,
-        gridHeight: 1,
-        padding: (group && group.graphPadding) || this.options.stencilGraphPadding || 10,
-      });
-    }
-
-    return this;
-  }
-}
-
-export const Stencil = ({ nodes = [], graph, viewKindStencils }: any) => {
+export const Stencil: React.FC<any> = ({ nodes = [], graph, viewKindStencils }: any) => {
   const refContainer = React.useRef<any>();
   useEffect(() => {
     if (graph) {
-      const s = new ComplexStencil({
+      const s = new StencilX6({
         title: 'Stencil',
         target: graph,
         collapsable: true,
@@ -127,19 +29,24 @@ export const Stencil = ({ nodes = [], graph, viewKindStencils }: any) => {
         layoutOptions: {
           columns: 1,
         },
-        layout(model, group) {
+        layout(model, group, stencilGraph) {
           const options = {
-            columnWidth: 140,
-            columns: 1,
-            resizeToFit: false,
+            columnWidth: 60,
+            columns: 5,
+            rowHeight: 60,
+            resizeToFit: true,
             dx: 10,
             dy: 10,
           };
 
-          grid(model, {
-            ...options,
-            ...(group ? group.layoutOptions : {}),
-          });
+          grid(
+            model,
+            {
+              ...options,
+              ...(group ? group.layoutOptions : {}),
+            },
+            stencilGraph as Graph,
+          );
         },
         getDropNode: (draggingNode: any) => {
           const data: any = { ...draggingNode.getProp() };
@@ -153,7 +60,31 @@ export const Stencil = ({ nodes = [], graph, viewKindStencils }: any) => {
           });
           const newNode = Node.create(node);
           if (nodeData.elements) {
-            for (let e in nodeData.elements) {
+            for (const e in nodeData.elements) {
+              const childNode = nodeFromData({
+                data: { '@id': uuidv4(), height: 55, width: 150, x: 0, y: 20, z: 2, subject: {} },
+                Renderer,
+                shape: 'rm:GeneralCompartmentNodeStencil',
+              });
+              const newChildNode = Node.create(childNode);
+              newNode.addChild(newChildNode);
+            }
+          }
+          return newNode;
+        },
+        getPopupNode: (node: any) => {
+          const data: any = { ...node.getProp() };
+          data.editing = true;
+          const nodeData = data.metaData;
+          const Renderer = StencilEditor({ options: viewKindStencils[nodeData['@id']] });
+          const popupNode = nodeFromData({
+            data: { '@id': 'popup', height: 55, width: 150, subject: {}, ...data.position, x: 0, y: 0 },
+            Renderer,
+            shape: nodeData['@id'],
+          });
+          const newNode = Node.create(popupNode);
+          if (nodeData.elements) {
+            for (const e in nodeData.elements) {
               const childNode = nodeFromData({
                 data: { '@id': uuidv4(), height: 55, width: 150, x: 0, y: 20, z: 2, subject: {} },
                 Renderer,
@@ -183,17 +114,44 @@ export const Stencil = ({ nodes = [], graph, viewKindStencils }: any) => {
   return <div ref={refContainer} className={styles.stencil} />;
 };
 
-export const createStencils = (graph: any, viewKindStencils: AnyCnameRecord) => {
+export const createStencils: React.FC<any> = (graph: any, viewKindStencils: AnyCnameRecord) => {
   const nodes = Object.keys(viewKindStencils).reduce((acc: any, e: string, idx: number) => {
     if (viewKindStencils[e].type === 'DiagramNode') {
-      const Renderer = PanelStencilRenderer({ options: viewKindStencils[e], parent: true });
+      const Renderer = StencilEditor({ options: viewKindStencils[e], parent: true });
       const node: any = nodeFromData({
-        data: { '@id': e, height: 55, width: 150, subject: {}, x: 0, y: 0 },
+        data: { '@id': e, height: 55, width: 150, subject: {}, x: 0, y: 0, layout: viewKindStencils[e].layout },
         Renderer,
         shape: e,
       });
+      Graph.registerNode(
+        e,
+        {
+          inherit: ReactShape,
+        },
+        true,
+      );
+      Graph.registerNode(
+        'rm:GeneralCompartmentNodeStencil',
+        {
+          inherit: ReactShape,
+        },
+        true,
+      );
+      node.resizeGraph = () => null;
       node.metaData = viewKindStencils[e];
-      acc.push(node);
+      const newNode = Node.create(node);
+      if (viewKindStencils[e].elements) {
+        for (const el in viewKindStencils[e].elements) {
+          const childNode = nodeFromData({
+            data: { '@id': uuidv4(), height: 55, width: 150, x: 0, y: 20, z: 2, subject: {} },
+            Renderer,
+            shape: 'rm:GeneralCompartmentNodeStencil',
+          });
+          const newChildNode = Node.create(childNode);
+          newNode.addChild(newChildNode);
+        }
+      }
+      acc.push(newNode);
     }
     return acc;
   }, []);
