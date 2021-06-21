@@ -1,43 +1,43 @@
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
-import { getSnapshot } from 'mobx-state-tree';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
-import { SparqlClientImpl } from '@agentlab/sparql-jsld-client';
+import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
+import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
-import { rdfServerUrl, rmRepositoryParam } from '../config';
-import { GraphEditor } from '../components/GraphEditor';
-import { RootContextProvider } from '../stores/RootContext';
+import { GraphEditor } from '../src/components/GraphEditor';
 
-import { createRootStoreFromState } from '../stores/RootStore';
-import { rootModelInitialState3 } from '../stores/ViewArch';
-import { viewDescrCollConstr } from '../stores/view';
+import { archModelInitialState, archViewDescrs, archViewKinds } from '../src/stores/ViewArch';
+import { viewDescrCollConstr } from '../src/stores/view';
+import { viewKindCollConstr } from '../src/stores/viewKinds';
 
-import '../index.css';
-import '../App.css';
+import '../src/index.css';
+import '../src/App.css';
 
-const client = new SparqlClientImpl(rdfServerUrl);
-const rootStore = createRootStoreFromState(rmRepositoryParam, client, rootModelInitialState3);
+const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
+//@ts-ignore
+const rootStore = Repository.create(archModelInitialState, { client });
 const store: any = asReduxStore(rootStore);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 connectReduxDevtools(require('remotedev'), rootStore);
 
-const cc = getSnapshot(rootStore);
-console.log(cc);
-
 export default {
-  title: 'Components/GraphEditor',
+  title: 'GraphEditor/ArchDiagram',
   component: GraphEditor,
 } as Meta;
 
 const Template: Story<any> = (args: any) => (
   <Provider store={store}>
-    <RootContextProvider rootStore={rootStore}>
+    <MstContextProvider rootStore={rootStore}>
       <GraphEditor {...args} />
-    </RootContextProvider>
+    </MstContextProvider>
   </Provider>
 );
 
-export const Architecture = Template.bind({});
-Architecture.args = {
-  viewDescrId: viewDescrCollConstr['@id'],
+export const LocalData = Template.bind({});
+LocalData.args = {
+  viewDescrCollId: viewDescrCollConstr['@id'],
+  viewDescrId: archViewDescrs[0]['@id'],
+  viewKindCollId: viewKindCollConstr['@id'],
+  viewKindId: archViewKinds[0]['@id'],
 };

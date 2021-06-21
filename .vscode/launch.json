@@ -8,14 +8,7 @@
             "type": "pwa-chrome",
             "request": "launch",
             "name": "Storybook1 in Chrome",
-            "url": "http://localhost:6006/?path=/story/datarenderer--time-series",
-            "webRoot": "${workspaceFolder}",
-        },
-        {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Storybook2 in Chrome",
-            "url": "http://localhost:6006/?path=/story/remotedatarenderer--time-series",
+            "url": "http://localhost:6006/?path=/story/grapheditor-archdiagram--local-data",
             "webRoot": "${workspaceFolder}",
         },
     ]

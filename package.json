@@ -22,7 +22,7 @@
     "cypress:open": "cypress open",
     "lint": "eslint \"{src,stories,test}**/*.{js,jsx,ts,tsx}\"",
     "prepare": "husky install && yarn build",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -s ./stories/static -p 6006",
     "build-storybook": "build-storybook",
     "format": "./node_modules/.bin/prettier --write \"{src,stories,test}/**/*.{js,jsx,ts,tsx,json,css,less,scss,md}\"",
     "lint-staged": "lint-staged"
