@@ -13,10 +13,13 @@ export const StencilEditor = ({ options }: any) =>
 export const createNewStencilProps = (options, nodeData) => {
   const newProps = {};
   for (const key in options) {
-    if (key == 'style') {
+    if (key === 'style') {
       newProps[key] = options.style;
     } else {
-      if (options[key].scope) {
+      const val = options[key];
+      if (typeof val === 'string') {
+        newProps[key] = val;
+      } else if (val.scope) {
         const uri = options[key].scope.split('/').join('.');
         newProps[key] = get(nodeData, uri) || options[key].default;
       }
