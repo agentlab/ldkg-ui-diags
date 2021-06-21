@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { stencils } from './';
 import { observer } from 'mobx-react-lite';
 import { createNewStencilProps } from './StencilEditor';
-import { get } from 'lodash';
 
 export const PanelStencilRenderer = ({ options, parent }: any) =>
   observer<any>(({ node, nodeData, ...props }: any) => {

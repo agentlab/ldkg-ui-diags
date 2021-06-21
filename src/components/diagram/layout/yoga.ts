@@ -2,6 +2,7 @@ import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
 import { Record, List } from 'immutable';
 import { getRoot } from './kiwi';
+import { createNewStencilProps } from '../stencils/StencilEditor';
 
 const PositionRecord: any = Record({
   top: 0,
@@ -51,7 +52,7 @@ const rehydrate = (node: any): any => {
 };
 
 const nodeConfig = {
-  'rm:PropertyNodeStencil': {},
+  /*'rm:PropertyNodeStencil': {},
   'rm:CompartmentNodeStencil': {
     paddingTop: 20,
     paddingLeft: 1,
@@ -75,7 +76,7 @@ const nodeConfig = {
     },
     flexDirection: 'row',
     alignItems: 'stretch',
-  },
+  },*/
 };
 
 type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
@@ -112,6 +113,13 @@ export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
     const changed = handleGraphEvent(e, 'remove', graph);
     updateVariables(changed, graph);
   });
+  /*graph.on('node:selected', (e) => {
+    //
+    if (e.node._parent) {
+      graph.select(e.node._parent);
+      graph.unselect(e.node);
+    }
+  });*/
 };
 
 const defaultLayout = {
@@ -203,18 +211,22 @@ const applyProperties = (props: { [key: string]: string | number | null | any },
 };
 
 export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> => {
-  const node: X6Node = e.node;
+  const node: any = e.node;
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
+    console.log('ADDD', node);
     if (node.hasParent()) {
-      const changed = changeParent(null, node, node, graph);
+      const changed = changeParent(null, node.getParent(), node, graph);
       changedNodes = new Set([...changedNodes, ...changed]);
     }
   } else if (type === 'changeParent') {
     const changed = changeParent(e.previous, e.current, node, graph);
     changedNodes = new Set([...changedNodes, ...changed]);
   } else if (type === 'move') {
+    if (node.getParent() && !node.getStore().get().movable) {
+      moveNode(node.getParent());
+    }
     moveNode(node);
   } else if (type === 'resize') {
     resizeNode(node, graph);
@@ -304,13 +316,14 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
 };
 
 const changeChildren = (previous: string[], current: string[], node: any) => {
+  console.log('NODE', node, node.getParent());
   const removed = previous.filter((x) => !current.includes(x));
   const added = current.filter((x) => !previous.includes(x));
 
   const changedIds = [...removed, ...added];
   const changedNodes = changedIds.map((nodeId) => (node._model.graph as Graph).getCell(nodeId));
 
-  return new Set(changedNodes.map((node) => getRoot(node)));
+  return node.getParent() ? new Set(changedNodes.map((node) => getRoot(node))) : new Set([]);
 };
 
 const removeNode = (node: any) => {
@@ -345,6 +358,7 @@ const addNode = (node: any) => {
 const moveNode = (node: any) => {
   if (!node._parent) {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
+
     yogaNode.setPosition(Yoga.EDGE_LEFT, node.position().x);
     yogaNode.setPosition(Yoga.EDGE_TOP, node.position().y);
   }

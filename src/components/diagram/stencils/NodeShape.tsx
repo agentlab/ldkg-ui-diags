@@ -13,7 +13,7 @@ const inputStyle: React.CSSProperties = {
   textOverflow: 'ellipsis',
 };
 
-export const NodeShape = React.memo(
+/*export const NodeShape = React.memo(
   ({ children = () => {}, data = {}, text, setEditing, nodeData, onSave }: any) => {
     const label = data.label || nodeData?.subject?.title || text;
     return (
@@ -38,6 +38,28 @@ export const NodeShape = React.memo(
         )}
         {children()}
       </div>
+    );
+  },
+  (prev: any, next: any) => {
+    if (prev.data?.editing !== next.data?.editing) {
+      return false;
+    }
+    return true;
+  },
+);*/
+
+export const NodeShape = React.memo(
+  ({ children = () => null, data = {}, text, setEditing, style, nodeData, onSave }: any) => {
+    const label = data.label || nodeData?.subject?.title || text;
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          boxSizing: 'border-box',
+          backgroundColor: 'white',
+          ...style,
+        }}></div>
     );
   },
   (prev: any, next: any) => {

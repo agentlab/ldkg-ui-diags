@@ -135,7 +135,7 @@ export const viewDataRootNodes = [
     z: 0,
     rotation: 0,
     height: 60,
-    width: 20,
+    width: 172,
     subject: {
       // ref to the model object
       '@id': 'rm:ArtifactShape',
@@ -194,8 +194,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 20,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode1', // ref to the parent node
     object: 'rm:DataModelView', // ref to the diagram
     //path?
@@ -209,8 +209,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 20,
     z: 2,
-    height: 85,
-    width: 240,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode1', // ref to the parent node
     object: 'rm:DataModelView', // ref to the diagram
     //path?
@@ -224,8 +224,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 20,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode10', // ref to the parent node
     subject: {
       // ref to the model object
@@ -252,8 +252,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 30,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:titleShape',
@@ -280,8 +280,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 40,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:descriptionShape',
@@ -307,8 +307,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 50,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:createdShape',
@@ -334,8 +334,8 @@ export const viewDataChildNodes = [
     x: 10,
     y: 60,
     z: 2,
-    height: 85,
-    width: 230,
+    height: 35,
+    width: 170,
     parent: 'rm:diagramNode10',
     subject: {
       '@id': 'rm:modifiedShape',
@@ -361,7 +361,7 @@ export const viewDataChildNodes = [
     x: 40,
     y: 30,
     z: 2,
-    height: 85,
+    height: 35,
     width: 230,
     parent: 'rm:diagramNode2',
     subject: {
