@@ -1,5 +1,7 @@
 import React from 'react';
 import { Graph, Markup } from '@antv/x6';
+import ReactDOM from 'react-dom';
+import { stencils } from './stencils';
 
 export const edgeExamples = [
   {
@@ -7,27 +9,7 @@ export const edgeExamples = [
       markup: [{ ...Markup.getForeignObjectMarkup() }],
       attrs: {
         fo: {
-          label: 'Default',
-          width: 1,
-          height: 1,
-          x: 60,
-          y: -10,
-        },
-      },
-    },
-    attrs: {
-      line: {
-        stroke: '#808080',
-        strokeWidth: 1,
-      },
-    },
-  },
-  {
-    label: {
-      markup: [{ ...Markup.getForeignObjectMarkup() }],
-      attrs: {
-        fo: {
-          label: 'Association',
+          label: 'похожесть',
           width: 1,
           height: 1,
           x: 60,
@@ -41,7 +23,32 @@ export const edgeExamples = [
         strokeWidth: 1,
         targetMarker: {
           name: 'block',
-          strokeWidth: 2,
+          strokeWidth: 1,
+          fill: '#808080',
+        },
+      },
+    },
+  },
+  {
+    label: {
+      markup: [{ ...Markup.getForeignObjectMarkup() }],
+      attrs: {
+        fo: {
+          label: 'в категории',
+          width: 1,
+          height: 1,
+          x: 60,
+          y: -10,
+        },
+      },
+    },
+    attrs: {
+      line: {
+        stroke: '#808080',
+        strokeWidth: 1,
+        targetMarker: {
+          name: 'block',
+          strokeWidth: 1,
           open: true,
         },
       },
@@ -52,7 +59,7 @@ export const edgeExamples = [
       markup: [{ ...Markup.getForeignObjectMarkup() }],
       attrs: {
         fo: {
-          label: 'Inheritance',
+          label: 'подкатегория',
           width: 1,
           height: 1,
           x: 60,
@@ -66,7 +73,7 @@ export const edgeExamples = [
         strokeWidth: 1,
         targetMarker: {
           name: 'block',
-          strokeWidth: 2,
+          strokeWidth: 1,
           fill: 'white',
         },
       },
@@ -102,7 +109,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
     },
   };
 
-  const width = 100;
+  const width = 120;
   const height = 200;
   const itemHeight = 30;
 
@@ -115,6 +122,23 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
       width: width,
       height: height,
       interacting: false,
+      onEdgeLabelRendered: (args) => {
+        const { selectors, label } = args;
+        const Renderer = stencils['defaultLabel'];
+        const content = selectors.foContent as HTMLDivElement;
+        if (content) {
+          ReactDOM.render(
+            <Renderer
+              parent={selectors.fo}
+              label={label?.attrs?.fo.label}
+              onSave={() => {
+                /*do nothing*/
+              }}
+            />,
+            content,
+          );
+        }
+      },
     });
     edges.forEach((edge, idx) =>
       g.addEdge({

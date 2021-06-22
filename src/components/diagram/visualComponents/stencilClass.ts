@@ -96,9 +96,10 @@ export class Stencil extends View {
     this.dnd = new myDND(this.options);
     this.onSearch = FunctionExt.debounce(this.onSearch, 200);
     this.container = document.createElement('div');
-    this.$container = this.$(this.container)
-      .addClass(this.prefixClassName(ClassNames.base))
-      .attr('data-not-found-text', this.options.notFoundText || 'No matches found');
+    this.$container = this.$(this.container).attr(
+      'data-not-found-text',
+      this.options.notFoundText || 'No matches found',
+    );
 
     this.options.collapsable =
       options.collapsable && options.groups && options.groups.some((group) => group.collapsable !== false);
@@ -112,10 +113,7 @@ export class Stencil extends View {
       }
     }
 
-    this.$('<div/>')
-      .addClass(this.prefixClassName(ClassNames.title))
-      .html(this.options.title)
-      .appendTo(this.$container);
+    //this.$('<div/>').html(this.options.title).appendTo(this.$container);
 
     this.popup = document.createElement('div');
     this.popup.style.position = 'absolute';

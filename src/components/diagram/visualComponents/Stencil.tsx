@@ -23,17 +23,17 @@ export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
       const s = new StencilX6({
         title: 'Stencil',
         target: graph,
-        collapsable: true,
+        //collapsable: true,
         stencilGraphWidth: 300,
-        stencilGraphHeight: 380,
+        stencilGraphHeight: 280,
         layoutOptions: {
           columns: 1,
         },
         layout(model, group, stencilGraph) {
           const options = {
-            columnWidth: 60,
-            columns: 5,
-            rowHeight: 60,
+            columnWidth: 70,
+            columns: 2,
+            rowHeight: 70,
             resizeToFit: true,
             dx: 10,
             dy: 10,
@@ -75,7 +75,7 @@ export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
         groups: [
           {
             name: 'group1',
-            title: 'Components',
+            title: 'Стенсилы',
           },
         ],
       });
