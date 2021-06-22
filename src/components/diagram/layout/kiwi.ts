@@ -123,8 +123,8 @@ export const propogateUpdates = (rootNode: any, graph: any) => {
 
 export const getRoot = (node: any) => {
   let current = node;
-  while (current._parent) {
-    current = current._parent;
+  while (current.getParent()) {
+    current = current.getParent();
   }
   return current;
 };

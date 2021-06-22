@@ -2,12 +2,12 @@ import { Node } from '@antv/x6';
 import { Options } from '@antv/x6/lib/graph/options'; // TODO: how to properly import Options?
 
 export const validateEmbedding = ({ child, parent }: { child: Node; parent: Node }): boolean => {
-  if (parent.shape === 'rm:PropertyNodeStencil') {
+  /*if (parent.shape === 'rm:PropertyNodeStencil') {
     return false;
   }
   if (parent.shape === 'rm:ClassNodeStencil' && child.shape === 'rm:ClassNodeStencil') {
     return false;
-  }
+  }*/
   return true;
 };
 

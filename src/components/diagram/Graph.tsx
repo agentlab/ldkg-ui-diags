@@ -6,7 +6,7 @@ import { addYogaSolver } from './layout/yoga';
 //import { addKiwiSolver } from './layout/kiwi';
 
 import { Minimap } from './visualComponents/Minimap';
-import { createStencils } from './visualComponents/Stencil';
+import { Stencil } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
 import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
 import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
@@ -49,7 +49,8 @@ export const Graph = (props: any) => {
       graph.resize(width, height);
     };
     resizeFn();
-
+    graph.disablePanning();
+    graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
     // dispose attached HTML objects
     return () => {
@@ -72,7 +73,7 @@ export const Graph = (props: any) => {
         )}
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
-            {createStencils(graph, props.stencilPanel)}
+            <Stencil graph={graph} viewKindStencils={props.stencilPanel} />
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>

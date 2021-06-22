@@ -3,7 +3,7 @@ import { ToolsView, EdgeView, Point } from '@antv/x6';
 import { observer } from 'mobx-react-lite';
 import { Input } from 'antd';
 
-const style: React.CSSProperties = {
+const fieldStyle: React.CSSProperties = {
   backgroundColor: 'white',
   boxSizing: 'border-box',
 
@@ -18,8 +18,9 @@ const style: React.CSSProperties = {
 };
 
 export const NodeField = React.memo(
-  ({ data = {}, text, setEditing, nodeData, onSave }: any) => {
-    const label = data.label || `${nodeData?.subject?.name}: ${nodeData?.subject?.datatype}`;
+  ({ data = {}, text, style, setEditing, nodeData, onSave }: any) => {
+    const label =
+      data.label || nodeData?.subject?.title || `${nodeData?.subject?.name}: ${nodeData?.subject?.datatype}`;
     return data.editing ? (
       <Input defaultValue={label} onBlur={(e: any) => onSave(e.target.value)} style={style} />
     ) : (
@@ -27,7 +28,7 @@ export const NodeField = React.memo(
         onDoubleClick={() => {
           if (setEditing) setEditing(true);
         }}
-        style={style}>
+        style={{ ...fieldStyle, ...style }}>
         {label}
       </div>
     );

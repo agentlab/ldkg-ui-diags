@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import cloneDeep from 'lodash-es/cloneDeep';
-import { Graph, Cell, Markup } from '@antv/x6';
+import { Graph, Cell, Markup, Node, Interp, Model, Registry } from '@antv/x6';
+import { ShareRegistry } from '@antv/x6/lib/model/registry';
+import { Options as GraphOptions } from '@antv/x6/lib/graph/options';
 import { ReactShape } from '@antv/x6-react-shape';
 import { EdgeView, NodeView } from '@antv/x6';
 
@@ -10,6 +12,96 @@ import { StencilEditor } from './stencils/StencilEditor';
 import { EditableCellTool } from './stencils/NodeField';
 import { validateEmbedding, validateConnection } from './interactionValidation';
 
+export class ExtNode extends ReactShape {
+  translate(tx = 0, ty = 0, options: Node.TranslateOptions = {}) {
+    const selectedNodes = this.model?.graph?.getSelectedCells();
+
+    if (this.checkTranslationOwner(options.translateBy) && options.parentCall !== (this.getParent() as Node).id) {
+      return this;
+    }
+    if (tx === 0 && ty === 0) {
+      return this;
+    }
+    if (this.store.get().movable === false && !options.parentCall) {
+      if (this._parent) {
+        this._parent.translate(tx, ty, options);
+      }
+      return this;
+    }
+
+    options.translateBy = options.translateBy || this.id;
+
+    const position = this.getPosition();
+
+    if (options.restrict != null && options.translateBy === this.id) {
+      const bbox = this.getBBox({ deep: true });
+      const ra = options.restrict;
+      const dx = position.x - bbox.x;
+      const dy = position.y - bbox.y;
+      const x = Math.max(ra.x + dx, Math.min(ra.x + ra.width + dx - bbox.width, position.x + tx));
+      const y = Math.max(ra.y + dy, Math.min(ra.y + ra.height + dy - bbox.height, position.y + ty));
+
+      tx = x - position.x;
+      ty = y - position.y;
+    }
+
+    const translatedPosition = {
+      x: position.x + tx,
+      y: position.y + ty,
+    };
+
+    options.tx = tx;
+    options.ty = ty;
+
+    if (options.transition) {
+      if (typeof options.transition !== 'object') {
+        options.transition = {};
+      }
+
+      this.transition('position', translatedPosition, {
+        ...options.transition,
+        interp: Interp.object,
+      });
+      const newOptions = { ...options, parentCall: true };
+      this.eachChild((child) => {
+        if (selectedNodes?.indexOf(child) === -1) {
+          child.translate(tx, ty, newOptions);
+        }
+      });
+    } else {
+      this.startBatch('translate', options);
+      this.store.set('position', translatedPosition, options);
+      options.handledTranslation = options.handledTranslation || [];
+      if (!options.handledTranslation.includes(this)) {
+        options.handledTranslation.push(this);
+        const children = this.children;
+        if (children?.length) {
+          options.handledTranslation.push(...children);
+        }
+      }
+      const newOptions = { ...options, parentCall: this.id };
+      this.eachChild((child) => {
+        child.translate(tx, ty, newOptions);
+      });
+      this.stopBatch('translate', options);
+    }
+
+    return this;
+  }
+  getStore() {
+    return this.store;
+  }
+  checkTranslationOwner(ownerId) {
+    let child = this as Node;
+    while (child.getParent()) {
+      if ((child.getParent() as Node).id === ownerId) {
+        return true;
+      }
+      child = child.getParent() as Node;
+    }
+    return false;
+  }
+}
 class SimpleNodeView extends NodeView {
   protected renderMarkup() {
     this.renderJSONMarkup({
@@ -86,7 +178,7 @@ export const createGraph = ({
       Graph.registerNode(
         e,
         {
-          inherit: ReactShape,
+          inherit: ExtNode,
         },
         true,
       );
@@ -192,7 +284,17 @@ export const createGraph = ({
       findParent: 'center',
       validate: validateEmbedding,
     },
-    selecting: true,
+    selecting: {
+      enabled: true,
+      filter: (node) => {
+        const graph = node.model?.graph;
+        if (node.getParent() && !(node as ExtNode).getStore().get().movable) {
+          graph && graph.select((node.getParent() as Node).id);
+          return false;
+        }
+        return true;
+      },
+    },
     connecting: {
       dangling: false,
       connector: {
@@ -323,13 +425,13 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
   const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
   switch (data['@type']) {
     case 'rm:UsedInDiagramAsRootNodeShape': {
-      const node = nodeFromData({ data, Renderer, shape: data.stencil });
+      const node = createNode({ stencil: viewKindStencils[stencilId], data, shape: data.stencil, sample: false });
       (graph as Graph).addNode(node);
       break;
     }
     case 'rm:UsedInDiagramAsChildNode':
       if (graph.hasCell(data.parent)) {
-        const node = nodeFromData({ data, Renderer, shape: data.stencil });
+        const node = createNode({ stencil: viewKindStencils[stencilId], data, shape: data.stencil, sample: false });
         const child = (graph as Graph).addNode(node);
         const parent: Cell = (graph as Graph).getCell(data.parent);
         parent.addChild(child);
@@ -402,7 +504,9 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   size: { width: data.width, height: data.height },
   position: { x: data.x, y: data.y },
   layoutProp: data.layout || {},
+  style: data.style,
   shape: shape,
+  movable: data.movable !== undefined ? data.movable : true,
   editing: false,
   component(n) {
     const setEditing = (state: boolean) => {
@@ -445,3 +549,21 @@ const edgeFromData = ({ data }) => ({
     name: data.router || 'normal',
   },
 });
+
+export const createNode = ({ stencil, data, shape, sample }): Node => {
+  const Renderer = StencilEditor({ options: stencil });
+  const nodeData = nodeFromData({ data, shape, Renderer });
+  nodeData.layoutProp = { ...stencil.layout, ...nodeData.layoutProp };
+  const newNode = Node.create(nodeData);
+  (stencil.elements || []).forEach((el, idx) => {
+    if (el.constant || sample) {
+      const newData = { ...data };
+      delete newData['@id'];
+      newData.height = el.height || data.height;
+      newData.movable = false;
+      const childNode = createNode({ stencil: el, data: newData, shape, sample });
+      newNode.addChild(childNode);
+    }
+  });
+  return newNode;
+};

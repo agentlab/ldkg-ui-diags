@@ -34,6 +34,9 @@ export const event = (nodeId, nodeShape) => {
     hasParent() {
       return node._parent !== null;
     },
+    getParent() {
+      return node._parent;
+    },
   };
   const e = {
     node: node,
