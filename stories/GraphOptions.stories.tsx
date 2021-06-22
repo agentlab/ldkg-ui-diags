@@ -4,13 +4,14 @@ import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
 import { MstContextProvider } from '@agentlab/ldkg-ui-react';
+import cloneDeep from 'lodash-es/cloneDeep';
 
-import { Graph } from '../src/components/diagram/Graph';
+import { GraphEditor } from '../src/components/GraphEditor';
 
 import { mktpModelInitialState, mktpViewDescrs, mktpViewKinds } from '../src/stores/ViewCard';
 import { viewDescrCollConstr } from '../src/stores/view';
 import { viewKindCollConstr } from '../src/stores/viewKinds';
-import { getSnapshot } from 'mobx-state-tree';
+import { getSnapshot, applySnapshot } from 'mobx-state-tree';
 import { Spin } from 'antd';
 import { MstContext } from '@agentlab/ldkg-ui-react';
 
@@ -24,89 +25,35 @@ const store: any = asReduxStore(rootStore);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 connectReduxDevtools(require('remotedev'), rootStore);
 
-const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId, args }: any) => {
-  const { rootStore } = React.useContext(MstContext);
-  if (!rootStore) {
-    console.log('!rootStore', rootStore);
-    return <Spin />;
-  }
-
-  const collWithViewDescrsObs = rootStore.getColl(viewDescrCollId);
+const StoryEditor = ({ args }) => {
+  const collWithViewDescrsObs = rootStore.getColl(viewDescrCollConstr['@id']);
   if (!collWithViewDescrsObs) {
-    console.log('!collWithViewDescrsObs', viewDescrCollId);
+    console.log('!collWithViewDescrsObs', viewDescrCollConstr['@id']);
     return <Spin />;
   }
 
-  const viewDescrObs = collWithViewDescrsObs?.dataByIri(viewDescrId);
+  const viewDescrObs = collWithViewDescrsObs?.dataByIri(mktpViewDescrs[0]['@id']);
   if (!viewDescrObs) {
-    console.log('!viewDescrObs', viewDescrId);
+    console.log('!viewDescrObs', mktpViewDescrs[0]['@id']);
     return <Spin />;
   }
-
-  const collWithViewKindsObs = rootStore.getColl(viewKindCollId);
-  if (!collWithViewKindsObs) {
-    console.log('!collWithViewKindsObs', viewKindCollId);
-    return <Spin />;
-  }
-  const viewKindObs = collWithViewKindsObs?.dataIntrnl[0];
-  if (!viewKindObs) {
-    console.log('!viewKindObs', viewKindId);
-    return <Spin />;
-  }
-  const viewKind: any = getSnapshot(viewKindObs);
-  const view: any = getSnapshot(viewDescrObs);
-
-  const regStencils = (stencils, arr) => {
-    arr.forEach((e) => {
-      if (e.elements) {
-        regStencils(stencils, e.elements);
-      }
-      if (e.type === 'DiagramNode') {
-        stencils[e['@id']] = e;
-      }
-    });
-  };
-  const stencilPanel: any = {};
-  const viewKindStencils = viewKind?.elements.reduce((acc, e) => {
-    if (e.elements) {
-      regStencils(acc, e.elements);
-    }
-    acc[e['@id']] = e;
-    stencilPanel[e['@id']] = e;
-    return acc;
-  }, {});
-
-  const dataSource = viewKind?.elements.reduce((acc, e) => {
-    const dataUri = view.collsConstrs.filter((el) => el['@parent'] === e.resultsScope);
-    const graphData = rootStore.getColl(dataUri[0]);
-    acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
-    return acc;
-  }, {});
-
-  const newView = { ...view, ...{ options: { ...view.options, ...args } } };
+  const view = cloneDeep(getSnapshot(viewDescrObs));
+  (view as any).options = { ...(view as any).options, ...args };
+  applySnapshot(viewDescrObs, view);
   return (
-    <Graph
-      view={newView}
-      viewDescrObs={viewDescrObs}
-      viewKindStencils={viewKindStencils}
-      stencilPanel={stencilPanel}
-      viewKind={viewKind}
-      dataSource={dataSource}
+    <GraphEditor
+      viewDescrCollId={viewDescrCollConstr['@id']}
+      viewDescrId={mktpViewDescrs[0]['@id']}
+      viewKindCollId={viewKindCollConstr['@id']}
+      viewKindId={mktpViewKinds[0]['@id']}
     />
   );
 };
-
 const Template: Story<any> = (args: any) => {
   return (
     <Provider store={store}>
       <MstContextProvider rootStore={rootStore}>
-        <GraphEditor
-          args={args}
-          viewDescrCollId={viewDescrCollConstr['@id']}
-          viewDescrId={mktpViewDescrs[0]['@id']}
-          viewKindCollId={viewKindCollConstr['@id']}
-          viewKindId={mktpViewKinds[0]['@id']}
-        />
+        <StoryEditor args={args} />
       </MstContextProvider>
     </Provider>
   );
@@ -120,7 +67,7 @@ export default {
 export const GraphOptions = Template.bind({});
 GraphOptions.args = {
   title: true,
-  minimap: false,
-  configPanel: false,
-  toolbar: false,
+  minimap: true,
+  configPanel: true,
+  toolbar: true,
 };

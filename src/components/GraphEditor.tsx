@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 import { getSnapshot } from 'mobx-state-tree';
+import { observer } from 'mobx-react-lite';
 import { Spin } from 'antd';
 import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import { Graph } from './diagram/Graph';
 
-export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId }: any) => {
+export const GraphEditor = observer(({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId }: any) => {
   const { rootStore } = useContext(MstContext);
   if (!rootStore) {
     console.log('!rootStore', rootStore);
@@ -74,4 +75,4 @@ export const GraphEditor = ({ viewDescrCollId, viewDescrId, viewKindCollId, view
       dataSource={dataSource}
     />
   );
-};
+});
