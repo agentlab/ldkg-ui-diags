@@ -52,8 +52,6 @@ export const Graph = (props: any) => {
     graph.disablePanning();
     graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
-    console.log('GRAPH', graph);
-    console.log('DATA', props.dataSource);
     // dispose attached HTML objects
     return () => {
       graph.dispose();
