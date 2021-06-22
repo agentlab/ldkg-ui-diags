@@ -2,7 +2,6 @@ import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
 import { Record, List } from 'immutable';
 import { getRoot } from './kiwi';
-import { createNewStencilProps } from '../stencils/StencilEditor';
 
 const PositionRecord: any = Record({
   top: 0,
