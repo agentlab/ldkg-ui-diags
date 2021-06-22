@@ -16,7 +16,10 @@ export const createNewStencilProps = (options, nodeData) => {
     if (key == 'style') {
       newProps[key] = { ...options.style, ...nodeData.style };
     } else {
-      if (options[key].scope) {
+      const val = options[key];
+      if (typeof val === 'string') {
+        newProps[key] = val;
+      } else if (val.scope) {
         const uri = options[key].scope.split('/').join('.');
         newProps[key] = get(nodeData, uri) || options[key].default;
       }

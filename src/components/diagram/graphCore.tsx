@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash-es/cloneDeep';
 import { Graph, Cell, Markup, Node, Interp, Model, Registry } from '@antv/x6';
 import { ShareRegistry } from '@antv/x6/lib/model/registry';
 import { Options as GraphOptions } from '@antv/x6/lib/graph/options';
@@ -183,35 +183,6 @@ export const createGraph = ({
         true,
       );
     });
-
-    Graph.registerNode(
-      'rm:ClassNodeStencil',
-      {
-        inherit: ExtNode,
-      },
-      true,
-    );
-    Graph.registerNode(
-      'rm:CompartmentNodeStencil',
-      {
-        inherit: ExtNode,
-      },
-      true,
-    );
-    Graph.registerNode(
-      'rm:PropertyNodeStencil',
-      {
-        inherit: ExtNode,
-      },
-      true,
-    );
-    Graph.registerNode(
-      'rm:CardStencil',
-      {
-        inherit: ExtNode,
-      },
-      true,
-    );
 
     const circleArrowhead = {
       tagName: 'circle',
@@ -478,9 +449,13 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
               line: {
                 ...viewKindStencils[stencilId].line,
               },
+              outline: {
+                ...viewKindStencils[stencilId].outline,
+              },
             },
           },
         };
+        if (viewKindStencils[stencilId].shape) edge.shape = viewKindStencils[stencilId].shape;
         (graph as Graph).addEdge(edge);
       } else {
         return false;
@@ -495,7 +470,7 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
  */
 export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
   nodesData.forEach((data: any) => {
-    const Renderer = stencils[data.stencil || 'rm:ClassNodeStencil'];
+    const Renderer = stencils[data.stencil || 'rm:RectWithText'];
     const node = nodeFromData({ data, Renderer, shape: data.stencil });
     (graph as Graph).addNode(node);
   });
@@ -549,25 +524,27 @@ const edgeFromData = ({ data }) => ({
   id: data['@id'],
   target: data.arrowTo,
   source: data.arrowFrom,
-  label: {
-    markup: [{ ...Markup.getForeignObjectMarkup() }],
-    attrs: {
-      fo: {
-        label: data.subject.name,
-        width: 1,
-        height: 1,
-        x: 60,
-        y: -10,
-      },
-    },
-    position: {
-      distance: 0.3,
-      args: {
-        keepGradient: true,
-        ensureLegibility: true,
-      },
-    },
-  },
+  label: data.subject.name
+    ? {
+        markup: [{ ...Markup.getForeignObjectMarkup() }],
+        attrs: {
+          fo: {
+            label: data.subject.name,
+            width: 1,
+            height: 1,
+            x: 60,
+            y: -10,
+          },
+        },
+        position: {
+          distance: 0.3,
+          args: {
+            keepGradient: true,
+            ensureLegibility: true,
+          },
+        },
+      }
+    : {},
   router: {
     name: data.router || 'normal',
   },

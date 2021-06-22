@@ -33,7 +33,11 @@ export default {
     peerDepsExternal(),
     resolve(),
     commonjs(),
-    typescript({ declaration: true, outDir: './es' }),
+    typescript({
+      tsconfig: './tsconfig-build.json',
+      declaration: true,
+      outDir: './es',
+    }),
     /*postcss({
       plugins: [
         autoprefixer(),

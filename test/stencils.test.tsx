@@ -1,3 +1,5 @@
+/* eslint-disable jest/expect-expect */
+import React from 'react';
 import { act, render } from '@testing-library/react';
 
 import { Compartment } from '../src/components/diagram/stencils/Compartment';
@@ -11,31 +13,31 @@ describe('Stencils', () => {
     await act(async () => {
       render(<Compartment text='Test' />);
     });
-  });
+  }, 500);
 
   it('renders Compartment with empty title without crashing', async () => {
     await act(async () => {
       render(<Compartment text='' />);
     });
-  });
+  }, 500);
 
   it('renders NodeField without crashing', async () => {
     await act(async () => {
       render(<NodeField data={{ label: 'Test' }} />);
     });
-  });
+  }, 500);
 
   it('renders NodeShape without crashing', async () => {
     await act(async () => {
       render(<NodeShape data={{ label: 'Test' }} />);
     });
-  });
+  }, 500);
 
   it('renders Default without crashing', async () => {
     await act(async () => {
       render(<Default data={{ label: 'Test' }} />);
     });
-  });
+  }, 500);
 
   it('renders Card without crashing', async () => {
     await act(async () => {
@@ -51,5 +53,5 @@ describe('Stencils', () => {
         />,
       );
     });
-  });
+  }, 500);
 });

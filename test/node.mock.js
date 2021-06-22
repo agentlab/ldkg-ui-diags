@@ -32,7 +32,7 @@ export const event = (nodeId, nodeShape) => {
       node._pos = { x, y };
     },
     hasParent() {
-      return false;
+      return node._parent !== null;
     },
   };
   const e = {

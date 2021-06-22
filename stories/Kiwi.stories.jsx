@@ -5,19 +5,25 @@ import { handleGraphEvent, updateVariables, addKiwiSolver } from '../src/compone
 import { Benchmark, union, now } from './benchmarkCommon';
 import { event } from '../test/node.mock';
 
+const graphMock = {
+  hasCell() {
+    return true;
+  },
+};
+
 const embed = (parent, type, solver) => {
   let e = event(uuidv4(), type);
-  const c1 = handleGraphEvent(e, 'add', solver);
+  const c1 = handleGraphEvent(e, 'add', solver, graphMock);
   parent.node._children.push(e.node);
   e.node._parent = parent.node;
-  const c2 = handleGraphEvent(e, 'embed', solver);
+  const c2 = handleGraphEvent(e, 'embed', solver, graphMock);
   return [e, new Set([...c1, ...c2])];
 };
 
 const addComplexRoot = (solver) => {
   const rootId = uuidv4();
   let root = event(rootId, 'rm:ClassNodeStencil');
-  const c1 = handleGraphEvent(root, 'add', solver);
+  const c1 = handleGraphEvent(root, 'add', solver, graphMock);
   const c2 = [...Array(2)].map(() => {
     let [comp, c2] = embed(root, 'rm:PropertiesCompartmentNodeStencil', solver);
     const c3 = [...Array(3)].map(() => {
@@ -51,7 +57,7 @@ const perfTestMove = (length) => {
     const root = addComplexRoot(solver);
     const start = now();
     root.node.pos = { x: 100, y: 100 };
-    const c = handleGraphEvent(root, 'move', solver);
+    const c = handleGraphEvent(root, 'move', solver, graphMock);
     updateVariables(c, solver);
     const end = now();
     return end - start;
@@ -67,7 +73,7 @@ const perfTestAddSimpleRoot = (length) => {
   const round = () => {
     const start = now();
     const root = event(uuidv4(), 'rm:ClassNodeStencil');
-    const changed = handleGraphEvent(root, 'add', solver);
+    const changed = handleGraphEvent(root, 'add', solver, graphMock);
     updateVariables(changed, solver);
     const end = now();
     return end - start;
@@ -81,7 +87,7 @@ const perfTestAddSimpleRoot = (length) => {
 const perfTestAddChildren = (length) => {
   const solver = new kiwi.Solver();
   let root = event(uuidv4(), 'rm:ClassNodeStencil');
-  const c1 = handleGraphEvent(root, 'add', solver);
+  const c1 = handleGraphEvent(root, 'add', solver, graphMock);
   updateVariables(c1, solver);
 
   const round = () => {
