@@ -8,6 +8,7 @@ import {
 } from '@agentlab/sparql-jsld-client';
 
 import { viewKindCollConstr, viewKinds } from './viewKinds';
+import { triggerFocus } from 'antd/lib/input/Input';
 
 export const viewDescrCollConstr = {
   '@id': 'rm:Views_Coll',
@@ -39,6 +40,10 @@ export const viewDescrs = [
         factor: 4,
         bgColor: 'transparent',
       },
+      title: true,
+      minimap: false,
+      configPanel: false,
+      toolbar: false,
     },
     collsConstrs: [
       {
