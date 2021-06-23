@@ -12,8 +12,11 @@ import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
 import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool, edgeExamples } from './ConnectorTool';
+import { viewDataArchArrows } from '../../stores/ViewArch';
 
 export const Graph = (props: any) => {
+  const { view } = props;
+  const options = view.options || {};
   const { rootStore } = useContext(MstContext);
   const [graph, setGraph] = React.useState<any>(null);
   const refContainer = React.useRef<any>();
@@ -66,7 +69,7 @@ export const Graph = (props: any) => {
   return (
     <React.Fragment>
       <div className={styles.wrap}>
-        {props.view.title && (
+        {props.view.title && options.title !== false && (
           <div className={styles.header}>
             <span>{props.view.title}</span>
           </div>
@@ -77,7 +80,7 @@ export const Graph = (props: any) => {
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>
-            <GraphToolbar graph={graph} />
+            {options.toolbar === false ? null : <GraphToolbar graph={graph} />}
             <div style={{ position: 'relative' }}>
               {/*<Button type='primary' shape='round' onClick={props.loadData}>
                 Load More
@@ -92,8 +95,10 @@ export const Graph = (props: any) => {
             </div>
           </div>
           <div style={{ position: 'relative' }}>
-            <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
-            <Minimap minimapContainer={minimapContainer} />
+            {options.configPanel === false ? null : (
+              <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
+            )}
+            {options.minimap === false ? null : <Minimap minimapContainer={minimapContainer} />}
           </div>
         </div>
       </div>

@@ -316,6 +316,10 @@ export const mktpViewDescrs = [
         factor: 4,
         bgColor: 'transparent',
       },
+      title: true,
+      minimap: false,
+      configPanel: false,
+      toolbar: false,
     },
     collsConstrs: [
       // Categories (coll constr, inherited from ViewKind, parent references in '@parent' fields, which are our extension of JSON-LD)
