@@ -171,7 +171,7 @@ export const createGraph = ({
   viewKindStencils,
   minimapContainer,
   edgeConnectorRef,
-  rootStore,
+  store,
 }) => {
   try {
     Object.keys(viewKindStencils).forEach((e) => {
@@ -400,11 +400,11 @@ export const createGrid = ({ graph, view }) => {
   }
 };
 
-export const addNewData = ({ graph, data, viewKindStencils, rootStore }) => {
+export const addNewData = ({ graph, data, viewKindStencils, store }) => {
   const stash = {};
   for (const key in data) {
     data[key].forEach((e: any) => {
-      if (!addGraphData(graph, e, key, viewKindStencils, rootStore)) {
+      if (!addGraphData(graph, e, key, viewKindStencils, store)) {
         if (stash[key]) {
           stash[key].push(e);
         } else {
@@ -415,12 +415,12 @@ export const addNewData = ({ graph, data, viewKindStencils, rootStore }) => {
   }
   for (const key in stash) {
     stash[key].forEach((e: any) => {
-      addGraphData(graph, e, key, viewKindStencils, rootStore);
+      addGraphData(graph, e, key, viewKindStencils, store);
     });
   }
 };
 
-const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
+const addGraphData = (graph, data, key, viewKindStencils, store) => {
   const stencilId = data.stencil || key;
   const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
   switch (data['@type']) {
@@ -468,7 +468,7 @@ const addGraphData = (graph, data, key, viewKindStencils, rootStore) => {
 /**
  * function @deprecated
  */
-export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
+export const addNewParentNodes = ({ graph, nodesData, store }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil || 'rm:RectWithText'];
     const node = nodeFromData({ data, Renderer, shape: data.stencil });
@@ -479,7 +479,7 @@ export const addNewParentNodes = ({ graph, nodesData, rootStore }) => {
 /**
  * function @deprecated
  */
-export const addNewChildNodes = ({ graph, nodesData, rootStore }) => {
+export const addNewChildNodes = ({ graph, nodesData, store }) => {
   nodesData.forEach((data: any) => {
     const Renderer = stencils[data.stencil];
     const node = nodeFromData({ data, Renderer, shape: data.stencil });

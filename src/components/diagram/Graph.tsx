@@ -17,7 +17,7 @@ import { viewDataArchArrows } from '../../stores/ViewArch';
 export const Graph = (props: any) => {
   const { view } = props;
   const options = view.options || {};
-  const { rootStore } = useContext(MstContext);
+  const { store } = useContext(MstContext);
   const [graph, setGraph] = React.useState<any>(null);
   const refContainer = React.useRef<any>();
   const refWrap = React.useRef<any>();
@@ -41,11 +41,11 @@ export const Graph = (props: any) => {
       viewKindStencils: props.viewKindStencils,
       minimapContainer,
       edgeConnectorRef,
-      rootStore,
+      store,
     });
     createGrid({ graph, view: props.view });
     addYogaSolver({ graph });
-    addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, rootStore });
+    addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, store });
     setGraph(graph);
     const resizeFn = () => {
       const { width, height } = getContainerSize();

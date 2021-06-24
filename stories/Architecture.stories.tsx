@@ -28,7 +28,7 @@ export default {
 
 const Template: Story<any> = (args: any) => (
   <Provider store={store}>
-    <MstContextProvider rootStore={rootStore}>
+    <MstContextProvider store={rootStore}>
       <GraphEditor {...args} />
     </MstContextProvider>
   </Provider>

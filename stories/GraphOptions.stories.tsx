@@ -1,10 +1,10 @@
+import { cloneDeep } from 'lodash-es';
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
 import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
 import { MstContextProvider } from '@agentlab/ldkg-ui-react';
-import cloneDeep from 'lodash-es/cloneDeep';
 
 import { GraphEditor } from '../src/components/GraphEditor';
 
@@ -13,7 +13,6 @@ import { viewDescrCollConstr } from '../src/stores/view';
 import { viewKindCollConstr } from '../src/stores/viewKinds';
 import { getSnapshot, applySnapshot } from 'mobx-state-tree';
 import { Spin } from 'antd';
-import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import '../src/index.css';
 import '../src/App.css';
@@ -52,7 +51,7 @@ const StoryEditor = ({ args }) => {
 const Template: Story<any> = (args: any) => {
   return (
     <Provider store={store}>
-      <MstContextProvider rootStore={rootStore}>
+      <MstContextProvider store={rootStore}>
         <StoryEditor args={args} />
       </MstContextProvider>
     </Provider>
