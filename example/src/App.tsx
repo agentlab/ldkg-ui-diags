@@ -29,7 +29,7 @@ connectReduxDevtools(require('remotedev'), rootStore);
 function App() {
   return (
     <Provider store={store}>
-      <MstContextProvider rootStore={rootStore}>
+      <MstContextProvider store={rootStore}>
         <GraphEditor
           viewDescrCollId={viewDescrCollConstr['@id']}
           viewDescrId={viewDescrs[0]['@id']}
