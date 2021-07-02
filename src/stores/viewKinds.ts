@@ -5,7 +5,7 @@ export const viewKindCollConstr = {
   entConstrs: [
     {
       '@id': 'rm:ViewKinds_EntConstr0',
-      schema: ViewKindShapeSchema,
+      schema: 'rm:ViewKindShape',
     },
   ],
 };

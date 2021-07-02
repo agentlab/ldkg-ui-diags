@@ -424,7 +424,7 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
   const stencilId = data.stencil || key;
   const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
   switch (data['@type']) {
-    case 'rm:UsedInDiagramAsRootNodeShape': {
+    case 'rm:UsedInDiagramAsRootNode': {
       const node = createNode({ stencil: viewKindStencils[stencilId], data, shape: data.stencil, sample: false });
       (graph as Graph).addNode(node);
       break;

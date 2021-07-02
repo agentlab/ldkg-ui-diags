@@ -447,7 +447,7 @@ export const mktpViewDescrs = [
 export const viewDataCategoryNodes = [
   {
     '@id': 'mktp:diagramNode01',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
     x: 10,
     y: 10,
@@ -466,7 +466,7 @@ export const viewDataCategoryNodes = [
   },
   {
     '@id': 'mktp:diagramNode02',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
     x: 10,
     y: 200,
@@ -485,7 +485,7 @@ export const viewDataCategoryNodes = [
   },
   {
     '@id': 'mktp:diagramNode03',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
     x: 400,
     y: 10,
@@ -507,7 +507,7 @@ export const viewDataCategoryNodes = [
 export const viewDataProductNodes = [
   {
     '@id': 'mktp:diagramNode11',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductStencil',
     x: 100,
     y: 160,
@@ -525,7 +525,7 @@ export const viewDataProductNodes = [
   },
   {
     '@id': 'mktp:diagramNode12',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductStencil',
     x: 300,
     y: 160,
@@ -546,7 +546,7 @@ export const viewDataProductNodes = [
 export const viewDataProductCardNodes = [
   {
     '@id': 'mktp:diagramNode21',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductCardStencil',
     x: 10,
     y: 320,
@@ -577,7 +577,7 @@ export const viewDataProductCardNodes = [
   },
   {
     '@id': 'mktp:diagramNode22',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductCardStencil',
     x: 250,
     y: 320,
@@ -608,7 +608,7 @@ export const viewDataProductCardNodes = [
   },
   {
     '@id': 'mktp:diagramNode23',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductCardStencil',
     x: 500,
     y: 320,
@@ -639,7 +639,7 @@ export const viewDataProductCardNodes = [
   },
   {
     '@id': 'mktp:diagramNode24',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     stencil: 'mktp:ProductCardStencil',
     x: 750,
     y: 320,

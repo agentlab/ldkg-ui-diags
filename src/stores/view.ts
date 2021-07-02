@@ -15,7 +15,7 @@ export const viewDescrCollConstr = {
   entConstrs: [
     {
       '@id': 'rm:Views_EntConstr0',
-      schema: ViewShapeSchema,
+      schema: 'rm:ViewShape',
     },
   ],
 };
@@ -134,7 +134,7 @@ export const viewDescrs = [
 export const viewDataRootNodes = [
   {
     '@id': 'rm:diagramNode1',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 10,
     y: 10,
     z: 0,
@@ -166,7 +166,7 @@ export const viewDataRootNodes = [
   },
   {
     '@id': 'rm:diagramNode2',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 250,
     y: 150,
     z: 0,

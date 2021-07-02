@@ -59,7 +59,7 @@ const Template: Story<any> = (args: any) => {
 };
 
 export default {
-  title: 'GraphEditor/CardsDiagram',
+  title: 'GraphEditor/CardsDiagramOptions',
   component: Template,
 } as Meta;
 

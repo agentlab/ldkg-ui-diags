@@ -6,7 +6,7 @@ import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import { Graph } from './diagram/Graph';
 
-export const GraphEditor = observer(({ viewDescrCollId, viewDescrId, viewKindCollId, viewKindId }: any) => {
+export const GraphEditor = observer<any>(({ viewDescrCollId, viewDescrId, viewKindCollId }: any) => {
   const { store } = useContext(MstContext);
   if (!store) {
     console.log('!store', store);
@@ -30,7 +30,8 @@ export const GraphEditor = observer(({ viewDescrCollId, viewDescrId, viewKindCol
     console.log('!collWithViewKindsObs', viewKindCollId);
     return <Spin />;
   }
-  const viewKindObs = collWithViewKindsObs?.dataIntrnl[0];
+  const viewKindId = viewDescrObs.viewKind;
+  const viewKindObs = collWithViewKindsObs.dataByIri(viewKindId);
   if (!viewKindObs) {
     console.log('!viewKindObs', viewKindId);
     return <Spin />;

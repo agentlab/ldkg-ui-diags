@@ -281,7 +281,7 @@ export const archViewDescrs = [
 export const viewDataRootArchNodes = [
   {
     '@id': 'mktp:diagramNode1',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 100,
     y: 160,
     z: 0,
@@ -300,7 +300,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode2',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 300,
     y: 160,
     z: 0,
@@ -319,7 +319,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode3',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 500,
     y: 160,
     z: 0,
@@ -338,7 +338,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode4',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 100,
     y: 360,
     z: 0,
@@ -357,7 +357,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode5',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 300,
     y: 360,
     z: 0,
@@ -376,7 +376,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode6',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 500,
     y: 360,
     z: 0,
@@ -395,7 +395,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode7',
-    '@type': 'rm:UsedInDiagramAsRootNodeShape',
+    '@type': 'rm:UsedInDiagramAsRootNode',
     x: 100,
     y: 560,
     z: 0,
