@@ -7,9 +7,8 @@ import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
 
+import { viewKindCollConstr, viewDescrCollConstr } from '../src/stores/view';
 import { mktpModelInitialState, mktpViewDescrs, mktpViewKinds } from '../src/stores/ViewCard';
-import { viewDescrCollConstr } from '../src/stores/view';
-import { viewKindCollConstr } from '../src/stores/viewKinds';
 
 import '../src/index.css';
 import '../src/App.css';

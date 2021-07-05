@@ -7,8 +7,8 @@ import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
 
-import { viewDescrCollConstr, rootModelInitialState2, viewDescrs } from '../src/stores/view';
-import { viewKinds, viewKindCollConstr } from '../src/stores/viewKinds';
+import { viewKindCollConstr, viewDescrCollConstr } from '../src/stores/view';
+import { classViewKinds, classViewDescrs, classModelInitialState } from '../src/stores/viewClass';
 
 import '../src/index.css';
 import '../src/App.css';
@@ -18,7 +18,7 @@ const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
 //const rootStore = createModelFromState('mktp', client, rootModelInitialState, additionalColls);
 // for local hardcoded data
 //@ts-ignore
-const rootStore = Repository.create(rootModelInitialState2, { client });
+const rootStore = Repository.create(classModelInitialState, { client });
 const store: any = asReduxStore(rootStore);
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 connectReduxDevtools(require('remotedev'), rootStore);
@@ -39,7 +39,7 @@ const Template: Story<any> = (args: any) => (
 export const LocalData = Template.bind({});
 LocalData.args = {
   viewDescrCollId: viewDescrCollConstr['@id'],
-  viewDescrId: viewDescrs[0]['@id'],
+  viewDescrId: classViewDescrs[0]['@id'],
   viewKindCollId: viewKindCollConstr['@id'],
-  viewKindId: viewKinds[0]['@id'],
+  viewKindId: classViewKinds[0]['@id'],
 };

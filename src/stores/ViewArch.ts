@@ -1,8 +1,7 @@
 import moment from 'moment';
 import { rootModelInitialState } from '@agentlab/sparql-jsld-client';
 
-import { viewDescrCollConstr } from './view';
-import { viewKindCollConstr } from './viewKinds';
+import { viewKindCollConstr, viewDescrCollConstr } from './view';
 
 /***************************************
  * ViewKinds & ViewDescrs Data

@@ -1,17 +1,19 @@
 import { cloneDeep } from 'lodash-es';
 import React from 'react';
 import { Story, Meta } from '@storybook/react';
+
+import { getSnapshot, applySnapshot } from 'mobx-state-tree';
 import { Provider } from 'react-redux';
 import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
+
 import { SparqlClientImpl, Repository } from '@agentlab/sparql-jsld-client';
 import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
 
+import { viewKindCollConstr, viewDescrCollConstr } from '../src/stores/view';
 import { mktpModelInitialState, mktpViewDescrs, mktpViewKinds } from '../src/stores/ViewCard';
-import { viewDescrCollConstr } from '../src/stores/view';
-import { viewKindCollConstr } from '../src/stores/viewKinds';
-import { getSnapshot, applySnapshot } from 'mobx-state-tree';
+
 import { Spin } from 'antd';
 
 import '../src/index.css';

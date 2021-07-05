@@ -1,18 +1,29 @@
 import moment from 'moment';
-import { rootModelInitialState } from '@agentlab/sparql-jsld-client';
+import React from 'react';
+import { Story, Meta } from '@storybook/react';
+import { Provider } from 'react-redux';
+import { asReduxStore, connectReduxDevtools } from 'mst-middlewares';
+import {
+  SparqlClientImpl,
+  //Repository,
+  rootModelInitialState,
+  createModelFromState,
+  CollState,
+} from '@agentlab/sparql-jsld-client';
+import { MstContextProvider } from '@agentlab/ldkg-ui-react';
 
-import { viewKindCollConstr, viewDescrCollConstr } from './view';
+import { GraphEditor } from '../src/components/GraphEditor';
 
-// @prefix wbc: <https://www.wildberries.ru/catalog/>
+//import { mktpModelInitialState } from '../src/stores/ViewCard';
+import { viewKindCollConstr, viewDescrCollConstr } from '../src/stores/view';
 
-/***************************************
- * ViewKinds & ViewDescrs Data
- ***************************************/
+import '../src/index.css';
+import '../src/App.css';
 
 /**
  * Mktp Cards ViewKinds
  */
-export const mktpViewKinds = [
+const mktpViewKinds = [
   {
     '@id': 'mktp:_8g34sKh',
     '@type': 'rm:ViewKind',
@@ -41,7 +52,7 @@ export const mktpViewKinds = [
         ],
       },
       // Products
-      {
+      /*{
         '@id': 'mktp:_58Dfdh',
         '@type': 'rm:CollConstr',
         entConstrs: [
@@ -149,7 +160,7 @@ export const mktpViewKinds = [
             schema: 'hs:CardInProdLinkShape',
           },
         ],
-      },
+      },*/
     ],
     elements: [
       /**
@@ -181,7 +192,7 @@ export const mktpViewKinds = [
         },
         paletteOrder: 0, // sorting order for stencils palette
       },
-      {
+      /*{
         '@id': 'mktp:ProductStencil',
         type: 'DiagramNode',
         protoStencil: 'rm:CardStencil',
@@ -228,11 +239,11 @@ export const mktpViewKinds = [
           // child embedding should be disabled here
         },
         paletteOrder: 2,
-      },
+      },*/
       /**
        * Edges (arrows)
        */
-      {
+      /*{
         '@id': 'mktp:SubcategoryArrowStencil',
         type: 'DiagramEdge',
         protoStencil: 'rm:CardStencil',
@@ -287,7 +298,7 @@ export const mktpViewKinds = [
             fill: '#808080',
           },
         },
-      },
+      },*/
     ],
   },
 ];
@@ -295,7 +306,7 @@ export const mktpViewKinds = [
 /**
  * Mktp Cards ViewDescrs
  */
-export const mktpViewDescrs = [
+const mktpViewDescrs = [
   {
     '@id': 'mktp:_kg67Sdfl',
     '@type': 'rm:View',
@@ -341,7 +352,7 @@ export const mktpViewDescrs = [
         ],
       },
       // Products (coll constr, inherited from ViewKind)
-      {
+      /*{
         '@id': 'mktp:_s7Df8sj',
         '@type': 'rm:CollConstr',
         '@parent': 'mktp:_58Dfdh',
@@ -434,488 +445,62 @@ export const mktpViewDescrs = [
             },
           },
         ],
-      },
+      },*/
     ],
   },
 ];
 
-/***************************************
- * Diagram Nodes
- ***************************************/
-
-export const viewDataCategoryNodes = [
-  {
-    '@id': 'mktp:diagramNode01',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
-    x: 10,
-    y: 10,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    // ref to the model object
-    subject: {
-      '@id': 'wbc:dom-i-dacha/zdorove',
-      '@type': 'hs:Category',
-      title: 'Здоровье',
-      description: '',
-    },
-    object: 'mktp:_kg67Sdfl', // ref to the diagram
-  },
-  {
-    '@id': 'mktp:diagramNode02',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
-    x: 10,
-    y: 200,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    // ref to the model object
-    subject: {
-      '@id': 'wbc:zdorove/ozdorovlenie',
-      '@type': 'hs:Category',
-      title: 'Оздоровление',
-      description: '',
-    },
-    object: 'mktp:_kg67Sdfl', // ref to the diagram
-  },
-  {
-    '@id': 'mktp:diagramNode03',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
-    x: 400,
-    y: 10,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    // ref to the model object
-    subject: {
-      '@id': 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      '@type': 'hs:Category',
-      title: 'Массажер электрический',
-      description: '',
-    },
-    object: 'mktp:_kg67Sdfl', // ref to the diagram
-  },
-];
-
-export const viewDataProductNodes = [
-  {
-    '@id': 'mktp:diagramNode11',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductStencil',
-    x: 100,
-    y: 160,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'mktp:Product1',
-      '@type': 'mktp:Product',
-      title: 'Массажная подушка роликовая',
-      description: 'Электрический роликовый массажер для спины, шеи, плеч',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramNode12',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductStencil',
-    x: 300,
-    y: 160,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'mktp:Product2',
-      '@type': 'mktp:Product',
-      title: 'Массажная подушка роликовая с лямками',
-      description: 'Электрический роликовый массажер с лямками',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-];
-
-export const viewDataProductCardNodes = [
-  {
-    '@id': 'mktp:diagramNode21',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductCardStencil',
-    x: 10,
-    y: 320,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'wbc:15570386/detail.aspx',
-      '@type': 'hs:ProductCard',
-      title: 'Электрическая массажная подушка релакс с подогревом...',
-      description:
-        'Электрическая массажная подушка релакс с подогревом / Массажер электрический для тела / шеи / спины',
-      imageUrl: 'https://img2.wbstatic.net/c252x336/new/15570000/15570386-1.jpg',
-      brand: {
-        '@id': 'https://www.wildberries.ru/brands/relax-massage',
-        '@type': 'hs:Brand',
-        name: 'Relax Massage',
-      },
-      price: 1043,
-      seller: {
-        '@id': 'https://examples.ru/sellers/15570386',
-        '@type': 'hs:Seller',
-        name: '',
-      },
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramNode22',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductCardStencil',
-    x: 250,
-    y: 320,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'wbc:15622789/detail.aspx',
-      '@type': 'hs:ProductCard',
-      title: 'Массажная подушка с подогревом для дома и автомомобиля...',
-      description:
-        'Массажная подушка с подогревом для дома и автомомобиля массажер для шеи спины 8 роликов чудо релакс',
-      imageUrl: 'https://img2.wbstatic.net/c252x336/new/15620000/15622789-1.jpg',
-      brand: {
-        '@id': 'https://www.wildberries.ru/brands/happygoods',
-        '@type': 'hs:Brand',
-        name: 'HappyGoods',
-      },
-      price: 964,
-      seller: {
-        '@id': 'https://examples.ru/sellers/15622789',
-        '@type': 'hs:Seller',
-        name: '',
-      },
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramNode23',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductCardStencil',
-    x: 500,
-    y: 320,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'wbc:16170086/detail.aspx',
-      '@type': 'hs:ProductCard',
-      title: 'Электрическая массажная подушка релакс с подогревом...',
-      description:
-        'Электрическая массажная подушка релакс с подогревом / Массажер электрический для тела / шеи / спины',
-      imageUrl: 'https://img2.wbstatic.net/c252x336/new/16170000/16170086-1.jpg',
-      brand: {
-        '@id': 'https://www.wildberries.ru/brands/doktor-aybolit',
-        '@type': 'hs:Brand',
-        name: 'ДОКТОР АЙБОЛИТ',
-      },
-      price: 1304,
-      seller: {
-        '@id': 'https://examples.ru/sellers/16170086',
-        '@type': 'hs:Seller',
-        name: '',
-      },
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramNode24',
-    '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:ProductCardStencil',
-    x: 750,
-    y: 320,
-    z: 0,
-    rotation: 0,
-    height: 85,
-    width: 230,
-    subject: {
-      '@id': 'wbc:18247707/detail.aspx',
-      '@type': 'hs:ProductCard',
-      title: 'Массажер для спины шеи тела плеч ног...',
-      description: 'Массажер для спины шеи тела плеч ног/ Электрический роликовый Массажер/ массаж шиацу',
-      imageUrl: 'https://img2.wbstatic.net/c252x336/new/18240000/18247707-1.jpg',
-      brand: {
-        '@id': 'https://www.wildberries.ru/brands/massazher-dlya-shei-spiny-1',
-        '@type': 'hs:Brand',
-        name: 'массажер для шеи спины №1',
-      },
-      price: 1559,
-      seller: {
-        '@id': 'https://examples.ru/sellers/18247707',
-        '@type': 'hs:Seller',
-        name: '',
-      },
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-];
-
-/***************************************
- * Arrows
- ***************************************/
-
 /**
- * Отношения между 3 категориями
+ * Collections Configs Data
  */
-export const viewDataSubcatInCatArrows = [
+const additionalColls: CollState[] = [
+  // ViewKinds Collection
   {
-    '@id': 'mktp:diagramArrow01',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:SubcategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode02', // ref to the arrow-connected graph node at the "from" end
-    arrowTo: 'mktp:diagramNode01', // ref to the arrow-connected graph node at the "to" end
-    //router: 'manhattan',
-    // ref to the model object
-    subject: {
-      '@id': 'mktp:sc01',
-      '@type': 'hs:SubcatInCatLink',
-      subject: 'wbc:zdorove/ozdorovlenie',
-      object: 'wbc:dom-i-dacha/zdorove',
-      name: 'подкатегория',
+    constr: viewKindCollConstr,
+    data: mktpViewKinds,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false, // disable data loading from the server for viewKinds.collConstrs
     },
-    object: 'mktp:_kg67Sdfl', // ref to the diagram
   },
+  // ViewDescrs Collection
   {
-    '@id': 'mktp:diagramArrow02',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:SubcategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode03',
-    arrowTo: 'mktp:diagramNode02',
-    subject: {
-      '@id': 'mktp:sc02',
-      '@type': 'hs:SubcatInCatLink',
-      subject: 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      object: 'wbc:zdorove/ozdorovlenie',
-      name: 'подкатегория',
+    constr: viewDescrCollConstr,
+    data: mktpViewDescrs,
+    opt: {
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      //resolveCollConstrs: false, // 'true' here (by default) triggers data loading from the server
+      // for viewDescrs.collConstrs (it loads lazily -- after the first access)
     },
-    object: 'mktp:_kg67Sdfl',
   },
 ];
 
-/**
- * 4 товара в категории 03
- */
-export const viewDataCardInCatArrows = [
-  {
-    '@id': 'mktp:diagramArrow11',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToCategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode21',
-    arrowTo: 'mktp:diagramNode03',
-    subject: {
-      '@id': 'mktp:cicl1',
-      '@type': 'hs:CardInCatLink',
-      subject: 'wbc:15570386/detail.aspx',
-      object: 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      name: 'в категории',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow12',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToCategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode22',
-    arrowTo: 'mktp:diagramNode03',
-    subject: {
-      '@id': 'mktp:cicl2',
-      '@type': 'hs:CardInCatLink',
-      subject: 'wbc:15622789/detail.aspx',
-      object: 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      name: 'в категории',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow13',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToCategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode23',
-    arrowTo: 'mktp:diagramNode03',
-    subject: {
-      '@id': 'mktp:cicl3',
-      '@type': 'hs:CardInCatLink',
-      subject: 'wbc:16170086/detail.aspx',
-      object: 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      name: 'в категории',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow14',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToCategoryArrowStencil',
-    arrowFrom: 'mktp:diagramNode24',
-    arrowTo: 'mktp:diagramNode03',
-    subject: {
-      '@id': 'mktp:cicl4',
-      '@type': 'hs:CardInCatLink',
-      subject: 'wbc:18247707/detail.aspx',
-      object: 'wbc:zdorove/ozdorovlenie?sort=popular&page=1&xsubject=594',
-      name: 'в категории',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-];
+const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
+const rootStore = createModelFromState('mktp', client, rootModelInitialState, additionalColls);
+//@ts-ignore
+//const rootStore = Repository.create(mktpModelInitialState, { client });
+const store: any = asReduxStore(rootStore);
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+connectReduxDevtools(require('remotedev'), rootStore);
 
-/**
- * 3 товара в продукте1 и 1 товар в продукте 2
- */
-export const viewDataCardInProdArrows = [
-  {
-    '@id': 'mktp:diagramArrow21',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToProductArrowStencil',
-    arrowFrom: 'mktp:diagramNode21',
-    arrowTo: 'mktp:diagramNode11',
-    subject: {
-      '@id': 'mktp:cipl1',
-      '@type': 'hs:CardInProdLink',
-      subject: 'wbc:15570386/detail.aspx',
-      object: 'mktp:Product1',
-      name: 'похожесть',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow22',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToProductArrowStencil',
-    arrowFrom: 'mktp:diagramNode22',
-    arrowTo: 'mktp:diagramNode11',
-    subject: {
-      '@id': 'mktp:cipl2',
-      '@type': 'hs:CardInProdLink',
-      subject: 'wbc:15622789/detail.aspx',
-      object: 'mktp:Product1',
-      name: 'похожесть',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow23',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToProductArrowStencil',
-    arrowFrom: 'mktp:diagramNode23',
-    arrowTo: 'mktp:diagramNode11',
-    subject: {
-      '@id': 'mktp:cipl3',
-      '@type': 'hs:CardInProdLink',
-      subject: 'wbc:16170086/detail.aspx',
-      object: 'mktp:Product1',
-      name: 'похожесть',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-  {
-    '@id': 'mktp:diagramArrow24',
-    '@type': 'rm:UsedInDiagramAsArrow',
-    stencil: 'mktp:CardToProductArrowStencil',
-    arrowFrom: 'mktp:diagramNode24',
-    arrowTo: 'mktp:diagramNode12',
-    subject: {
-      '@id': 'mktp:cipl4',
-      '@type': 'hs:CardInProdLink',
-      subject: 'wbc:18247707/detail.aspx',
-      object: 'mktp:Product2',
-      name: 'похожесть',
-    },
-    object: 'mktp:_kg67Sdfl',
-  },
-];
+export default {
+  title: 'GraphEditor/CardsDiagramRemote',
+  component: GraphEditor,
+} as Meta;
 
-/**
- * Mktp Cards Initial Model State with all data
- */
-export const mktpModelInitialState = {
-  ...rootModelInitialState,
-  colls: {
-    ...rootModelInitialState.colls,
-    // ViewKind
-    [viewKindCollConstr['@id']]: {
-      '@id': viewKindCollConstr['@id'],
-      collConstr: viewKindCollConstr,
-      dataIntrnl: mktpViewKinds,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    // ViewDescr
-    [viewDescrCollConstr['@id']]: {
-      '@id': viewDescrCollConstr['@id'],
-      collConstr: viewDescrCollConstr,
-      dataIntrnl: mktpViewDescrs,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    // ViewData -- Nodes
-    [mktpViewDescrs[0].collsConstrs?.[0]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[0]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[0]['@id'], // reference by @id
-      dataIntrnl: viewDataCategoryNodes,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    [mktpViewDescrs[0].collsConstrs?.[1]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[1]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[1]['@id'], // reference by @id
-      dataIntrnl: viewDataProductNodes,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    [mktpViewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[2]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
-      dataIntrnl: viewDataProductCardNodes,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    // ViewData -- Arrows
-    [mktpViewDescrs[0].collsConstrs?.[3]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[3]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[3]['@id'], // reference by @id
-      dataIntrnl: viewDataSubcatInCatArrows,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    [mktpViewDescrs[0].collsConstrs?.[4]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[4]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[4]['@id'], // reference by @id
-      dataIntrnl: viewDataCardInCatArrows,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-    [mktpViewDescrs[0].collsConstrs?.[5]['@id'] || '']: {
-      '@id': mktpViewDescrs[0].collsConstrs?.[5]['@id'],
-      collConstr: mktpViewDescrs[0].collsConstrs?.[5]['@id'], // reference by @id
-      dataIntrnl: viewDataCardInProdArrows,
-      updPeriod: undefined,
-      lastSynced: moment.now(),
-      resolveCollConstrs: false,
-    },
-  },
+const Template: Story<any> = (args: any) => (
+  <Provider store={store}>
+    <MstContextProvider store={rootStore}>
+      <GraphEditor {...args} />
+    </MstContextProvider>
+  </Provider>
+);
+
+export const RemoteData = Template.bind({});
+RemoteData.args = {
+  viewDescrCollId: viewDescrCollConstr['@id'],
+  viewDescrId: mktpViewDescrs[0]['@id'],
+  viewKindCollId: viewKindCollConstr['@id'],
 };
