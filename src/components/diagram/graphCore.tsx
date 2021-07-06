@@ -230,6 +230,11 @@ export const createGraph = ({
     clipboard: {
       enabled: true,
     },
+    panning: {
+      enabled: true,
+      modifiers: 'ctrl',
+      eventTypes: ['leftMouseDown'],
+    },
     minimap: {
       enabled: true,
       container: minimapContainer.current,
@@ -271,7 +276,7 @@ export const createGraph = ({
       enabled: true,
       pageVisible: true,
       pageBreak: false,
-      pannable: true,
+      //pannable: true,
     },
     mousewheel: {
       enabled: true,
@@ -506,6 +511,8 @@ export const nodeFromData = ({ data, shape, Renderer }) => ({
   layoutProp: data.layout || {},
   style: data.style,
   shape: shape,
+  attrs: data.attrs,
+  zIndex: data.zIndex,
   movable: data.movable !== undefined ? data.movable : true,
   editing: false,
   component(n) {

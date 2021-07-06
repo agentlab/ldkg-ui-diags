@@ -52,7 +52,6 @@ export const Graph = (props: any) => {
       graph.resize(width, height);
     };
     resizeFn();
-    graph.disablePanning();
     graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
     // dispose attached HTML objects

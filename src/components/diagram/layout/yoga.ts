@@ -214,7 +214,6 @@ export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> =>
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
-    console.log('ADDD', node);
     if (node.hasParent()) {
       const changed = changeParent(null, node.getParent(), node, graph);
       changedNodes = new Set([...changedNodes, ...changed]);
@@ -315,7 +314,6 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
 };
 
 const changeChildren = (previous: string[], current: string[], node: any) => {
-  console.log('NODE', node, node.getParent());
   const removed = previous.filter((x) => !current.includes(x));
   const added = current.filter((x) => !previous.includes(x));
 
