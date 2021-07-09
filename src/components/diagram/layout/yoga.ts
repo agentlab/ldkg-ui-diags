@@ -15,8 +15,8 @@ const r: any = Record({
   height: 'auto',
   minWidth: 0,
   minHeight: 0,
-  maxWidth: 'none',
-  maxHeight: 'none',
+  maxWidth: NaN,
+  maxHeight: NaN,
   justifyContent: Yoga.JUSTIFY_FLEX_START,
   alignItems: Yoga.ALIGN_STRETCH,
   alignSelf: Yoga.ALIGN_AUTO,
@@ -214,7 +214,6 @@ export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> =>
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
-    console.log('ADDD', node);
     if (node.hasParent()) {
       const changed = changeParent(null, node.getParent(), node, graph);
       changedNodes = new Set([...changedNodes, ...changed]);
@@ -243,11 +242,11 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
-    if (yogaNode.getChildCount() === 0) {
+    /*if (yogaNode.getChildCount() === 0) {
       yogaNode.setWidth(computedLayout.width);
     } else {
       yogaNode.setWidth('auto');
-    }
+    }*/
     if (!node._parent) {
       setCumputedSize(node, computedLayout); // set absolute position
     } else {
@@ -286,20 +285,36 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
   if (previous) {
     const previousParentNode = node._model.graph.getCell(previous);
     const previousParentYogaNode: Yoga.YogaNode = previousParentNode.store.data.yogaProps;
+    const previousParentLayout = previousParentYogaNode.getComputedLayout();
     previousParentYogaNode.removeChild(yogaNode);
     if (previousParentYogaNode.getChildCount() === 0) {
-      const width = previousParentYogaNode.getComputedLayout().width;
-      previousParentYogaNode.setWidth(width);
+      previousParentYogaNode.setWidth(previousParentLayout.width);
+      previousParentYogaNode.setHeight(previousParentLayout.height);
     }
     changedNodes = new Set([...changedNodes, getRoot(previousParentNode)]);
+    if (!current) {
+      yogaNode.setWidth(previousParentLayout.width);
+    }
   }
-
   // add to new parent
   if (current) {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
-    parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount()); // add to bottom
-    setNodeRealative(parentYogaNode);
+    const parentlayout = parentYogaNode.getComputedLayout();
+    parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount());
+    const childLayout = yogaNode.getComputedLayout();
+    parentYogaNode.setHeight('auto');
+    if (childLayout.width >= parentlayout.width) {
+      setChildParentsRelative(node);
+      const rootNode = getRoot(node);
+      const rootYogaNode: Yoga.YogaNode = rootNode.store.data.yogaProps;
+      rootYogaNode.calculateLayout();
+      const layout = rootYogaNode.getComputedLayout();
+      setChildParentsWidth(node, '100%');
+      rootYogaNode.setWidth(layout.width);
+      rootYogaNode.setHeight(layout.height);
+    }
+    yogaNode.setWidth('100%');
   }
 
   // update node position based on type
@@ -315,7 +330,6 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
 };
 
 const changeChildren = (previous: string[], current: string[], node: any) => {
-  console.log('NODE', node, node.getParent());
   const removed = previous.filter((x) => !current.includes(x));
   const added = current.filter((x) => !previous.includes(x));
 
@@ -365,10 +379,24 @@ const moveNode = (node: any) => {
 
 const resizeNode = (node: any, graph: any) => {
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
-  setChildrenRelative(node, graph);
   yogaNode.setWidth(node.size().width);
   yogaNode.setHeight(node.size().height);
-  if (!node._parent) {
+  if (node._parent) {
+    const parentNode = node._parent;
+    const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
+    const parentlayout = parentYogaNode.getComputedLayout();
+    if (node.size().width >= parentlayout.width) {
+      setChildParentsRelative(node);
+      const rootNode = getRoot(node);
+      const rootYogaNode: Yoga.YogaNode = rootNode.store.data.yogaProps;
+      rootYogaNode.calculateLayout();
+      const layout = rootYogaNode.getComputedLayout();
+      setChildParentsWidth(node, '100%');
+      rootYogaNode.setWidth(layout.width);
+      rootYogaNode.setHeight(layout.height);
+    }
+    yogaNode.setWidth('100%');
+  } else {
     yogaNode.setPosition(Yoga.EDGE_LEFT, node.position().x);
     yogaNode.setPosition(Yoga.EDGE_TOP, node.position().y);
   }
@@ -386,6 +414,24 @@ const setCumputedSize = (node: X6Node, size: any) => {
 const setNodeRealative = (yogaNode: any) => {
   yogaNode.setWidth('auto');
   yogaNode.setHeight('auto');
+};
+
+const setChildParentsRelative = (node: any) => {
+  if (node.getParent()) {
+    const parent = node.getParent();
+    const parentYogaNode: Yoga.YogaNode = parent.store.data.yogaProps;
+    setNodeRealative(parentYogaNode);
+    setChildParentsRelative(parent);
+  }
+};
+
+const setChildParentsWidth = (node: any, width: string) => {
+  if (node.getParent()) {
+    const parent = node.getParent();
+    const parentYogaNode: Yoga.YogaNode = parent.store.data.yogaProps;
+    parentYogaNode.setWidth(width);
+    setChildParentsWidth(parent, width);
+  }
 };
 
 const setChildrenRelative = (node: any, graph: any) => {
