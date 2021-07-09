@@ -66,7 +66,7 @@ export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
           const nodeData = data.metaData;
           const newNode = createNode({
             stencil: viewKindStencils[nodeData['@id']],
-            data: { '@id': 'popup', height: 55, width: 150, subject: {}, ...data.position, x: 0, y: 0 },
+            data: { '@id': data.id, height: 55, width: 150, subject: {}, ...data.position, x: 0, y: 0 },
             shape: nodeData['@id'],
             sample: true,
           });
@@ -85,7 +85,15 @@ export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
           if (viewKindStencils[e].type === 'DiagramNode') {
             const node = createNode({
               stencil: viewKindStencils[e],
-              data: { '@id': e, height: 55, width: 150, subject: {}, x: 0, y: 0, layout: viewKindStencils[e].layout },
+              data: {
+                '@id': e,
+                height: 55,
+                width: 150,
+                subject: {},
+                x: 0,
+                y: 0,
+                layout: viewKindStencils[e].layout,
+              },
               shape: e,
               sample: true,
             });
