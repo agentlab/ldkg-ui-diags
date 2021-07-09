@@ -3,6 +3,7 @@ import { addYogaSolver } from './../layout/yoga';
 import { grid } from '@antv/x6/lib//layout/grid';
 import { EventArgs } from '@antv/x6/lib/graph/events';
 import { Dnd } from '@antv/x6/lib/addon/dnd';
+import { data } from 'jquery';
 
 class myDND extends Addon.Dnd {
   protected drop(draggingNode: Node, pos: Point.PointLike) {
@@ -244,39 +245,46 @@ export class Stencil extends View {
     }
     return this;
   }
-
+  protected getParent(node: Node): Node {
+    let curNode = node;
+    while (curNode.getParent()) {
+      curNode = curNode.getParent() as Node;
+    }
+    return curNode;
+  }
+  protected showPopup(event: any, targetNode: Node, targetGraph: Graph): void {
+    this.popup.style.top = event.pageY + 'px';
+    this.popup.style.left = `${Number(event.pageX) + 100}px`;
+    const node = this.options.getPopupNode(targetNode);
+    this.popupGraph.addNode(node);
+  }
   protected loadGroup(cells: (Node | Node.Metadata)[], groupName?: string): Stencil {
     const model = this.getModel(groupName);
     const group = this.getGroup(groupName);
     const graph = this.getGraph(groupName);
     graph.on('node:mouseenter', (e: any) => {
-      if (!e.node._parent) {
-        this.popup.style.visibility = 'visible';
-        this.popup.style.top = e.e.pageY + 'px';
-        this.popup.style.left = `${Number(e.e.pageX) + 100}px`;
-        const node = this.options.getPopupNode(e.node);
-        if (!graph.hasCell('popup')) {
-          this.popupGraph.addNode(node);
-        }
+      this.popup.style.visibility = 'visible';
+      const id = e.node.id;
+      const targetNode = graph.getCellById(id.slice(id.indexOf(':') + 1)) as Node;
+      if (!this.popupGraph.hasCell(targetNode.id)) {
+        this.popupGraph.model.resetCells([]);
+        this.showPopup(e.e, targetNode, graph);
       }
     });
     graph.on('node:mouseleave', (e: any) => {
-      if (!e.node._parent) {
-        this.popupGraph.model.resetCells([]);
-        this.popup.style.visibility = 'hidden';
-      }
+      this.popup.style.visibility = 'hidden';
     });
     addYogaSolver({ graph });
+    const nodes = cells.map((cell) =>
+      Node.isNode(cell)
+        ? cell
+        : Node.create({
+            ...cell,
+            resizeGraph: layout && model ? () => FunctionExt.call(layout, this, model, group, graph) : () => null,
+          }),
+    );
     const layout = (group && group.layout) || this.options.layout;
     if (model && graph) {
-      const nodes = cells.map((cell) =>
-        Node.isNode(cell)
-          ? cell
-          : Node.create({
-              ...cell,
-              resizeGraph: layout && model ? () => FunctionExt.call(layout, this, model, group, graph) : () => null,
-            }),
-      );
       graph.addNodes(nodes);
     }
     let height = this.options.stencilGraphHeight;
@@ -297,12 +305,34 @@ export class Stencil extends View {
       });
     }
 
+    // create wrapper components
+    nodes.forEach((e: Node) => {
+      if (!e.getParent()) {
+        const data = e.getProp();
+        const newData = {
+          id: 'wrapper:' + data.id,
+          ...data.size,
+          ...data.position,
+          attrs: {
+            // 指定 rect 元素的样式
+            body: {
+              stroke: 'rgba(0,0,0,0)',
+              fill: 'rgba(0,0,0,0)',
+            },
+          },
+        };
+        graph.addNode(newData);
+      }
+    });
+
     return this;
   }
 
   protected onDragStart(args: EventArgs['node:mousedown']): void {
-    const { e, node } = args;
-    this.dnd.start(node, e);
+    const { e, node, view } = args;
+    const id = node.id;
+    const targetNode = view.graph.getCellById(id.slice(id.indexOf(':') + 1)) as Node;
+    this.dnd.start(targetNode, e);
   }
 
   protected filter(keyword: string, filter?: Filter): void {
