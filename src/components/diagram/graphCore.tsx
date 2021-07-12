@@ -356,8 +356,13 @@ export const createGraph = ({
       enabled: true,
       filter: (node) => {
         const graph = node.model?.graph;
-        if (node.getParent() && !(node as ExtNode).getStore().get().movable) {
-          graph && graph.select((node.getParent() as Node).id);
+        if (graph && node.getParent() && !(node as ExtNode).getStore().get().movable) {
+          const parent = node.getParent();
+          if (graph.isSelected(parent?.id || '')) {
+            graph.unselect((node.getParent() as Node).id);
+          } else {
+            graph.select((node.getParent() as Node).id);
+          }
           return false;
         }
         return true;

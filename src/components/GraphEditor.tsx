@@ -6,7 +6,7 @@ import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import { Graph } from './diagram/Graph';
 
-export const GraphEditor = observer<any>(({ viewDescrCollId, viewDescrId, viewKindCollId }: any) => {
+export const GraphEditor = observer<any>(({ viewDescrCollId, viewDescrId, viewKindCollId, onSelect }: any) => {
   const { store } = useContext(MstContext);
   if (!store) {
     console.log('!store', store);
@@ -74,6 +74,7 @@ export const GraphEditor = observer<any>(({ viewDescrCollId, viewDescrId, viewKi
       stencilPanel={stencilPanel}
       viewKind={viewKind}
       dataSource={dataSource}
+      onSelect={onSelect}
     />
   );
 });

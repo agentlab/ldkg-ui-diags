@@ -52,6 +52,10 @@ export const Graph = (props: any) => {
       graph.resize(width, height);
     };
     resizeFn();
+    graph.selection.widget.collection.on('updated', (e) => {
+      const nodeIds = graph.selection.widget.collection.cells.map((c) => c.id);
+      props.onSelect(nodeIds);
+    });
     graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
     // dispose attached HTML objects
