@@ -74,7 +74,7 @@ export class ExtNode extends ReactShape {
       options.handledTranslation = options.handledTranslation || [];
       if (!options.handledTranslation.includes(this)) {
         options.handledTranslation.push(this);
-        const children = this.children;
+        const children = this._children;
         if (children?.length) {
           options.handledTranslation.push(...children);
         }
@@ -91,7 +91,7 @@ export class ExtNode extends ReactShape {
   getStore() {
     return this.store;
   }
-  checkTranslationOwner(ownerId) {
+  checkTranslationOwner(ownerId: string | number | undefined): boolean {
     let child = this as Node;
     while (child.getParent()) {
       if ((child.getParent() as Node).id === ownerId) {
@@ -100,6 +100,69 @@ export class ExtNode extends ReactShape {
       child = child.getParent() as Node;
     }
     return false;
+  }
+  eachChild(iterator: (child: Cell, index: number, children: Cell[]) => void, context?: any) {
+    (this._children || []).forEach(iterator, context);
+    return this;
+  }
+  getChildCount() {
+    return this._children?.length || 0;
+  }
+  insertChild(child: Cell | null, index?: number, options: Cell.SetOptions = {}): this {
+    if (child != null && child !== this) {
+      const oldParent = child.getParent();
+      const changed = this !== oldParent;
+
+      let pos = index;
+      if (pos == null) {
+        pos = this.getChildCount();
+        if (!changed) {
+          pos -= 1;
+        }
+      }
+
+      // remove from old parent
+      if (oldParent) {
+        const children = oldParent.getChildren();
+        if (children) {
+          const index = children.indexOf(child);
+          if (index >= 0) {
+            child.setParent(null, options);
+            children.splice(index, 1);
+            oldParent.setChildren(children, options);
+          }
+        }
+      }
+      let children = this._children;
+      if (children == null) {
+        children = [];
+        children.push(child);
+      } else {
+        children.splice(pos, 0, child);
+      }
+
+      child.setParent(this, options);
+      this.setChildren(children, options);
+
+      if (changed && this.model) {
+        const incomings = this.model.getIncomingEdges(this);
+        const outgoings = this.model.getOutgoingEdges(this);
+
+        if (incomings) {
+          incomings.forEach((edge) => edge.updateParent(options));
+        }
+
+        if (outgoings) {
+          outgoings.forEach((edge) => edge.updateParent(options));
+        }
+      }
+
+      if (this.model) {
+        this.model.addCell(child, options);
+      }
+    }
+
+    return this;
   }
 }
 class SimpleNodeView extends NodeView {
@@ -568,7 +631,7 @@ export const createNode = ({ stencil, data, shape, sample }): Node => {
       delete newData['@id'];
       newData.height = el.height || data.height;
       newData.movable = false;
-      const childNode = createNode({ stencil: el, data: newData, shape, sample });
+      const childNode = createNode({ stencil: el, data: newData, shape: el['@id'], sample });
       newNode.addChild(childNode);
     }
   });
