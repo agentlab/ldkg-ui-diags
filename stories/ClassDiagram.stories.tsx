@@ -31,7 +31,7 @@ export default {
 const Template: Story<any> = (args: any) => (
   <Provider store={store}>
     <MstContextProvider store={rootStore}>
-      <GraphEditor {...args} />
+      <GraphEditor {...args} onSelect={(ids) => console.log('SELECTED: ', ids)} />
     </MstContextProvider>
   </Provider>
 );
