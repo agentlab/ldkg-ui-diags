@@ -124,6 +124,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
       interacting: false,
       onEdgeLabelRendered: (args) => {
         const { selectors, label } = args;
+        const edge: any = args.edge;
         const Renderer = stencils['defaultLabel'];
         const content = selectors.foContent as HTMLDivElement;
         if (content) {
@@ -131,6 +132,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
             <Renderer
               parent={selectors.fo}
               label={label?.attrs?.fo.label}
+              editable={edge.store.data.editable}
               onSave={() => {
                 /*do nothing*/
               }}
@@ -143,6 +145,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
     edges.forEach((edge, idx) =>
       g.addEdge({
         id: String(idx),
+        editable: false,
         source: [10, 10 + idx * itemHeight],
         target: [width - 10, 10 + idx * itemHeight],
         ...edge,

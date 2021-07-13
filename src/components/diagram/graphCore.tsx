@@ -320,6 +320,7 @@ export const createGraph = ({
     },
     onEdgeLabelRendered: (args) => {
       const { selectors, label } = args;
+      const edge: any = args.edge;
       const Renderer = stencils['defaultLabel'];
       const content = selectors.foContent as HTMLDivElement;
       if (content) {
@@ -327,6 +328,7 @@ export const createGraph = ({
           <Renderer
             parent={selectors.fo}
             label={label?.attrs?.fo.label}
+            editable={edge.store.data.editable}
             onSave={() => {
               /*do nothing*/
             }}
@@ -599,6 +601,7 @@ const edgeFromData = ({ data }) => ({
   id: data['@id'],
   target: data.arrowTo,
   source: data.arrowFrom,
+  editable: data.editable,
   label: data.subject.name
     ? {
         markup: [{ ...Markup.getForeignObjectMarkup() }],
