@@ -1,20 +1,11 @@
 import React, { useEffect } from 'react';
-import { Node, Graph } from '@antv/x6';
-import { ReactShape } from '@antv/x6-react-shape';
-//import { grid } from '@antv/x6/lib/layout/grid';
+import { Graph } from '@antv/x6';
 import { v4 as uuidv4 } from 'uuid';
-import { nodeFromData, createNode, ExtNode } from '../graphCore';
-import { StencilEditor } from '../stencils/StencilEditor';
+import { createNode, ExtNode } from '../graphCore';
 import { Stencil as StencilX6 } from './stencilClass';
 import { grid } from './grid';
 
 import styles from '../../../Editor.module.css';
-//import { AnyCnameRecord } from 'node:dns';
-
-interface AnyCnameRecord {
-  type: 'CNAME';
-  value: string;
-}
 
 export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
   const refContainer = React.useRef<any>();

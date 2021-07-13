@@ -50,34 +50,6 @@ const rehydrate = (node: any): any => {
   return record;
 };
 
-const nodeConfig = {
-  /*'rm:PropertyNodeStencil': {},
-  'rm:CompartmentNodeStencil': {
-    paddingTop: 20,
-    paddingLeft: 1,
-    paddingRight: 1,
-    paddingBottom: 1,
-  },
-  'rm:PropertiesCompartmentNodeStencil': {
-    padding: {
-      top: 28,
-      left: 3,
-      right: 3,
-      bottom: 3,
-    },
-  },
-  'rm:ClassNodeStencil': {
-    padding: {
-      top: 28,
-      left: 3,
-      right: 3,
-      bottom: 3,
-    },
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },*/
-};
-
 type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
 
 export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
@@ -112,13 +84,6 @@ export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
     const changed = handleGraphEvent(e, 'remove', graph);
     updateVariables(changed, graph);
   });
-  /*graph.on('node:selected', (e) => {
-    //
-    if (e.node._parent) {
-      graph.select(e.node._parent);
-      graph.unselect(e.node);
-    }
-  });*/
 };
 
 const defaultLayout = {
@@ -242,11 +207,6 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
-    /*if (yogaNode.getChildCount() === 0) {
-      yogaNode.setWidth(computedLayout.width);
-    } else {
-      yogaNode.setWidth('auto');
-    }*/
     if (!node._parent) {
       setCumputedSize(node, computedLayout); // set absolute position
     } else {
@@ -356,7 +316,6 @@ const addNode = (node: any) => {
       alignItems: 'stretch',
       minHeight: 0,
       ...node.store.data.size,
-      ...nodeConfig[node.shape],
       ...node.store.data.layoutProp,
     }),
     root,
