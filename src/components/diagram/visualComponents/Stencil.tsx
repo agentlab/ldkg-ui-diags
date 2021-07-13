@@ -1,81 +1,112 @@
 import React, { useEffect } from 'react';
-import { Addon } from '@antv/x6';
-import { NodeShape } from '../stencils/NodeShape';
-import { NodeField } from '../stencils/NodeField';
-import { nodeFromData } from '../graphCore';
+import { Node, Graph } from '@antv/x6';
+import { ReactShape } from '@antv/x6-react-shape';
+//import { grid } from '@antv/x6/lib/layout/grid';
+import { v4 as uuidv4 } from 'uuid';
+import { nodeFromData, createNode, ExtNode } from '../graphCore';
+import { StencilEditor } from '../stencils/StencilEditor';
+import { Stencil as StencilX6 } from './stencilClass';
+import { grid } from './grid';
 
 import styles from '../../../Editor.module.css';
+//import { AnyCnameRecord } from 'node:dns';
 
-const nodeFieldData = {
-  '@id': 'Node Field',
-  x: 10,
-  y: 10,
-  z: 0,
-  rotation: 0,
-  height: 40,
-  width: 100,
-  subject: { name: 'Node Field' },
-};
-const nodeShapeData = {
-  '@id': 'Node Shape',
-  x: 10,
-  y: 10,
-  z: 0,
-  rotation: 0,
-  height: 40,
-  width: 100,
-  subject: { title: 'Node Shape' },
-};
-export const Stencil = ({ nodes = [], graph }: any) => {
+interface AnyCnameRecord {
+  type: 'CNAME';
+  value: string;
+}
+
+export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
   const refContainer = React.useRef<any>();
   useEffect(() => {
     if (graph) {
-      const s = new Addon.Stencil({
+      const s = new StencilX6({
         title: 'Stencil',
         target: graph,
-        collapsable: true,
-        stencilGraphWidth: 290,
-        stencilGraphHeight: 180,
+        //collapsable: true,
+        stencilGraphWidth: 300,
+        stencilGraphHeight: 280,
         layoutOptions: {
           columns: 1,
+        },
+        layout(model, group, stencilGraph) {
+          const options = {
+            columnWidth: 70,
+            columns: 2,
+            rowHeight: 70,
+            resizeToFit: true,
+            dx: 10,
+            dy: 10,
+          };
+
+          grid(
+            model,
+            {
+              ...options,
+              ...(group ? group.layoutOptions : {}),
+            },
+            stencilGraph as Graph,
+          );
+        },
+        getDropNode: (draggingNode: any) => {
+          const data: any = { ...draggingNode.getProp() };
+          data.editing = true;
+          const nodeData = data.metaData;
+          const newNode = createNode({
+            stencil: viewKindStencils[nodeData['@id']],
+            data: { '@id': uuidv4(), height: 55, width: 150, subject: {}, ...data.position },
+            shape: nodeData['@id'],
+            sample: true,
+          });
+          return newNode;
+        },
+        getPopupNode: (node: any) => {
+          const data: any = { ...node.getProp() };
+          data.editing = true;
+          const nodeData = data.metaData;
+          const newNode = createNode({
+            stencil: viewKindStencils[nodeData['@id']],
+            data: { '@id': data.id, height: 55, width: 150, subject: {}, ...data.position, x: 0, y: 0 },
+            shape: nodeData['@id'],
+            sample: true,
+          });
+          return newNode;
         },
         groups: [
           {
             name: 'group1',
-            title: 'Components',
+            title: 'Стенсилы',
           },
         ],
       });
 
       if (s) {
+        const nodes = Object.keys(viewKindStencils).reduce((acc: any, e: string, idx: number) => {
+          if (viewKindStencils[e].type === 'DiagramNode') {
+            const node = createNode({
+              stencil: viewKindStencils[e],
+              data: {
+                '@id': e,
+                height: 55,
+                width: 150,
+                subject: {},
+                x: 0,
+                y: 0,
+                layout: viewKindStencils[e].layout,
+              },
+              shape: e,
+              sample: true,
+            });
+            (node as ExtNode).getStore().get().metaData = viewKindStencils[e];
+            acc.push(node);
+          }
+          return acc;
+        }, []);
         s.load(nodes, 'group1');
       }
       refContainer.current?.appendChild(s.container);
     }
-  }, [graph, nodes]);
+  }, [graph, viewKindStencils]);
 
   return <div ref={refContainer} className={styles.stencil} />;
-};
-
-export const createStencils = (isClassDiagram: boolean, graph: any) => {
-  const nodeShape = nodeFromData({ data: nodeShapeData, Renderer: NodeShape, shape: 'group' });
-  const nodeField = nodeFromData({ data: nodeFieldData, Renderer: NodeField, shape: 'field' });
-  const nodeCircle = {
-    id: 'Node Circle',
-    size: { width: 80, height: 80 },
-    zIndex: 0,
-    shape: 'circle',
-    label: 'Node Circle',
-    attrs: {
-      body: {
-        fill: '#efdbff',
-        stroke: '#9254de',
-      },
-    },
-  };
-  return isClassDiagram ? (
-    <Stencil nodes={[nodeField, nodeShape]} graph={graph} />
-  ) : (
-    <Stencil nodes={[nodeCircle]} graph={graph} />
-  );
 };

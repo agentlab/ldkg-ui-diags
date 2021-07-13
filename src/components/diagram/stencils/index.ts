@@ -1,14 +1,20 @@
 import { NodeShape } from './NodeShape';
 import { NodeField } from './NodeField';
-import { Compartment } from './Compartment';
 import { DefaultLabel } from './DefualtLabel';
 import { Default } from './Default';
+import { Card } from './Card';
+import { Association } from './Association';
+import { Inheritance } from './Inheritance';
+import { SvgStencil } from './SvgStencil';
 
 export const stencils = {
-  compartment: Compartment,
-  'rm:PropertyNodeStencil': NodeField,
-  'rm:ClassNodeStencil': NodeShape,
+  'rm:RectWithText': NodeField,
+  'rm:TitledRectNodeStencil': NodeShape,
+  'rm:CardStencil': Card,
+  'rm:SvgStencil': SvgStencil,
   default: Default,
-  'rm:AssociationArrowStencil': Default,
   defaultLabel: DefaultLabel,
+  'rm:DefaultEdgeStencil': {},
+  'rm:AssociationArrowStencil': Association,
+  'rm:InheritanceArrowStencil': Inheritance,
 };
