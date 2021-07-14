@@ -2,27 +2,50 @@ import React from 'react';
 import { ToolsView, EdgeView, Point } from '@antv/x6';
 import { observer } from 'mobx-react-lite';
 import { Input } from 'antd';
+import { useEffect } from 'react';
+import { identity } from 'mathjs';
+import { cloneDeep } from 'lodash';
+import './cell.css';
 
 const fieldStyle: React.CSSProperties = {
-  backgroundColor: 'white',
+  display: 'flex',
+  //backgroundColor: 'white',
   boxSizing: 'border-box',
-
+  alignItems: 'center',
   width: '100%',
   height: '100%',
-  paddingLeft: 3,
-  fontSize: 10,
+  margin: 0,
+  padding: '0 0 0 3px',
+  fontSize: 12,
+  verticalAlign: 'middle',
 
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
+  border: 0,
+  boxShadow: 'none !important',
 };
 
 export const NodeField = React.memo(
   ({ data = {}, text, style, setEditing, nodeData, onSave }: any) => {
+    const ref = React.createRef<any>();
+    useEffect(() => {
+      if (data.editing) {
+        ref.current.focus();
+      }
+    }, [data.editing]);
     const label =
       data.label || nodeData?.subject?.title || `${nodeData?.subject?.name}: ${nodeData?.subject?.datatype}`;
     return data.editing ? (
-      <Input defaultValue={label} onBlur={(e: any) => onSave(e.target.value)} style={style} />
+      <Input
+        ref={ref}
+        defaultValue={label}
+        onMouseUp={(e) => {
+          e.stopPropagation();
+        }}
+        onBlur={(e: any) => onSave(e.target.value)}
+        style={{ ...fieldStyle, ...style }}
+      />
     ) : (
       <div
         onDoubleClick={() => {

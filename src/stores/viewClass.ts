@@ -49,6 +49,7 @@ export const classViewKinds = [
                 'linear-gradient(to top, rgb(247, 247, 247) 10% , rgb(230, 230, 230) 80%, rgb(214, 214, 214) 100%)',
               borderBottom: '1px solid rgb(150,150,150)',
               textAlign: 'center',
+              justifyContent: 'center',
               fontSize: '1.2em',
             },
             constant: true,

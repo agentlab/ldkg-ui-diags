@@ -1,0 +1,12 @@
+.ant-input {
+  display: block !important;
+  height: 100% !important;
+  border: 0;
+}
+.ant-input:focus,
+.ant-input-focused {
+  display: block;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+}
