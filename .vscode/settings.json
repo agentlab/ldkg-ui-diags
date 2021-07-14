@@ -16,5 +16,9 @@
   "prettier.endOfLine": "lf",
   "versionlens.suggestions.showOnStartup": true,
   "versionlens.suggestions.showPrereleasesOnStartup": true,
-  "jest.autoRun": "off"
+  "jest.autoRun": "off",
+  "cSpell.words": [
+    "antd",
+    "antv"
+  ]
 }
