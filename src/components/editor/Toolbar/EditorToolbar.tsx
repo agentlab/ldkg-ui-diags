@@ -18,15 +18,15 @@ import styles from '../../../Editor.module.css';
 const Item = Toolbar.Item;
 const Group = Toolbar.Group;
 
-export const GraphToolbar = ({ graph }) => {
+export const GraphToolbar = ({ graph, enable }) => {
   return (
     <div className={styles.toolbar}>
-      <EditorToolbar graph={graph} />
+      <EditorToolbar graph={graph} enable={enable} />
     </div>
   );
 };
 
-const EditorToolbar = ({ graph }) => {
+const EditorToolbar = ({ graph, enable }) => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -100,6 +100,7 @@ const EditorToolbar = ({ graph }) => {
       graph.bindKey('meta+c', copy);
       graph.bindKey('meta+v', paste);
       graph.bindKey('meta+x', cut);
+      graph.bindKey('delete', cut);
     }
   }, [graph, copy, cut, paste]);
 
@@ -139,7 +140,7 @@ const EditorToolbar = ({ graph }) => {
     }
   };
 
-  return (
+  return enable ? (
     <div>
       <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
         <Group>
@@ -163,7 +164,7 @@ const EditorToolbar = ({ graph }) => {
         </Group>
       </Toolbar>
     </div>
-  );
+  ) : null;
 };
 
 export default EditorToolbar;
