@@ -3,8 +3,6 @@ import { NodeField } from './NodeField';
 import { DefaultLabel } from './DefaultLabel';
 import { Default } from './Default';
 import { Card } from './Card';
-import { Association } from './Association';
-import { Inheritance } from './Inheritance';
 import { SvgStencil } from './SvgStencil';
 
 export const stencils = {
