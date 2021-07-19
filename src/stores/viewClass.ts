@@ -316,7 +316,7 @@ export const viewDataRootNodes = [
     },
     object: 'rm:DataModelView', // ref to the diagram
     //layout?
-    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     //styles: 'string with css?',
   },
   {

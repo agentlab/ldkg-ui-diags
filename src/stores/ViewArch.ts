@@ -66,9 +66,9 @@ export const archViewKinds = [
        * Nodes
        */
       {
-        '@id': 'rm:WindTurbineStencil', // stencil should be registered under thos @id
+        '@id': 'rm:WindTurbineStencil', // stencil should be registered under this @id
         type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil', //reference to the base stencil which should be customized additionaly with 'style' and registered under the different id from @id property
+        protoStencil: 'rm:SvgStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
         resultsScope: 'mktp:_kwe56Hgs',
         // img, title, description are the fields from Cart stencil
         img: '/wind.svg',
@@ -244,7 +244,7 @@ export const archViewDescrs = [
             conditions: {
               '@id': 'mktp:_2Yud6',
               '@type': 'rm:EntConstrCondition',
-              '@parent': 'mktp:_Sdf72d', // parent Cond, used @ prefix to avoid collisions with conditions (our extension of JSON-LD)
+              '@parent': 'mktp:_Sdf72d', // parent Condition, used @ prefix to avoid collisions with conditions (our extension of JSON-LD)
               object: 'mktp:_kg67Sdfl', // all the inheritance thing just to add this field!!!
             },
           },
@@ -295,7 +295,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:WindTurbineStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:WindTurbineStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode2',
@@ -314,7 +314,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode3',
@@ -333,7 +333,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:GeneratorStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:GeneratorStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode4',
@@ -352,7 +352,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:SubstationStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:SubstationStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
   },
   {
     '@id': 'mktp:diagramNode5',
@@ -371,7 +371,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HeaterStencil', // ref to the stencil (type of the graphical sign, not in
   },
   {
     '@id': 'mktp:diagramNode6',
@@ -390,7 +390,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphical sign, not in
   },
   {
     '@id': 'mktp:diagramNode7',
@@ -409,7 +409,7 @@ export const viewDataRootArchNodes = [
       description: '',
     },
     object: 'rm:DataModelView', // ref to the diagram
-    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphicsl sign, not in
+    stencil: 'rm:HouseStencil', // ref to the stencil (type of the graphical sign, not in
   },
 ];
 

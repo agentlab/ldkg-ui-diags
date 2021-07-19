@@ -6,7 +6,7 @@ import { applySnapshot } from 'mobx-state-tree';
 import editorStyles from '../../../Editor.module.css';
 import panelStyles from './ConfigPanel.module.css';
 
-export const GraphCongigPanel = ({ view, viewDescrObs }: any) => {
+export const GraphConfigPanel = ({ view, viewDescrObs }: any) => {
   const onChange = (val) => {
     if (viewDescrObs) {
       const viewDescr = cloneDeep(view);

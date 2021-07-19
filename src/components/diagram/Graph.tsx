@@ -9,7 +9,7 @@ import { Minimap } from './visualComponents/Minimap';
 import { Stencil } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
 import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
-import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
+import { GraphConfigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool } from './ConnectorTool';
 
@@ -164,7 +164,7 @@ export const Graph = (props: any) => {
           </div>
           <div style={{ position: 'relative' }}>
             {options.configPanel === false ? null : (
-              <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
+              <GraphConfigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
             )}
             {options.minimap === false ? null : <Minimap minimapContainer={minimapContainer} />}
           </div>

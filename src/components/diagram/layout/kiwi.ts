@@ -73,7 +73,7 @@ export const addKiwiSolver = ({ graph }: { graph: Graph }) => {
 
 export const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver, graph) => {
   const node: Node = e.node;
-  let changedNodes = new Set<any>([node, ...propogateUpdates(getRoot(node), graph)]);
+  let changedNodes = new Set<any>([node, ...propagateUpdates(getRoot(node), graph)]);
   if (type === 'add') {
     addNode(node, solver);
     if (node.hasParent()) {
@@ -90,7 +90,7 @@ export const handleGraphEvent = (e: any, type: string, solver: kiwi.Solver, grap
   } else if (type === 'remove') {
     removeNode(node, solver);
   }
-  //changedIds = [...changedIds, ...this.propogateUpdates(this.getRoot(node.id))];
+  //changedIds = [...changedIds, ...this.propagateUpdates(this.getRoot(node.id))];
   return changedNodes;
 };
 
@@ -103,11 +103,11 @@ export const updateVariables = (changedNodes, solver) => {
       top: n.store.data.kiwiProps.top.value(),
       left: n.store.data.kiwiProps.left.value(),
     };
-    setCumputedSize(n, computedSize);
+    setComputedSize(n, computedSize);
   }
 };
 
-export const propogateUpdates = (rootNode: any, graph: any) => {
+export const propagateUpdates = (rootNode: any, graph: any) => {
   let changedNodes = new Set<Node>([rootNode]);
   const current = rootNode;
   if (!current || !current._children) {
@@ -115,7 +115,7 @@ export const propogateUpdates = (rootNode: any, graph: any) => {
   }
   for (const childNode of current._children) {
     if (graph.hasCell(childNode)) {
-      changedNodes = new Set([...changedNodes, ...propogateUpdates(childNode, graph)]);
+      changedNodes = new Set([...changedNodes, ...propagateUpdates(childNode, graph)]);
     }
   }
   return changedNodes;
@@ -181,7 +181,7 @@ const embedNode = (previous, current, node, solver: kiwi.Solver, graph) => {
       solver.removeConstraint(constraint);
     }
     child.parent = null;
-    changedNodes = new Set([...changedNodes, ...propogateUpdates(parentNode, graph)]);
+    changedNodes = new Set([...changedNodes, ...propagateUpdates(parentNode, graph)]);
   }
   // add to new parent
   if (current) {
@@ -248,7 +248,7 @@ const removeNode = (node, solver: kiwi.Solver) => {
   solver.removeEditVariable(removed.height);
 };
 
-const setCumputedSize = (node: Node, size: any) => {
+const setComputedSize = (node: Node, size: any) => {
   node.resize(size.width, size.height, {
     ignore: true,
   });

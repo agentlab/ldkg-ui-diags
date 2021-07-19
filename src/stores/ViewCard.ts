@@ -156,9 +156,9 @@ export const mktpViewKinds = [
        * Nodes
        */
       {
-        '@id': 'mktp:CategoryStencil', // stencil should be registered under thos @id
+        '@id': 'mktp:CategoryStencil', // stencil should be registered under this @id
         type: 'DiagramNode',
-        protoStencil: 'rm:CardStencil', //reference to the base stencil which should be customized additionaly with 'style' and registered under the different id from @id property
+        protoStencil: 'rm:CardStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
         resultsScope: 'mktp:_kwe56Hgs',
         // img, title, description are the fields from Cart stencil
         img: {
@@ -275,7 +275,7 @@ export const mktpViewKinds = [
         protoStencil: 'rm:CardStencil',
         resultsScope: 'mktp:_ld98Sdg',
         title: 'похожесть',
-        description: 'Карточка похожего товара объединена по сходству в один тоавр',
+        description: 'Карточка похожего товара объединена по сходству в один товар',
         paletteOrder: 4,
         // styles for targetMarker
         line: {
@@ -334,7 +334,7 @@ export const mktpViewDescrs = [
             conditions: {
               '@id': 'mktp:_2Yud6',
               '@type': 'rm:EntConstrCondition',
-              '@parent': 'mktp:_Sdf72d', // parent Cond, used @ prefix to avoid collisions with conditions (our extension of JSON-LD)
+              '@parent': 'mktp:_Sdf72d', // parent Condition, used @ prefix to avoid collisions with conditions (our extension of JSON-LD)
               object: 'mktp:_kg67Sdfl', // all the inheritance thing just to add this field!!!
             },
           },
@@ -447,7 +447,7 @@ export const viewDataCategoryNodes = [
   {
     '@id': 'mktp:diagramNode01',
     '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     x: 10,
     y: 10,
     z: 0,
@@ -466,7 +466,7 @@ export const viewDataCategoryNodes = [
   {
     '@id': 'mktp:diagramNode02',
     '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     x: 10,
     y: 200,
     z: 0,
@@ -485,7 +485,7 @@ export const viewDataCategoryNodes = [
   {
     '@id': 'mktp:diagramNode03',
     '@type': 'rm:UsedInDiagramAsRootNode',
-    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'mktp:CategoryStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     x: 400,
     y: 10,
     z: 0,
@@ -587,9 +587,8 @@ export const viewDataProductCardNodes = [
     subject: {
       '@id': 'wbc:15622789/detail.aspx',
       '@type': 'hs:ProductCard',
-      title: 'Массажная подушка с подогревом для дома и автомомобиля...',
-      description:
-        'Массажная подушка с подогревом для дома и автомомобиля массажер для шеи спины 8 роликов чудо релакс',
+      title: 'Массажная подушка с подогревом для дома и автомобиля...',
+      description: 'Массажная подушка с подогревом для дома и автомобиля массажер для шеи спины 8 роликов чудо релакс',
       imageUrl: 'https://img2.wbstatic.net/c252x336/new/15620000/15622789-1.jpg',
       brand: {
         '@id': 'https://www.wildberries.ru/brands/happygoods',
