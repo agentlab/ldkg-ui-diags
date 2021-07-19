@@ -140,29 +140,27 @@ export const GraphToolbar = ({ graph, enable }) => {
 
 const EditorToolbar = ({ handleClick, canUndo, canRedo }) => {
   return (
-    <React.Fragment>
-      <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
-        <Group>
-          <Item name='delete' icon={<ClearOutlined />} tooltip='Clear (Cmd + D)' />
-        </Group>
-        <Group>
-          <Item name='undo' tooltip='Undo (Cmd + Z)' icon={<UndoOutlined />} disabled={!canUndo} />
-          <Item name='redo' tooltip='Redo (Cmd + Shift + Z)' icon={<RedoOutlined />} disabled={!canRedo} />
-        </Group>
-        <Group>
-          <Item name='copy' tooltip='Copy (Cmd + C)' icon={<CopyOutlined />} />
-          <Item name='cut' tooltip='Cut (Cmd + X)' icon={<ScissorOutlined />} />
-          <Item name='paste' tooltip='Paste (Cmd + V)' icon={<SnippetsOutlined />} />
-        </Group>
-        <Group>
-          <Item name='save' icon={<SaveOutlined />} tooltip='Save (Cmd + S)' />
-          <Item name='print' icon={<PrinterOutlined />} tooltip='Print (Cmd + P)' />
-        </Group>
-        <Group>
-          <Item name='switch' icon={<RetweetOutlined />} tooltip='Switch' />
-        </Group>
-      </Toolbar>
-    </React.Fragment>
+    <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
+      <Group>
+        <Item name='delete' icon={<ClearOutlined />} tooltip='Clear (Cmd + D)' />
+      </Group>
+      <Group>
+        <Item name='undo' tooltip='Undo (Cmd + Z)' icon={<UndoOutlined />} disabled={!canUndo} />
+        <Item name='redo' tooltip='Redo (Cmd + Shift + Z)' icon={<RedoOutlined />} disabled={!canRedo} />
+      </Group>
+      <Group>
+        <Item name='copy' tooltip='Copy (Cmd + C)' icon={<CopyOutlined />} />
+        <Item name='cut' tooltip='Cut (Cmd + X)' icon={<ScissorOutlined />} />
+        <Item name='paste' tooltip='Paste (Cmd + V)' icon={<SnippetsOutlined />} />
+      </Group>
+      <Group>
+        <Item name='save' icon={<SaveOutlined />} tooltip='Save (Cmd + S)' />
+        <Item name='print' icon={<PrinterOutlined />} tooltip='Print (Cmd + P)' />
+      </Group>
+      <Group>
+        <Item name='switch' icon={<RetweetOutlined />} tooltip='Switch' />
+      </Group>
+    </Toolbar>
   );
 };
 
