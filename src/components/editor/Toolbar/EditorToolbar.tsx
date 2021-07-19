@@ -19,14 +19,6 @@ const Item = Toolbar.Item;
 const Group = Toolbar.Group;
 
 export const GraphToolbar = ({ graph, enable }) => {
-  return (
-    <div className={styles.toolbar}>
-      <EditorToolbar graph={graph} enable={enable} />
-    </div>
-  );
-};
-
-const EditorToolbar = ({ graph, enable }) => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -116,8 +108,8 @@ const EditorToolbar = ({ graph, enable }) => {
         graph.clearCells();
         break;
       case 'save':
-        graph.toPNG((datauri: string) => {
-          DataUri.downloadDataUri(datauri, 'chart.png');
+        graph.toPNG((dataUri: string) => {
+          DataUri.downloadDataUri(dataUri, 'chart.png');
         });
         break;
       case 'print':
@@ -139,9 +131,16 @@ const EditorToolbar = ({ graph, enable }) => {
         break;
     }
   };
-
   return enable ? (
-    <div>
+    <div className={styles.toolbar}>
+      <EditorToolbar handleClick={handleClick} canUndo={canUndo} canRedo={canRedo} />
+    </div>
+  ) : null;
+};
+
+const EditorToolbar = ({ handleClick, canUndo, canRedo }) => {
+  return (
+    <React.Fragment>
       <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
         <Group>
           <Item name='delete' icon={<ClearOutlined />} tooltip='Clear (Cmd + D)' />
@@ -163,8 +162,8 @@ const EditorToolbar = ({ graph, enable }) => {
           <Item name='switch' icon={<RetweetOutlined />} tooltip='Switch' />
         </Group>
       </Toolbar>
-    </div>
-  ) : null;
+    </React.Fragment>
+  );
 };
 
 export default EditorToolbar;
