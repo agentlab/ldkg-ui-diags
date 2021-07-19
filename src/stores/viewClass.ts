@@ -140,9 +140,16 @@ export const classViewKinds = [
         '@id': 'rm:AssociationArrowStencil',
         type: 'DiagramEdge',
         resultsScope: 'rm:Arrows_CollConstr',
+        title: 'Aссоциация',
         line: {
           stroke: '#808080',
           strokeWidth: 1,
+        },
+        style: {
+          display: 'flex',
+          //backgroundColor: 'white',
+          boxSizing: 'border-box',
+          alignItems: 'center',
         },
       },
     ],

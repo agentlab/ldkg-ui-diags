@@ -1,9 +1,9 @@
 import React from 'react';
-import { Graph, Markup } from '@antv/x6';
+import { Graph } from '@antv/x6';
 import ReactDOM from 'react-dom';
 import { stencils } from './stencils';
 
-export const edgeExamples = [
+/*export const edgeExamples = [
   {
     label: {
       markup: [{ ...Markup.getForeignObjectMarkup() }],
@@ -79,11 +79,11 @@ export const edgeExamples = [
       },
     },
   },
-];
+];*/
 
 const defOnSelect = (itemIdx: number) => console.log('Selected edge: ', itemIdx);
 
-export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: any) => {
+export const ConnectorTool = ({ edges, onSelect = defOnSelect }: any) => {
   const refContainer = React.useRef<HTMLDivElement | null>(null);
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
   const [graph, setGraph] = React.useState<Graph | null>(null);
@@ -154,7 +154,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
     Graph.registerEdgeTool(hoverBoundary.name, hoverBoundary.value, true);
     Graph.registerEdgeTool(selectedBoundary.name, selectedBoundary.value, true);
     setGraph(g);
-  }, [refContainer]);
+  }, [refContainer, edges]);
 
   React.useEffect(() => {
     if (!graph) {
