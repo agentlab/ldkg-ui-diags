@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
 import './cell.css';
-const style: React.CSSProperties = {
+const defaultStyle: React.CSSProperties = {
   backgroundColor: 'white',
   boxSizing: 'border-box',
 
@@ -20,6 +20,7 @@ export const DefaultLabel = (props: any) => {
   const [editing, setEditing] = useState(false);
   const [curLabel, setCurLabel] = useState(props.label);
   const { parent, onSave, editable = true } = props;
+  const labelStyle = { ...defaultStyle, ...props.style };
   const ref = React.useRef<any>();
   const inputRef = React.createRef<any>();
   const toggleEdit = () => {
@@ -46,7 +47,7 @@ export const DefaultLabel = (props: any) => {
       {editing && editable ? (
         <Input
           ref={inputRef}
-          style={style}
+          style={labelStyle}
           onMouseUp={(e) => {
             e.stopPropagation();
           }}
@@ -55,7 +56,7 @@ export const DefaultLabel = (props: any) => {
           onBlur={(e: any) => saveData(e.target.value)}
         />
       ) : (
-        <span style={style}>{curLabel}</span>
+        <span style={labelStyle}>{curLabel}</span>
       )}
     </div>
   );

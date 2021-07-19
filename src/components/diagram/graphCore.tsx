@@ -429,6 +429,7 @@ export const createGraph = ({
             parent={selectors.fo}
             label={label?.attrs?.fo.label}
             editable={edge.store.data.editable}
+            style={edge.store.data.style}
             onSave={() => {
               /*do nothing*/
             }}
@@ -617,7 +618,6 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
     case 'rm:UsedInDiagramAsArrow':
       if (graph.hasCell(data.arrowFrom) && graph.hasCell(data.arrowTo)) {
         const edge = {
-          ...edgeFromData({ data }),
           ...viewKindStencils[stencilId],
           ...{
             attrs: {
@@ -629,6 +629,7 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
               },
             },
           },
+          ...edgeFromData({ data }),
         };
         if (viewKindStencils[stencilId].shape) edge.shape = viewKindStencils[stencilId].shape;
         (graph as Graph).addEdge(edge);

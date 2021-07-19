@@ -4,15 +4,14 @@ import { MstContext } from '@agentlab/ldkg-ui-react';
 import { createGraph, createGrid, addNewData } from './graphCore';
 import { addYogaSolver } from './layout/yoga';
 //import { addKiwiSolver } from './layout/kiwi';
-
+import { Markup } from '@antv/x6';
 import { Minimap } from './visualComponents/Minimap';
 import { Stencil } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
 import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
-import { GraphCongigPanel } from '../editor/ConfigPanel/ConfigPanel';
+import { GraphConfigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
-import { ConnectorTool, edgeExamples } from './ConnectorTool';
-import { viewDataArchArrows } from '../../stores/ViewArch';
+import { ConnectorTool } from './ConnectorTool';
 
 export const Graph = (props: any) => {
   const { view } = props;
@@ -30,7 +29,8 @@ export const Graph = (props: any) => {
   const minimapContainer = React.useRef<HTMLDivElement>(null);
   const edgeConnectorRef = React.useRef<any>();
   const [edgeConnector, setEdgeConnector] = React.useState<any>();
-  const onEdgeSelect = (idx) => setEdgeConnector(edgeExamples[idx]);
+  const [edges, setEdges] = React.useState([]);
+  const onEdgeSelect = (idx) => setEdgeConnector(edges[idx]);
 
   useEffect(() => {
     const { width, height } = getContainerSize();
@@ -64,11 +64,76 @@ export const Graph = (props: any) => {
       window.removeEventListener('resize', resizeFn);
     };
   }, []);
-
+  const createEdges = () => {
+    const viewKindStencils = props.viewKindStencils;
+    const edges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
+      if (viewKindStencils[e].type === 'DiagramEdge') {
+        const edge = {
+          label: {
+            markup: [{ ...Markup.getForeignObjectMarkup() }],
+            attrs: {
+              fo: {
+                label: viewKindStencils[e].name,
+                width: 1,
+                height: 1,
+                x: 60,
+                y: -10,
+              },
+            },
+          },
+          attrs: {
+            line: {
+              ...viewKindStencils[e].line,
+            },
+            outline: {
+              ...viewKindStencils[e].outline,
+            },
+          },
+          ...viewKindStencils[e],
+        };
+        acc.push(edge);
+      }
+      return acc;
+    }, []);
+    return edges;
+  };
   React.useEffect(() => {
     edgeConnectorRef.current = edgeConnector;
   }, [edgeConnector]);
 
+  React.useEffect(() => {
+    const viewKindStencils = props.viewKindStencils;
+    const newEdges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
+      if (viewKindStencils[e].type === 'DiagramEdge') {
+        const edge = {
+          label: {
+            markup: [{ ...Markup.getForeignObjectMarkup() }],
+            attrs: {
+              fo: {
+                label: viewKindStencils[e].title,
+                width: 1,
+                height: 1,
+                x: 60,
+                y: -10,
+              },
+            },
+          },
+          attrs: {
+            line: {
+              ...viewKindStencils[e].line,
+            },
+            outline: {
+              ...viewKindStencils[e].outline,
+            },
+          },
+          ...viewKindStencils[e],
+        };
+        acc.push(edge);
+      }
+      return acc;
+    }, []);
+    setEdges(newEdges);
+  }, [props.viewKindStencils]);
   return (
     <React.Fragment>
       <div className={styles.wrap}>
@@ -80,7 +145,7 @@ export const Graph = (props: any) => {
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
             <Stencil graph={graph} viewKindStencils={props.stencilPanel} />
-            <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
+            <ConnectorTool edges={edges} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>
             <GraphToolbar graph={graph} enable={options.toolbar} />
@@ -99,7 +164,7 @@ export const Graph = (props: any) => {
           </div>
           <div style={{ position: 'relative' }}>
             {options.configPanel === false ? null : (
-              <GraphCongigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
+              <GraphConfigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
             )}
             {options.minimap === false ? null : <Minimap minimapContainer={minimapContainer} />}
           </div>

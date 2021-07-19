@@ -50,34 +50,6 @@ const rehydrate = (node: any): any => {
   return record;
 };
 
-const nodeConfig = {
-  /*'rm:PropertyNodeStencil': {},
-  'rm:CompartmentNodeStencil': {
-    paddingTop: 20,
-    paddingLeft: 1,
-    paddingRight: 1,
-    paddingBottom: 1,
-  },
-  'rm:PropertiesCompartmentNodeStencil': {
-    padding: {
-      top: 28,
-      left: 3,
-      right: 3,
-      bottom: 3,
-    },
-  },
-  'rm:ClassNodeStencil': {
-    padding: {
-      top: 28,
-      left: 3,
-      right: 3,
-      bottom: 3,
-    },
-    flexDirection: 'row',
-    alignItems: 'stretch',
-  },*/
-};
-
 type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
 
 export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
@@ -112,13 +84,6 @@ export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
     const changed = handleGraphEvent(e, 'remove', graph);
     updateVariables(changed, graph);
   });
-  /*graph.on('node:selected', (e) => {
-    //
-    if (e.node._parent) {
-      graph.select(e.node._parent);
-      graph.unselect(e.node);
-    }
-  });*/
 };
 
 const defaultLayout = {
@@ -242,13 +207,8 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
-    /*if (yogaNode.getChildCount() === 0) {
-      yogaNode.setWidth(computedLayout.width);
-    } else {
-      yogaNode.setWidth('auto');
-    }*/
     if (!node._parent) {
-      setCumputedSize(node, computedLayout); // set absolute position
+      setComputedSize(node, computedLayout); // set absolute position
     } else {
       // set position relative to parent
       const computedSize = {
@@ -257,7 +217,7 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
         width: computedLayout.width,
         height: computedLayout.height,
       };
-      setCumputedSize(node, computedSize);
+      setComputedSize(node, computedSize);
     }
   };
 
@@ -300,11 +260,11 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
   if (current) {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
-    const parentlayout = parentYogaNode.getComputedLayout();
+    const parentLayout = parentYogaNode.getComputedLayout();
     parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount());
     const childLayout = yogaNode.getComputedLayout();
     parentYogaNode.setHeight('auto');
-    if (childLayout.width >= parentlayout.width) {
+    if (childLayout.width >= parentLayout.width) {
       setChildParentsRelative(node);
       const rootNode = getRoot(node);
       const rootYogaNode: Yoga.YogaNode = rootNode.store.data.yogaProps;
@@ -356,7 +316,6 @@ const addNode = (node: any) => {
       alignItems: 'stretch',
       minHeight: 0,
       ...node.store.data.size,
-      ...nodeConfig[node.shape],
       ...node.store.data.layoutProp,
     }),
     root,
@@ -384,8 +343,8 @@ const resizeNode = (node: any, graph: any) => {
   if (node._parent) {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
-    const parentlayout = parentYogaNode.getComputedLayout();
-    if (node.size().width >= parentlayout.width) {
+    const parentLayout = parentYogaNode.getComputedLayout();
+    if (node.size().width >= parentLayout.width) {
       setChildParentsRelative(node);
       const rootNode = getRoot(node);
       const rootYogaNode: Yoga.YogaNode = rootNode.store.data.yogaProps;
@@ -402,7 +361,7 @@ const resizeNode = (node: any, graph: any) => {
   }
 };
 
-const setCumputedSize = (node: X6Node, size: any) => {
+const setComputedSize = (node: X6Node, size: any) => {
   node.resize(size.width, size.height, {
     ignore: true,
   });
@@ -411,7 +370,7 @@ const setCumputedSize = (node: X6Node, size: any) => {
   });
 };
 
-const setNodeRealative = (yogaNode: any) => {
+const setNodeRelative = (yogaNode: any) => {
   yogaNode.setWidth('auto');
   yogaNode.setHeight('auto');
 };
@@ -420,7 +379,7 @@ const setChildParentsRelative = (node: any) => {
   if (node.getParent()) {
     const parent = node.getParent();
     const parentYogaNode: Yoga.YogaNode = parent.store.data.yogaProps;
-    setNodeRealative(parentYogaNode);
+    setNodeRelative(parentYogaNode);
     setChildParentsRelative(parent);
   }
 };

@@ -36,6 +36,7 @@ const SizeOperator = ({ node, children, height, parent, child }: any) => {
         node.store.data.resizeGraph();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return parent && child ? (
     <div ref={ref}>{children}</div>

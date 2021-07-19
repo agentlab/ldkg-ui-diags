@@ -1,10 +1,8 @@
 import { NodeShape } from './NodeShape';
 import { NodeField } from './NodeField';
-import { DefaultLabel } from './DefualtLabel';
+import { DefaultLabel } from './DefaultLabel';
 import { Default } from './Default';
 import { Card } from './Card';
-import { Association } from './Association';
-import { Inheritance } from './Inheritance';
 import { SvgStencil } from './SvgStencil';
 
 export const stencils = {
@@ -15,6 +13,4 @@ export const stencils = {
   default: Default,
   defaultLabel: DefaultLabel,
   'rm:DefaultEdgeStencil': {},
-  'rm:AssociationArrowStencil': Association,
-  'rm:InheritanceArrowStencil': Inheritance,
 };

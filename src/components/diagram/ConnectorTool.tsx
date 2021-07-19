@@ -1,89 +1,11 @@
 import React from 'react';
-import { Graph, Markup } from '@antv/x6';
+import { Graph } from '@antv/x6';
 import ReactDOM from 'react-dom';
 import { stencils } from './stencils';
 
-export const edgeExamples = [
-  {
-    label: {
-      markup: [{ ...Markup.getForeignObjectMarkup() }],
-      attrs: {
-        fo: {
-          label: 'похожесть',
-          width: 1,
-          height: 1,
-          x: 60,
-          y: -10,
-        },
-      },
-    },
-    attrs: {
-      line: {
-        stroke: '#808080',
-        strokeWidth: 1,
-        targetMarker: {
-          name: 'block',
-          strokeWidth: 1,
-          fill: '#808080',
-        },
-      },
-    },
-  },
-  {
-    label: {
-      markup: [{ ...Markup.getForeignObjectMarkup() }],
-      attrs: {
-        fo: {
-          label: 'в категории',
-          width: 1,
-          height: 1,
-          x: 60,
-          y: -10,
-        },
-      },
-    },
-    attrs: {
-      line: {
-        stroke: '#808080',
-        strokeWidth: 1,
-        targetMarker: {
-          name: 'block',
-          strokeWidth: 1,
-          open: true,
-        },
-      },
-    },
-  },
-  {
-    label: {
-      markup: [{ ...Markup.getForeignObjectMarkup() }],
-      attrs: {
-        fo: {
-          label: 'подкатегория',
-          width: 1,
-          height: 1,
-          x: 60,
-          y: -10,
-        },
-      },
-    },
-    attrs: {
-      line: {
-        stroke: '#808080',
-        strokeWidth: 1,
-        targetMarker: {
-          name: 'block',
-          strokeWidth: 1,
-          fill: 'white',
-        },
-      },
-    },
-  },
-];
-
 const defOnSelect = (itemIdx: number) => console.log('Selected edge: ', itemIdx);
 
-export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: any) => {
+export const ConnectorTool = ({ edges, onSelect = defOnSelect }: any) => {
   const refContainer = React.useRef<HTMLDivElement | null>(null);
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
   const [graph, setGraph] = React.useState<Graph | null>(null);
@@ -154,7 +76,7 @@ export const ConnectorTool = ({ edges = edgeExamples, onSelect = defOnSelect }: 
     Graph.registerEdgeTool(hoverBoundary.name, hoverBoundary.value, true);
     Graph.registerEdgeTool(selectedBoundary.name, selectedBoundary.value, true);
     setGraph(g);
-  }, [refContainer]);
+  }, [refContainer, edges]);
 
   React.useEffect(() => {
     if (!graph) {

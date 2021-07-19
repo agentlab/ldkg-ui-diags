@@ -137,12 +137,45 @@ export const classViewKinds = [
        * Edges (arrows)
        */
       {
-        '@id': 'rm:AssociationArrowStencil',
+        '@id': 'rm:AssociationArrow',
         type: 'DiagramEdge',
-        resultsScope: 'rm:Arrows_CollConstr',
+        resultsScope: 'rm:Association_CollConstr',
+        title: 'Ассоциация',
         line: {
           stroke: '#808080',
           strokeWidth: 1,
+          targetMarker: {
+            name: 'block',
+            strokeWidth: 1,
+            open: true,
+          },
+        },
+        style: {
+          display: 'flex',
+          //backgroundColor: 'white',
+          boxSizing: 'border-box',
+          alignItems: 'center',
+        },
+      },
+      {
+        '@id': 'rm:InheritanceArrow',
+        type: 'DiagramEdge',
+        resultsScope: 'rm:Inheritance_CollConstr',
+        title: 'Наследование',
+        line: {
+          stroke: '#808080',
+          strokeWidth: 1,
+          targetMarker: {
+            name: 'block',
+            strokeWidth: 1,
+            fill: 'white',
+          },
+        },
+        style: {
+          display: 'flex',
+          //backgroundColor: 'white',
+          boxSizing: 'border-box',
+          alignItems: 'center',
         },
       },
     ],
@@ -241,23 +274,46 @@ export const classViewDescrs = [
         ],
       },
       {
-        '@id': 'rm:Arrows_CollConstr',
+        '@id': 'rm:Association_CollConstr',
         '@type': 'rm:CollConstr',
-        '@parent': 'rm:Arrows_CollConstr',
+        '@parent': 'rm:Association_CollConstr',
         entConstrs: [
           {
-            '@id': 'rm:Arrows_EntConstr_0',
+            '@id': 'rm:Association_EntConstr_0',
             '@type': 'rm:EntConstr',
             schema: 'rm:UsedInDiagramAsArrowShape',
             conditions: {
-              '@id': 'rm:Arrows_EntConstr_0_Condition',
+              '@id': 'rm:Association_EntConstr_0_Condition',
               '@type': 'rm:EntConstrCondition',
               subject: '?eIri1',
               object: 'rm:DataModelView',
             },
           },
           {
-            '@id': 'rm:Arrows_EntConstr_1',
+            '@id': 'rm:Association_EntConstr_1',
+            '@type': 'rm:CollConstr',
+            schema: PropertyShapeSchema['@id'],
+          },
+        ],
+      },
+      {
+        '@id': 'rm:Inheritance_CollConstr',
+        '@type': 'rm:CollConstr',
+        '@parent': 'rm:Inheritance_CollConstr',
+        entConstrs: [
+          {
+            '@id': 'rm:Inheritance_EntConstr_0',
+            '@type': 'rm:EntConstr',
+            schema: 'rm:UsedInDiagramAsArrowShape',
+            conditions: {
+              '@id': 'rm:Inheritance_EntConstr_0_Condition',
+              '@type': 'rm:EntConstrCondition',
+              subject: '?eIri1',
+              object: 'rm:DataModelView',
+            },
+          },
+          {
+            '@id': 'rm:Inheritance_EntConstr_1',
             '@type': 'rm:CollConstr',
             schema: PropertyShapeSchema['@id'],
           },
@@ -309,7 +365,7 @@ export const viewDataRootNodes = [
     },
     object: 'rm:DataModelView', // ref to the diagram
     //layout?
-    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphicsl sign, not instance of a sign)
+    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     //styles: 'string with css?',
   },
   {
@@ -540,7 +596,7 @@ export const viewDataChildNodes = [
 /**
  * Arrows (reference properties)
  */
-export const viewDataArrows = [
+export const viewDataAssociationArrows = [
   {
     '@id': 'rm:diagramArrow1',
     '@type': 'rm:UsedInDiagramAsArrow',
@@ -568,7 +624,7 @@ export const viewDataArrows = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:AssociationArrowStencil',
+    stencil: 'rm:AssociationArrow',
     //styles: 'string with css?',
   },
   {
@@ -597,7 +653,7 @@ export const viewDataArrows = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:AssociationArrowStencil',
+    stencil: 'rm:AssociationArrow',
     //styles: 'string with css?',
   },
 ];
@@ -645,7 +701,15 @@ export const classModelInitialState = {
     [classViewDescrs[0].collsConstrs?.[2]['@id'] || '']: {
       '@id': classViewDescrs[0].collsConstrs?.[2]['@id'],
       collConstr: classViewDescrs[0].collsConstrs?.[2]['@id'], // reference by @id
-      dataIntrnl: viewDataArrows,
+      dataIntrnl: viewDataAssociationArrows,
+      updPeriod: undefined,
+      lastSynced: moment.now(),
+      resolveCollConstrs: false,
+    },
+    [classViewDescrs[0].collsConstrs?.[3]['@id'] || '']: {
+      '@id': classViewDescrs[0].collsConstrs?.[3]['@id'],
+      collConstr: classViewDescrs[0].collsConstrs?.[3]['@id'], // reference by @id
+      dataIntrnl: [],
       updPeriod: undefined,
       lastSynced: moment.now(),
       resolveCollConstrs: false,

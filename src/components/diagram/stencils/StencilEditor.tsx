@@ -13,7 +13,7 @@ export const StencilEditor = ({ options }: any) =>
 export const createNewStencilProps = (options, nodeData) => {
   const newProps = {};
   for (const key in options) {
-    if (key == 'style') {
+    if (key === 'style') {
       newProps[key] = { ...options.style, ...nodeData.style };
     } else {
       const val = options[key];
