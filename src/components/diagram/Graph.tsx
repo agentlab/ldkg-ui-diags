@@ -83,7 +83,7 @@ export const Graph = (props: any) => {
             <ConnectorTool edges={edgeExamples} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>
-            {options.toolbar === false ? null : <GraphToolbar graph={graph} />}
+            <GraphToolbar graph={graph} enable={options.toolbar} />
             <div style={{ position: 'relative' }}>
               {/*<Button type='primary' shape='round' onClick={props.loadData}>
                 Load More

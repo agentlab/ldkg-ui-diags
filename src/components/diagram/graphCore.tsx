@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import cloneDeep from 'lodash-es/cloneDeep';
-import { Graph, Cell, Markup, Node, Interp, Model, Registry } from '@antv/x6';
+import { Graph, Cell, Markup, Node, Interp, Model, Registry, ObjectExt } from '@antv/x6';
 import { ShareRegistry } from '@antv/x6/lib/model/registry';
 import { Options as GraphOptions } from '@antv/x6/lib/graph/options';
 import { ReactShape } from '@antv/x6-react-shape';
@@ -163,6 +163,106 @@ export class ExtNode extends ReactShape {
     }
 
     return this;
+  }
+  toJSON(options: Cell.ToJSONOptions = {}): Node.Properties {
+    const props = { ...this.store.get() };
+    const toString = Object.prototype.toString;
+    const cellType = 'node';
+
+    if (!props.shape) {
+      const ctor = this.constructor;
+      throw new Error(
+        `Unable to serialize ${cellType} missing "shape" prop, check the ${cellType} "${
+          ctor.name || toString.call(ctor)
+        }"`,
+      );
+    }
+
+    const ctor = this.constructor as typeof Cell;
+    const diff = options.diff === true;
+    const attrs = props.attrs || {};
+    const presets = ctor.getDefaults(true) as Node.Properties;
+    // When `options.diff` is `true`, we should process the custom options,
+    // such as `width`, `height` etc. to ensure the comparing work correctly.
+    const defaults = diff ? this.preprocess(presets, true) : presets;
+    const defaultAttrs = defaults.attrs || {};
+    const finalAttrs: any = {};
+
+    Object.keys(props).forEach((key) => {
+      if (key !== 'yogaProps') {
+        const val = props[key];
+        if (val != null && !Array.isArray(val) && typeof val === 'object' && !ObjectExt.isPlainObject(val)) {
+          throw new Error(
+            `Can only serialize ${cellType} with plain-object props, but got a "${toString.call(
+              val,
+            )}" type of key "${key}" on ${cellType} "${this.id}"`,
+          );
+        }
+
+        if (key !== 'attrs' && key !== 'shape' && diff) {
+          const preset = defaults[key];
+          if (ObjectExt.isEqual(val, preset)) {
+            delete props[key];
+          }
+        }
+      } else {
+        delete props[key];
+      }
+    });
+
+    Object.keys(attrs).forEach((key) => {
+      const attr = attrs[key];
+      const defaultAttr = defaultAttrs[key];
+
+      Object.keys(attr).forEach((name) => {
+        const value = attr[name] as any;
+        const defaultValue = defaultAttr ? defaultAttr[name] : null;
+
+        if (value != null && typeof value === 'object' && !Array.isArray(value)) {
+          Object.keys(value).forEach((subName) => {
+            const subValue = value[subName];
+            if (
+              defaultAttr == null ||
+              defaultValue == null ||
+              !ObjectExt.isObject(defaultValue) ||
+              !ObjectExt.isEqual(defaultValue[subName], subValue)
+            ) {
+              if (finalAttrs[key] == null) {
+                finalAttrs[key] = {};
+              }
+              if (finalAttrs[key][name] == null) {
+                finalAttrs[key][name] = {};
+              }
+              const tmp = finalAttrs[key][name] as any;
+              tmp[subName] = subValue;
+            }
+          });
+        } else if (defaultAttr == null || !ObjectExt.isEqual(defaultValue, value)) {
+          // `value` is not an object, default attribute with `key` does not
+          // exist or it is different than the attribute value set on the cell.
+          if (finalAttrs[key] == null) {
+            finalAttrs[key] = {};
+          }
+          finalAttrs[key][name] = value as any;
+        }
+      });
+    });
+
+    const finalProps = {
+      ...props,
+      attrs: ObjectExt.isEmpty(finalAttrs) ? undefined : finalAttrs,
+    };
+
+    if (finalProps.attrs == null) {
+      delete finalProps.attrs;
+    }
+
+    const ret = finalProps as any;
+    if (ret.angle === 0) {
+      delete ret.angle;
+    }
+
+    return ObjectExt.cloneDeep(ret);
   }
 }
 class SimpleNodeView extends NodeView {

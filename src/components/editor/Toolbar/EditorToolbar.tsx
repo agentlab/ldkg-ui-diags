@@ -18,15 +18,7 @@ import styles from '../../../Editor.module.css';
 const Item = Toolbar.Item;
 const Group = Toolbar.Group;
 
-export const GraphToolbar = ({ graph }) => {
-  return (
-    <div className={styles.toolbar}>
-      <EditorToolbar graph={graph} />
-    </div>
-  );
-};
-
-const EditorToolbar = ({ graph }) => {
+export const GraphToolbar = ({ graph, enable }) => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -100,6 +92,7 @@ const EditorToolbar = ({ graph }) => {
       graph.bindKey('meta+c', copy);
       graph.bindKey('meta+v', paste);
       graph.bindKey('meta+x', cut);
+      graph.bindKey('delete', cut);
     }
   }, [graph, copy, cut, paste]);
 
@@ -115,8 +108,8 @@ const EditorToolbar = ({ graph }) => {
         graph.clearCells();
         break;
       case 'save':
-        graph.toPNG((datauri: string) => {
-          DataUri.downloadDataUri(datauri, 'chart.png');
+        graph.toPNG((dataUri: string) => {
+          DataUri.downloadDataUri(dataUri, 'chart.png');
         });
         break;
       case 'print':
@@ -138,31 +131,36 @@ const EditorToolbar = ({ graph }) => {
         break;
     }
   };
-
-  return (
-    <div>
-      <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
-        <Group>
-          <Item name='delete' icon={<ClearOutlined />} tooltip='Clear (Cmd + D)' />
-        </Group>
-        <Group>
-          <Item name='undo' tooltip='Undo (Cmd + Z)' icon={<UndoOutlined />} disabled={!canUndo} />
-          <Item name='redo' tooltip='Redo (Cmd + Shift + Z)' icon={<RedoOutlined />} disabled={!canRedo} />
-        </Group>
-        <Group>
-          <Item name='copy' tooltip='Copy (Cmd + C)' icon={<CopyOutlined />} />
-          <Item name='cut' tooltip='Cut (Cmd + X)' icon={<ScissorOutlined />} />
-          <Item name='paste' tooltip='Paste (Cmd + V)' icon={<SnippetsOutlined />} />
-        </Group>
-        <Group>
-          <Item name='save' icon={<SaveOutlined />} tooltip='Save (Cmd + S)' />
-          <Item name='print' icon={<PrinterOutlined />} tooltip='Print (Cmd + P)' />
-        </Group>
-        <Group>
-          <Item name='switch' icon={<RetweetOutlined />} tooltip='Switch' />
-        </Group>
-      </Toolbar>
+  return enable ? (
+    <div className={styles.toolbar}>
+      <EditorToolbar handleClick={handleClick} canUndo={canUndo} canRedo={canRedo} />
     </div>
+  ) : null;
+};
+
+const EditorToolbar = ({ handleClick, canUndo, canRedo }) => {
+  return (
+    <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
+      <Group>
+        <Item name='delete' icon={<ClearOutlined />} tooltip='Clear (Cmd + D)' />
+      </Group>
+      <Group>
+        <Item name='undo' tooltip='Undo (Cmd + Z)' icon={<UndoOutlined />} disabled={!canUndo} />
+        <Item name='redo' tooltip='Redo (Cmd + Shift + Z)' icon={<RedoOutlined />} disabled={!canRedo} />
+      </Group>
+      <Group>
+        <Item name='copy' tooltip='Copy (Cmd + C)' icon={<CopyOutlined />} />
+        <Item name='cut' tooltip='Cut (Cmd + X)' icon={<ScissorOutlined />} />
+        <Item name='paste' tooltip='Paste (Cmd + V)' icon={<SnippetsOutlined />} />
+      </Group>
+      <Group>
+        <Item name='save' icon={<SaveOutlined />} tooltip='Save (Cmd + S)' />
+        <Item name='print' icon={<PrinterOutlined />} tooltip='Print (Cmd + P)' />
+      </Group>
+      <Group>
+        <Item name='switch' icon={<RetweetOutlined />} tooltip='Switch' />
+      </Group>
+    </Toolbar>
   );
 };
 
