@@ -25,7 +25,7 @@ export const GraphToolbar = ({ graph, enable }) => {
   const copy = useCallback(() => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
-      graph.copy(cells);
+      graph.copy(cells, { deep: true });
     }
     return false;
   }, [graph]);
@@ -62,13 +62,13 @@ export const GraphToolbar = ({ graph, enable }) => {
         setCanRedo(history.canRedo());
       });
 
-      graph.bindKey('meta+z', () => {
+      graph.bindKey('ctrl+z', () => {
         if (history.canUndo()) {
           history.undo();
         }
         return false;
       });
-      graph.bindKey('meta+shift+z', () => {
+      graph.bindKey('ctrl+y', () => {
         if (history.canRedo()) {
           history.redo();
         }
