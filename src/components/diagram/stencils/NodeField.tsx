@@ -3,8 +3,7 @@ import { ToolsView, EdgeView, Point } from '@antv/x6';
 import { observer } from 'mobx-react-lite';
 import { Input } from 'antd';
 import { useEffect } from 'react';
-import { identity } from 'mathjs';
-import { cloneDeep } from 'lodash';
+import { StencilProps } from './StencilEditor';
 import './cell.css';
 
 const fieldStyle: React.CSSProperties = {
@@ -26,7 +25,13 @@ const fieldStyle: React.CSSProperties = {
   boxShadow: 'none !important',
 };
 
-export const NodeField = React.memo(
+export interface NodeField {
+  data: any;
+  text: string;
+  editing: boolean;
+  setEditing: (state: boolean) => void;
+}
+export const NodeField: React.FC<NodeField> = React.memo(
   ({ data = {}, text, style, setEditing, nodeData, onSave }: any) => {
     const ref = React.createRef<any>();
     useEffect(() => {
@@ -64,7 +69,7 @@ export const NodeField = React.memo(
   },
 );
 
-export const NodeFieldWrap = observer<any>(({ data = {}, text, editingData, setEditing }: any) => {
+export const NodeFieldWrap = observer<StencilProps>(({ data = {}, text, editingData, setEditing }: any) => {
   const editing = editingData.get(data['@id']);
   if (!editingData.has(data['@id'])) {
     setEditing(false);

@@ -7,7 +7,11 @@ import { grid } from './grid';
 
 import styles from '../../../Editor.module.css';
 
-export const Stencil: React.FC<any> = ({ graph, viewKindStencils }: any) => {
+export interface StencilProps {
+  graph: Graph;
+  viewKindStencils: any;
+}
+export const Stencil: React.FC<StencilProps> = ({ graph, viewKindStencils }: any) => {
   const refContainer = React.useRef<any>();
   useEffect(() => {
     if (graph) {

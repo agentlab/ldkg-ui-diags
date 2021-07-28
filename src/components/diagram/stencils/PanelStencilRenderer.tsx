@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { stencils } from './';
 import { observer } from 'mobx-react-lite';
-import { createNewStencilProps } from './StencilEditor';
+import { createNewStencilProps, StencilProps } from './StencilEditor';
 
 export const PanelStencilRenderer = ({ options, parent }: any) =>
   observer<any>(({ node, nodeData, ...props }: any) => {
-    const Renderer = stencils[options.protoStencil];
+    const Renderer: React.FC<StencilProps> = stencils[options.protoStencil];
     const newProps = createNewStencilProps(options, nodeData);
     const createChildren = (children: any) => {
       return children.map((child: any) => {

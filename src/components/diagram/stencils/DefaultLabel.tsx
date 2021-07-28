@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from 'antd';
+
 import './cell.css';
 const defaultStyle: React.CSSProperties = {
   backgroundColor: 'white',
@@ -16,7 +17,7 @@ const defaultStyle: React.CSSProperties = {
   textOverflow: 'ellipsis',
 };
 
-export const DefaultLabel = (props: any) => {
+export const DefaultLabel: React.FC<any> = (props: any) => {
   const [editing, setEditing] = useState(false);
   const [curLabel, setCurLabel] = useState(props.label);
   const { parent, onSave, editable = true } = props;

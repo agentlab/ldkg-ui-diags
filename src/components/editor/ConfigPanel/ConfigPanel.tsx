@@ -6,7 +6,16 @@ import { applySnapshot } from 'mobx-state-tree';
 import editorStyles from '../../../Editor.module.css';
 import panelStyles from './ConfigPanel.module.css';
 
-export const GraphConfigPanel = ({ view, viewDescrObs }: any) => {
+export interface GraphConfigPanelProps {
+  view: any;
+  viewDescrObs: any;
+}
+export interface ConfigPanelProps {
+  view: any;
+  onChange: (data: any) => void;
+}
+
+export const GraphConfigPanel: React.FC<GraphConfigPanelProps> = ({ view, viewDescrObs }: any) => {
   const onChange = (val) => {
     if (viewDescrObs) {
       const viewDescr = cloneDeep(view);
@@ -25,7 +34,7 @@ export const GraphConfigPanel = ({ view, viewDescrObs }: any) => {
   );
 };
 
-const ConfigPanel = ({ view, onChange }) => (
+const ConfigPanel: React.FC<ConfigPanelProps> = ({ view, onChange }) => (
   <div className={panelStyles.config}>
     <ConfigGrid view={view} onChange={onChange} />
   </div>

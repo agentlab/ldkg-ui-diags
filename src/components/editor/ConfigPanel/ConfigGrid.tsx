@@ -11,10 +11,14 @@ enum GRID_TYPE {
   DOUBLE_MESH = 'doubleMesh',
 }
 
-const ConfigGrid = observer((props: any) => {
-  const attrs = props.view.options?.gridOptions || {};
+export interface ConfigGridProps {
+  view: any;
+  onChange: (data: any) => void;
+}
+const ConfigGrid = observer<ConfigGridProps>(({ view, onChange }) => {
+  const attrs = view.options?.gridOptions || {};
 
-  const onChange = props.onChange || (() => null);
+  const onChangeState = onChange || (() => null);
 
   return (
     <Tabs defaultActiveKey='1'>
@@ -22,7 +26,7 @@ const ConfigGrid = observer((props: any) => {
         <Row align='middle'>
           <Col span={8}>Grid Type</Col>
           <Col span={14}>
-            <Select style={{ width: '100%' }} value={attrs.type} onChange={(val) => onChange({ type: val })}>
+            <Select style={{ width: '100%' }} value={attrs.type} onChange={(val) => onChangeState({ type: val })}>
               <Select.Option value={GRID_TYPE.DOT}>Dot</Select.Option>
               <Select.Option value={GRID_TYPE.FIXED_DOT}>Fixed Dot</Select.Option>
               <Select.Option value={GRID_TYPE.MESH}>Mesh</Select.Option>
@@ -33,7 +37,13 @@ const ConfigGrid = observer((props: any) => {
         <Row align='middle'>
           <Col span={8}>Grid Size</Col>
           <Col span={12}>
-            <Slider min={1} max={20} step={1} value={attrs.size} onChange={(val: number) => onChange({ size: val })} />
+            <Slider
+              min={1}
+              max={20}
+              step={1}
+              value={attrs.size}
+              onChange={(val: number) => onChangeState({ size: val })}
+            />
           </Col>
           <Col span={2}>
             <div className='result'>{attrs.size}</div>
@@ -60,7 +70,7 @@ const ConfigGrid = observer((props: any) => {
                   max={10}
                   step={0.5}
                   value={attrs.thickness}
-                  onChange={(val: number) => onChange({ thickness: val })}
+                  onChange={(val: number) => onChangeState({ thickness: val })}
                 />
               </Col>
               <Col span={2}>
@@ -74,7 +84,7 @@ const ConfigGrid = observer((props: any) => {
                   type='color'
                   value={attrs.colorSecond}
                   style={{ width: '100%' }}
-                  onChange={(e) => onChange({ colorSecond: e.target.value })}
+                  onChange={(e) => onChangeState({ colorSecond: e.target.value })}
                 />
               </Col>
             </Row>
@@ -86,7 +96,7 @@ const ConfigGrid = observer((props: any) => {
                   max={10}
                   step={0.5}
                   value={attrs.thicknessSecond}
-                  onChange={(val: number) => onChange({ thicknessSecond: val })}
+                  onChange={(val: number) => onChangeState({ thicknessSecond: val })}
                 />
               </Col>
               <Col span={2}>
@@ -101,7 +111,7 @@ const ConfigGrid = observer((props: any) => {
                   max={10}
                   step={1}
                   value={attrs.factor}
-                  onChange={(val: number) => onChange({ factor: val })}
+                  onChange={(val: number) => onChangeState({ factor: val })}
                 />
               </Col>
               <Col span={2}>
@@ -118,7 +128,7 @@ const ConfigGrid = observer((props: any) => {
                   type='color'
                   value={attrs.color}
                   style={{ width: '100%' }}
-                  onChange={(e) => onChange({ color: e.target.value })}
+                  onChange={(e) => onChangeState({ color: e.target.value })}
                 />
               </Col>
             </Row>
@@ -130,7 +140,7 @@ const ConfigGrid = observer((props: any) => {
                   max={10}
                   step={0.5}
                   value={attrs.thickness}
-                  onChange={(val: number) => onChange({ thickness: val })}
+                  onChange={(val: number) => onChangeState({ thickness: val })}
                 />
               </Col>
               <Col span={1}>
@@ -148,7 +158,7 @@ const ConfigGrid = observer((props: any) => {
               type='color'
               value={attrs.bgColor}
               style={{ width: '100%' }}
-              onChange={(e) => onChange({ bgColor: e.target.value })}
+              onChange={(e) => onChangeState({ bgColor: e.target.value })}
             />
           </Col>
         </Row>

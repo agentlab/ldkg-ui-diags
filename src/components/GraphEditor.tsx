@@ -6,8 +6,14 @@ import { MstContext } from '@agentlab/ldkg-ui-react';
 
 import { Graph } from './diagram/Graph';
 
-export const GraphEditor = observer<any>(
-  ({ viewDescrCollId, viewDescrId, viewKindCollId, onSelect = () => null }: any) => {
+export interface GraphEditorProps {
+  viewDescrCollId: string;
+  viewDescrId: string;
+  viewKindCollId: string;
+  onSelect: () => void;
+}
+export const GraphEditor = observer<GraphEditorProps>(
+  ({ viewDescrCollId, viewDescrId, viewKindCollId, onSelect = () => null }) => {
     const { store } = useContext(MstContext);
     if (!store) {
       console.log('!store', store);

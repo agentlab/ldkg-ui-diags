@@ -1,11 +1,16 @@
 import React from 'react';
-import { Graph } from '@antv/x6';
+import { Graph, Edge } from '@antv/x6';
 import ReactDOM from 'react-dom';
 import { stencils } from './stencils';
 
 const defOnSelect = (itemIdx: number) => console.log('Selected edge: ', itemIdx);
 
-export const ConnectorTool = ({ edges, onSelect = defOnSelect }: any) => {
+export interface ConnectorToolProps {
+  edges: Edge.Properties[];
+  onSelect: (itemIdx: number) => void;
+}
+
+export const ConnectorTool: React.FC<ConnectorToolProps> = ({ edges, onSelect = defOnSelect }) => {
   const refContainer = React.useRef<HTMLDivElement | null>(null);
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
   const [graph, setGraph] = React.useState<Graph | null>(null);
