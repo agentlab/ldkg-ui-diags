@@ -155,14 +155,13 @@ export class ExtNode extends ReactShape {
   }
   toJSON(options: Cell.ToJSONOptions = {}): Node.Properties {
     const props = { ...this.store.get() };
-    const toString = Object.prototype.toString;
     const cellType = 'node';
 
     if (!props.shape) {
       const ctor = this.constructor;
       throw new Error(
         `Unable to serialize ${cellType} missing "shape" prop, check the ${cellType} "${
-          ctor.name || toString.call(ctor)
+          ctor.name || Object.prototype.toString.call(ctor)
         }"`,
       );
     }
@@ -182,7 +181,7 @@ export class ExtNode extends ReactShape {
         const val = props[key];
         if (val != null && !Array.isArray(val) && typeof val === 'object' && !ObjectExt.isPlainObject(val)) {
           throw new Error(
-            `Can only serialize ${cellType} with plain-object props, but got a "${toString.call(
+            `Can only serialize ${cellType} with plain-object props, but got a "${Object.prototype.toString.call(
               val,
             )}" type of key "${key}" on ${cellType} "${this.id}"`,
           );
