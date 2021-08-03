@@ -56,17 +56,18 @@
     "yoga-layout-prebuilt": ">=1.10.0"
   },
   "dependencies": {
+    "@agentlab/ldkg-ui-react": ">=0.1.11",
+    "@agentlab/sparql-jsld-client": ">=5.0.0-rc.9",
+    "@antv/x6": ">=1.24.5",
+    "@antv/x6-react-components": ">=1.1.13",
+    "@antv/x6-react-shape": ">=1.4.5",
     "@types/styled-components": "^5.1.11",
-    "@agentlab/ldkg-ui-react": "^0.1.11",
-    "@agentlab/sparql-jsld-client": "^5.0.0-rc.9",
-    "@antv/x6": "1.24.5",
-    "@antv/x6-react-components": "1.1.13",
-    "@antv/x6-react-shape": "1.4.5",
-    "immutable": "^4.0.0-rc.14",
-    "kiwi.js": "^1.1.2",
-    "styled-components": "^5.3.0",
-    "uuid": "^8.3.2",
-    "yoga-layout-prebuilt": "^1.10.0"
+    "ahooks": "^2.10.9",
+    "immutable": ">=4.0.0-rc.14",
+    "kiwi.js": ">=1.1.2",
+    "styled-components": ">=5.3.0",
+    "uuid": ">=8.3.2",
+    "yoga-layout-prebuilt": ">=1.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

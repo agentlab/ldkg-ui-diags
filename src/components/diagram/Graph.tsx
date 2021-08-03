@@ -9,6 +9,7 @@ import { Minimap } from './visualComponents/Minimap';
 import { Stencil } from './visualComponents/Stencil';
 import { GraphToolbar } from '../editor/Toolbar/EditorToolbar';
 import { ZoomToolbar } from '../editor/Toolbar/ZoomToolbar';
+import { FloatingContextMenu } from '../editor/Toolbar/ContextMenu';
 import { GraphConfigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool } from './ConnectorTool';
@@ -154,6 +155,7 @@ export const Graph = (props: any) => {
                 Load More
               </Button>*/}
               <ZoomToolbar graph={graph} />
+              <FloatingContextMenu graph={graph} />
               <div
                 id='container'
                 style={{ position: 'absolute', top: 0, left: 0 }}
