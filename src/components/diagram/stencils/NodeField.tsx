@@ -23,6 +23,7 @@ const fieldStyle: React.CSSProperties = {
   textOverflow: 'ellipsis',
   border: 0,
   boxShadow: 'none !important',
+  backgroundColor: 'white',
 };
 
 export interface NodeField {
@@ -62,7 +63,7 @@ export const NodeField = React.memo<NodeField>(
     );
   },
   (prev: any, next: any) => {
-    if (prev.data?.editing !== next.data?.editing) {
+    if (prev.data?.editing !== next.data?.editing || prev.data?.label !== next.data?.label) {
       return false;
     }
     return true;

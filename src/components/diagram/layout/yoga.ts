@@ -2,7 +2,6 @@ import Yoga, { Node } from 'yoga-layout-prebuilt';
 import { Graph, Node as X6Node } from '@antv/x6';
 import { Record, List } from 'immutable';
 import { getRoot } from './kiwi';
-
 const PositionRecord: any = Record({
   top: 0,
   right: 0,
@@ -53,7 +52,7 @@ const rehydrate = (node: any): any => {
 type Event = 'resize' | 'move' | 'add' | 'changeParent' | 'changeChildren' | 'remove';
 
 export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
-  graph.on('node:resized', (e: any) => {
+  graph.on('cell:change:size', (e: any) => {
     if (e.options && e.options.ignore) {
       return;
     }
@@ -72,9 +71,8 @@ export const addYogaSolver = ({ graph }: { graph: Graph }): void => {
     updateVariables(changed, graph);
   });
   graph.on('node:change:parent', (e: any) => {
-    handleGraphEvent(e, 'changeParent', graph);
-    // do not update variables, at this point parent node has outdated children array
-    // following `node:change:children` event will do the job
+    const changed = handleGraphEvent(e, 'changeParent', graph);
+    updateVariables(changed, graph);
   });
   graph.on('node:change:children', (e: any) => {
     const changed = handleGraphEvent(e, 'changeChildren', graph);
@@ -175,7 +173,7 @@ const applyProperties = (props: { [key: string]: string | number | null | any },
 };
 
 export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> => {
-  const node: any = e.node;
+  const node: any = e.node || e.cell;
   let changedNodes = new Set<any>([node, getRoot(node)]);
   if (type === 'add') {
     addNode(node);
@@ -199,11 +197,11 @@ export const handleGraphEvent = (e: any, type: Event, graph: Graph): Set<any> =>
     const changed = changeChildren(e.previous || [], e.current || [], node);
     changedNodes = new Set([...changedNodes, ...changed]);
   }
-
   return changedNodes;
 };
 
 export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
+  graph.history.disable();
   const updateNode = (node) => {
     const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
     const computedLayout = yogaNode.getComputedLayout();
@@ -227,7 +225,6 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
       (parent._children || []).forEach(updateNodeTree);
     }
   };
-
   [...changedNodes]
     .filter((node) => !node._parent)
     .forEach((node) => {
@@ -235,11 +232,12 @@ export const updateVariables = (changedNodes: Set<any>, graph: Graph): void => {
       yogaNode.calculateLayout();
       updateNodeTree(node);
     });
+  graph.history.enable();
 };
 
 const changeParent = (previous: any, current: any, node: any, graph: any) => {
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
-  let changedNodes = new Set<Node>([]);
+  let changedNodes = new Set<X6Node>([]);
 
   // remove from previous parent
   if (previous) {
@@ -261,7 +259,24 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
     const parentNode = node._parent;
     const parentYogaNode: Yoga.YogaNode = parentNode.store.data.yogaProps;
     const parentLayout = parentYogaNode.getComputedLayout();
-    parentYogaNode.insertChild(yogaNode, parentYogaNode.getChildCount());
+    let idx = parentYogaNode.getChildCount();
+    const order = node.store.data.order;
+    if (Number.isInteger(order)) {
+      (parentNode.store.data.nodes || []).forEach((node, index) => {
+        if (order < node.store.data.order && idx > index) {
+          idx = index;
+        }
+      });
+    } else {
+      node.store.data.order = idx;
+    }
+    parentYogaNode.insertChild(yogaNode, idx);
+    if (parentNode.store.data.nodes) {
+      parentNode.store.data.nodes.splice(idx, 0, node);
+    } else {
+      parentNode.store.data.nodes = [node];
+    }
+
     const childLayout = yogaNode.getComputedLayout();
     parentYogaNode.setHeight('auto');
     if (childLayout.width >= parentLayout.width) {
@@ -275,6 +290,7 @@ const changeParent = (previous: any, current: any, node: any, graph: any) => {
       rootYogaNode.setHeight(layout.height);
     }
     yogaNode.setWidth('100%');
+    changedNodes = new Set([...changedNodes, getRoot(parentNode)]);
   }
 
   // update node position based on type
@@ -301,6 +317,7 @@ const changeChildren = (previous: string[], current: string[], node: any) => {
 
 const removeNode = (node: any) => {
   // TODO: what is node at this point? does it exist inside graph?
+  node.store.data.nodes = [];
   const yogaNode: Yoga.YogaNode = node.store.data.yogaProps;
   if (node._parent) {
     const parentNode = node._parent;
@@ -323,7 +340,6 @@ const addNode = (node: any) => {
   root.setPosition(Yoga.EDGE_LEFT, node.position().x);
   root.setPosition(Yoga.EDGE_TOP, node.position().y);
   root.setFlexDirection(Yoga.FLEX_DIRECTION_COLUMN);
-
   node.store.data.yogaProps = root;
 };
 
@@ -390,17 +406,5 @@ const setChildParentsWidth = (node: any, width: string) => {
     const parentYogaNode: Yoga.YogaNode = parent.store.data.yogaProps;
     parentYogaNode.setWidth(width);
     setChildParentsWidth(parent, width);
-  }
-};
-
-const setChildrenRelative = (node: any, graph: any) => {
-  if (node._children) {
-    node._children.forEach((child: any) => {
-      if (graph.hasCell(child)) {
-        const yogaChild = child.store.data.yogaProps;
-        yogaChild.setWidth('100%');
-        setChildrenRelative(child, graph);
-      }
-    });
   }
 };

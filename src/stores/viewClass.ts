@@ -224,7 +224,7 @@ export const classViewDescrs = [
       title: true,
       minimap: false,
       configPanel: false,
-      toolbar: false,
+      toolbar: true,
     },
     collsConstrs: [
       {
