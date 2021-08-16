@@ -6,11 +6,11 @@ import { Card } from './Card';
 import { SvgStencil } from './SvgStencil';
 
 export const stencils = {
-  'rm:RectWithText': NodeField,
-  'rm:TitledRectNodeStencil': NodeShape,
-  'rm:CardStencil': Card,
-  'rm:SvgStencil': SvgStencil,
+  'aldkg:RectWithText': NodeField,
+  'aldkg:TitledRectNodeStencil': NodeShape,
+  'aldkg:CardStencil': Card,
+  'aldkg:SvgStencil': SvgStencil,
   default: Default,
   defaultLabel: DefaultLabel,
-  'rm:DefaultEdgeStencil': {},
+  'aldkg:DefaultEdgeStencil': {},
 };

@@ -24,11 +24,13 @@ export const createNewStencilProps = (options, nodeData) => {
       newProps[key] = { ...options.style, ...nodeData.style };
     } else {
       const val = options[key];
-      if (typeof val === 'string') {
-        newProps[key] = val;
-      } else if (val.scope) {
-        const uri = options[key].scope.split('/').join('.');
-        newProps[key] = get(nodeData, uri) || options[key].default;
+      if (val !== undefined) {
+        if (typeof val === 'string') {
+          newProps[key] = val;
+        } else if (val.scope) {
+          const uri = options[key].scope.split('/').join('.');
+          newProps[key] = get(nodeData, uri) || options[key].default;
+        }
       }
       //newProps[key] = get(data, options[key].scope);
     }

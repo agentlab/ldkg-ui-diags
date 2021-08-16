@@ -77,7 +77,7 @@ export const Stencil: React.FC<StencilProps> = ({ graph, viewKindStencils }: any
 
       if (s) {
         const nodes = Object.keys(viewKindStencils).reduce((acc: any, e: string, idx: number) => {
-          if (viewKindStencils[e].type === 'DiagramNode') {
+          if (viewKindStencils[e]['@type'] === 'aldkg:DiagramNodeVKElement') {
             const node = createNode({
               stencil: viewKindStencils[e],
               data: {

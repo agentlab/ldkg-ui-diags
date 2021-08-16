@@ -1,77 +1,37 @@
 import moment from 'moment';
+
 import {
   ArtifactShapeSchema,
   CollState,
   PropertyShapeSchema,
   rootModelInitialState,
 } from '@agentlab/sparql-jsld-client';
-
-import { viewKindCollConstr, viewDescrCollConstr } from './view';
+import { viewKindCollConstr, viewDescrCollConstr } from '@agentlab/ldkg-ui-react';
 
 export const classViewKinds = [
   {
     '@id': 'rm:classViewKind',
-    '@type': 'rm:ViewKind',
-    type: 'DiagramEditor',
+    '@type': 'aldkg:ViewKind',
     elements: [
-      /**
-       * Nodes
-       */
       {
-        '@id': 'rm:ClassNodeStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:TitledRectNodeStencil',
-        title: 'Class',
-        resultsScope: 'rm:RootNodes_CollConstr',
-        style: {
-          border: '1px solid rgb(150,150,150)',
-        },
-        layout: {
-          vertical: 'wrap_content',
-          width: 200,
-          padding: {
-            top: 1,
-            left: 1,
-            right: 1,
-            bottom: 1,
-          },
-        },
+        '@id': 'rm:classDiagramEditorViewKindElement',
+        '@type': 'aldkg:DiagramEditorVKElement',
         elements: [
-          // general fields Compartment (key-value)
+          /**
+           * Nodes
+           */
           {
-            '@id': 'rm:NodeStencilTitle',
-            type: 'DiagramNode',
-            protoStencil: 'rm:RectWithText',
-            title: 'General',
-            height: 25,
+            '@id': 'aldkg:ClassNodeStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:TitledRectNodeStencil',
+            title: 'Class',
+            resultsScope: 'rm:RootNodes_CollConstr',
             style: {
-              background:
-                'linear-gradient(to top, rgb(247, 247, 247) 10% , rgb(230, 230, 230) 80%, rgb(214, 214, 214) 100%)',
-              borderBottom: '1px solid rgb(150,150,150)',
-              textAlign: 'center',
-              justifyContent: 'center',
-              fontSize: '1.2em',
+              border: '1px solid rgb(150,150,150)',
             },
-            constant: true,
-            //scope: '!= property', // without scope
             layout: {
               vertical: 'wrap_content',
-              horizontal: 'match_parent',
-            },
-          },
-          {
-            '@id': 'rm:GeneralCompartmentNodeStencil',
-            type: 'DiagramNode',
-            protoStencil: 'rm:TitledRectNodeStencil',
-            title: 'General',
-            height: 60,
-            style: {
-              borderBottom: '1px solid rgb(150,150,150)',
-            },
-            //scope: '!= property', // without scope
-            layout: {
-              vertical: 'wrap_content',
-              horizontal: 'match_parent',
+              width: 200,
               padding: {
                 top: 1,
                 left: 1,
@@ -79,123 +39,149 @@ export const classViewKinds = [
                 bottom: 1,
               },
             },
-            /*elements: [
+            elements: [
+              // general fields Compartment (key-value)
               {
-                // без scope рендерит весь элемент
-                type: 'DiagramNode',
-                protoStencil: 'rm:RectWithText',
+                '@id': 'rm:NodeStencilTitle',
+                '@type': 'aldkg:DiagramNodeVKElement',
+                protoStencil: 'aldkg:RectWithText',
+                title: 'General',
+                height: 25,
+                style: {
+                  background:
+                    'linear-gradient(to top, rgb(247, 247, 247) 10% , rgb(230, 230, 230) 80%, rgb(214, 214, 214) 100%)',
+                  borderBottom: '1px solid rgb(150,150,150)',
+                  textAlign: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.2em',
+                },
+                constant: true,
+                //scope: '!= property', // without scope
                 layout: {
+                  vertical: 'wrap_content',
                   horizontal: 'match_parent',
                 },
               },
-            ],*/
+              {
+                '@id': 'aldkg:GeneralCompartmentNodeStencil',
+                '@type': 'aldkg:DiagramNodeVKElement',
+                protoStencil: 'aldkg:TitledRectNodeStencil',
+                title: 'General',
+                height: 60,
+                style: {
+                  borderBottom: '1px solid rgb(150,150,150)',
+                },
+                //scope: '!= property', // without scope
+                layout: {
+                  vertical: 'wrap_content',
+                  horizontal: 'match_parent',
+                  padding: {
+                    top: 1,
+                    left: 1,
+                    right: 1,
+                    bottom: 1,
+                  },
+                },
+                /*elements: [
+                  {
+                    // без scope рендерит весь элемент
+                    type: 'DiagramNode',
+                    protoStencil: 'aldkg:RectWithText',
+                    layout: {
+                      horizontal: 'match_parent',
+                    },
+                  },
+                ],*/
+              },
+              // properties Compartment (property-type)
+              {
+                '@id': 'aldkg:PropertiesCompartmentNodeStencil',
+                '@type': 'aldkg:DiagramNodeVKElement',
+                protoStencil: 'aldkg:TitledRectNodeStencil',
+                title: 'Properties',
+                height: 60,
+                //scope: 'property',  // without scope
+                style: {
+                  borderBottom: '1px solid rgb(150,150,150)',
+                },
+                //scope: '!= property', // without scope
+                layout: {
+                  vertical: 'wrap_content',
+                  horizontal: 'match_parent',
+                  padding: {
+                    top: 1,
+                    left: 1,
+                    right: 1,
+                    bottom: 1,
+                  },
+                },
+                /*elements: [
+                  {
+                    type: 'aldkg:PropertyNodeStencil',
+                    scope: '@id',
+                    layout: {
+                      horizontal: 'match_parent',
+                    },
+                  },
+                ],*/
+              },
+            ],
           },
-          // properties Compartment (property-type)
           {
-            '@id': 'rm:PropertiesCompartmentNodeStencil',
-            type: 'DiagramNode',
-            protoStencil: 'rm:TitledRectNodeStencil',
-            title: 'Properties',
-            height: 60,
-            //scope: 'property',  // without scope
-            style: {
-              borderBottom: '1px solid rgb(150,150,150)',
-            },
-            //scope: '!= property', // without scope
+            '@id': 'aldkg:PropertyNodeStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:RectWithText',
+            resultsScope: 'rm:ChildNodes_CollConstr',
             layout: {
               vertical: 'wrap_content',
-              horizontal: 'match_parent',
-              padding: {
-                top: 1,
-                left: 1,
-                right: 1,
-                bottom: 1,
+            },
+          },
+          /**
+           * Edges (arrows)
+           */
+          {
+            '@id': 'rm:AssociationArrow',
+            '@type': 'aldkg:DiagramEdgeVKElement',
+            resultsScope: 'rm:Association_CollConstr',
+            title: 'Ассоциация',
+            line: {
+              stroke: '#808080',
+              strokeWidth: 1,
+              targetMarker: {
+                name: 'block',
+                strokeWidth: 1,
+                open: true,
               },
             },
-            /*elements: [
-              {
-                type: 'rm:PropertyNodeStencil',
-                scope: '@id',
-                layout: {
-                  horizontal: 'match_parent',
-                },
+            style: {
+              display: 'flex',
+              //backgroundColor: 'white',
+              boxSizing: 'border-box',
+              alignItems: 'center',
+            },
+          },
+          {
+            '@id': 'rm:InheritanceArrow',
+            '@type': 'aldkg:DiagramEdgeVKElement',
+            resultsScope: 'rm:Inheritance_CollConstr',
+            title: 'Наследование',
+            line: {
+              stroke: '#808080',
+              strokeWidth: 1,
+              targetMarker: {
+                name: 'block',
+                strokeWidth: 1,
+                fill: 'white',
               },
-            ],*/
+            },
+            style: {
+              display: 'flex',
+              //backgroundColor: 'white',
+              boxSizing: 'border-box',
+              alignItems: 'center',
+            },
           },
         ],
-      },
-      {
-        '@id': 'rm:PropertyNodeStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:RectWithText',
-        resultsScope: 'rm:ChildNodes_CollConstr',
-        layout: {
-          vertical: 'wrap_content',
-        },
-      },
-      /**
-       * Edges (arrows)
-       */
-      {
-        '@id': 'rm:AssociationArrow',
-        type: 'DiagramEdge',
-        resultsScope: 'rm:Association_CollConstr',
-        title: 'Ассоциация',
-        line: {
-          stroke: '#808080',
-          strokeWidth: 1,
-          targetMarker: {
-            name: 'block',
-            strokeWidth: 1,
-            open: true,
-          },
-        },
-        style: {
-          display: 'flex',
-          //backgroundColor: 'white',
-          boxSizing: 'border-box',
-          alignItems: 'center',
-        },
-      },
-      {
-        '@id': 'rm:InheritanceArrow',
-        type: 'DiagramEdge',
-        resultsScope: 'rm:Inheritance_CollConstr',
-        title: 'Наследование',
-        line: {
-          stroke: '#808080',
-          strokeWidth: 1,
-          targetMarker: {
-            name: 'block',
-            strokeWidth: 1,
-            fill: 'white',
-          },
-        },
-        style: {
-          display: 'flex',
-          //backgroundColor: 'white',
-          boxSizing: 'border-box',
-          alignItems: 'center',
-        },
-      },
-    ],
-  },
-  {
-    '@id': 'rm:graphViewKind',
-    '@type': 'rm:ViewKind',
-    type: 'canvas',
-    elements: [
-      {
-        type: 'node',
-        scope: 'shapes',
-      },
-      {
-        type: 'node',
-        scope: 'properties',
-      },
-      {
-        type: 'edge',
-        scope: '',
       },
     ],
   },
@@ -204,131 +190,127 @@ export const classViewKinds = [
 export const classViewDescrs = [
   {
     '@id': 'rm:DataModelView',
-    '@type': 'rm:View',
-    title: 'Модель данных',
-    description: 'Модель данных хранилища на основе SHACL Shapes',
+    '@type': 'aldkg:ViewDescr',
     viewKind: 'rm:classViewKind',
-    type: 'DiagramEditor', // control type
-    elements: [],
-    options: {
-      gridOptions: {
-        type: 'mesh',
-        size: 10,
-        color: '#e5e5e5',
-        thickness: 1,
-        colorSecond: '#d0d0d0',
-        thicknessSecond: 1,
-        factor: 4,
-        bgColor: 'transparent',
-      },
-      title: true,
-      minimap: false,
-      configPanel: false,
-      toolbar: false,
-    },
     collsConstrs: [
       {
         '@id': 'rm:RootNodes_CollConstr',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'rm:RootNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:RootNodes_EntConstr_0',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsRootNodeShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsRootNodeShape',
             conditions: {
               '@id': 'rm:RootNodes_EntConstr_0_Condition',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
               object: 'rm:DataModelView',
             },
           },
           {
             '@id': 'rm:RootNodes_EntConstr_1',
-            '@type': 'rm:EntConstr',
+            '@type': 'aldkg:EntConstr',
             schema: ArtifactShapeSchema['@id'],
           },
         ],
       },
       {
         '@id': 'rm:ChildNodes_CollConstr',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'rm:ChildNodes_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:ChildNodes_EntConstr_0',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsChildNodeShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsChildNodeShape',
             conditions: {
               '@id': 'rm:ChildNodes_EntConstr_0_Condition',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
               object: 'rm:DataModelView',
             },
           },
           {
             '@id': 'rm:ChildNodes_EntConstr_1',
-            '@type': 'rm:EntConstr',
+            '@type': 'aldkg:EntConstr',
             schema: PropertyShapeSchema['@id'],
           },
         ],
       },
       {
         '@id': 'rm:Association_CollConstr',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'rm:Association_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:Association_EntConstr_0',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsArrowShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsArrowShape',
             conditions: {
               '@id': 'rm:Association_EntConstr_0_Condition',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
               object: 'rm:DataModelView',
             },
           },
           {
             '@id': 'rm:Association_EntConstr_1',
-            '@type': 'rm:CollConstr',
+            '@type': 'aldkg:CollConstr',
             schema: PropertyShapeSchema['@id'],
           },
         ],
       },
       {
         '@id': 'rm:Inheritance_CollConstr',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'rm:Inheritance_CollConstr',
         entConstrs: [
           {
             '@id': 'rm:Inheritance_EntConstr_0',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsArrowShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsArrowShape',
             conditions: {
               '@id': 'rm:Inheritance_EntConstr_0_Condition',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
               object: 'rm:DataModelView',
             },
           },
           {
             '@id': 'rm:Inheritance_EntConstr_1',
-            '@type': 'rm:CollConstr',
+            '@type': 'aldkg:CollConstr',
             schema: PropertyShapeSchema['@id'],
           },
         ],
       },
     ],
-  },
-  {
-    '@id': 'rm:GraphView',
-    '@type': 'rm:View',
-    title: 'Граф данных',
-    description: 'Граф данных хранилища на основе SHACL Shapes',
-    //viewKind: viewKinds[1]['@id'],
-    type: 'DiagramEditor',
-    elements: [],
+    elements: [
+      {
+        '@id': 'mktp:_fJ73K',
+        '@type': 'aldkg:DiagramEditorVDE', // control type
+        '@parent': 'rm:classDiagramEditorViewKindElement',
+        title: 'Модель данных',
+        description: 'Модель данных хранилища на основе SHACL Shapes',
+        options: {
+          gridOptions: {
+            type: 'mesh',
+            size: 10,
+            color: '#e5e5e5',
+            thickness: 1,
+            colorSecond: '#d0d0d0',
+            thicknessSecond: 1,
+            factor: 4,
+            bgColor: 'transparent',
+          },
+          title: true,
+          minimap: false,
+          configPanel: false,
+          toolbar: false,
+        },
+      },
+    ],
   },
 ];
 
@@ -338,7 +320,7 @@ export const classViewDescrs = [
 export const viewDataRootNodes = [
   {
     '@id': 'rm:diagramNode1',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 10,
     y: 10,
     z: 0,
@@ -365,12 +347,12 @@ export const viewDataRootNodes = [
     },
     object: 'rm:DataModelView', // ref to the diagram
     //layout?
-    stencil: 'rm:ClassNodeStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
+    stencil: 'aldkg:ClassNodeStencil', // ref to the stencil (type of the graphical sign, not instance of a sign)
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode2',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 250,
     y: 150,
     z: 0,
@@ -388,7 +370,7 @@ export const viewDataRootNodes = [
     },
     object: 'rm:DataModelView',
     //layout?
-    stencil: 'rm:ClassNodeStencil',
+    stencil: 'aldkg:ClassNodeStencil',
     //styles: 'string with css?',
   },
 ];
@@ -399,7 +381,7 @@ export const viewDataRootNodes = [
 export const viewDataChildNodes = [
   {
     '@id': 'rm:diagramNode100',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 20,
     z: 2,
@@ -409,12 +391,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:GeneralCompartmentNodeStencil',
+    stencil: 'aldkg:GeneralCompartmentNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode10',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 20,
     z: 2,
@@ -424,12 +406,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:PropertiesCompartmentNodeStencil',
+    stencil: 'aldkg:PropertiesCompartmentNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode11',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 20,
     z: 2,
@@ -452,12 +434,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView', // ref to the diagram
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode12',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 30,
     z: 2,
@@ -480,12 +462,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode13',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 40,
     z: 2,
@@ -507,12 +489,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode14',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 50,
     z: 2,
@@ -534,12 +516,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode15',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 10,
     y: 60,
     z: 2,
@@ -561,12 +543,12 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
   {
     '@id': 'rm:diagramNode16',
-    '@type': 'rm:UsedInDiagramAsChildNode',
+    '@type': 'aldkg:UsedInDiagramAsChildNode',
     x: 40,
     y: 30,
     z: 2,
@@ -588,7 +570,7 @@ export const viewDataChildNodes = [
     object: 'rm:DataModelView',
     //path?
     //layout?
-    stencil: 'rm:PropertyNodeStencil',
+    stencil: 'aldkg:PropertyNodeStencil',
     //styles: 'string with css?',
   },
 ];
@@ -599,7 +581,7 @@ export const viewDataChildNodes = [
 export const viewDataAssociationArrows = [
   {
     '@id': 'rm:diagramArrow1',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -629,7 +611,7 @@ export const viewDataAssociationArrows = [
   },
   {
     '@id': 'rm:diagramArrow3',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,

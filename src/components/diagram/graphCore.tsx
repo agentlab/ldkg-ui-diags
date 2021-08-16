@@ -600,12 +600,12 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
   const stencilId = data.stencil || key;
   const Renderer = StencilEditor({ options: viewKindStencils[stencilId] });
   switch (data['@type']) {
-    case 'rm:UsedInDiagramAsRootNode': {
+    case 'aldkg:UsedInDiagramAsRootNode': {
       const node = createNode({ stencil: viewKindStencils[stencilId], data, shape: data.stencil, sample: false });
       (graph as Graph).addNode(node);
       break;
     }
-    case 'rm:UsedInDiagramAsChildNode':
+    case 'aldkg:UsedInDiagramAsChildNode':
       if (graph.hasCell(data.parent)) {
         const node = createNode({ stencil: viewKindStencils[stencilId], data, shape: data.stencil, sample: false });
         const child = (graph as Graph).addNode(node);
@@ -615,7 +615,7 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
         return false;
       }
       break;
-    case 'rm:UsedInDiagramAsArrow':
+    case 'aldkg:UsedInDiagramAsArrow':
       if (graph.hasCell(data.arrowFrom) && graph.hasCell(data.arrowTo)) {
         const edge = {
           ...viewKindStencils[stencilId],
@@ -646,7 +646,7 @@ const addGraphData = (graph, data, key, viewKindStencils, store) => {
  */
 export const addNewParentNodes = ({ graph, nodesData, store }) => {
   nodesData.forEach((data: any) => {
-    const Renderer = stencils[data.stencil || 'rm:RectWithText'];
+    const Renderer = stencils[data.stencil || 'aldkg:RectWithText'];
     const node = nodeFromData({ data, Renderer, shape: data.stencil });
     (graph as Graph).addNode(node);
   });
@@ -670,7 +670,7 @@ export const addNewChildNodes = ({ graph, nodesData, store }) => {
  */
 export const addNewEdges = ({ graph, edgesData }) => {
   edgesData.forEach((data: any) => {
-    const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'rm:DefaultEdgeStencil'] };
+    const edge = { ...edgeFromData({ data }), ...stencils[data.stencil || 'aldkg:DefaultEdgeStencil'] };
     (graph as Graph).addEdge(edge);
   });
 };

@@ -61,7 +61,6 @@ export const Graph: React.FC<GraphProps> = ({
     });
     createGrid({ graph, view });
     addYogaSolver({ graph });
-    addNewData({ graph, data: dataSource, viewKindStencils, store });
     setGraph(graph);
     const resizeFn = () => {
       const { width, height } = getContainerSize();
@@ -80,45 +79,18 @@ export const Graph: React.FC<GraphProps> = ({
       window.removeEventListener('resize', resizeFn);
     };
   }, []);
-  const createEdges = () => {
-    const edges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
-      if (viewKindStencils[e].type === 'DiagramEdge') {
-        const edge = {
-          label: {
-            markup: [{ ...Markup.getForeignObjectMarkup() }],
-            attrs: {
-              fo: {
-                label: viewKindStencils[e].name,
-                width: 1,
-                height: 1,
-                x: 60,
-                y: -10,
-              },
-            },
-          },
-          attrs: {
-            line: {
-              ...viewKindStencils[e].line,
-            },
-            outline: {
-              ...viewKindStencils[e].outline,
-            },
-          },
-          ...viewKindStencils[e],
-        };
-        acc.push(edge);
-      }
-      return acc;
-    }, []);
-    return edges;
-  };
+
+  useEffect(() => {
+    if (graph) addNewData({ graph, data: dataSource, viewKindStencils, store });
+  }, [dataSource, graph, store, viewKindStencils]);
+
   React.useEffect(() => {
     edgeConnectorRef.current = edgeConnector;
   }, [edgeConnector]);
 
   React.useEffect(() => {
     const newEdges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
-      if (viewKindStencils[e].type === 'DiagramEdge') {
+      if (viewKindStencils[e]['@type'] === 'aldkg:DiagramEdgeVKElement') {
         const edge = {
           label: {
             markup: [{ ...Markup.getForeignObjectMarkup() }],

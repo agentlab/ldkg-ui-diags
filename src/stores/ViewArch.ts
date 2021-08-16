@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { rootModelInitialState } from '@agentlab/sparql-jsld-client';
 
-import { viewKindCollConstr, viewDescrCollConstr } from './view';
+import { rootModelInitialState } from '@agentlab/sparql-jsld-client';
+import { viewKindCollConstr, viewDescrCollConstr } from '@agentlab/ldkg-ui-react';
 
 /***************************************
  * ViewKinds & ViewDescrs Data
@@ -13,27 +13,26 @@ import { viewKindCollConstr, viewDescrCollConstr } from './view';
 export const archViewKinds = [
   {
     '@id': 'mktp:_8g34sKh',
-    '@type': 'rm:ViewKind',
-    type: 'DiagramEditor',
+    '@type': 'aldkg:ViewKind',
     collsConstrs: [
       // Devices
       {
         '@id': 'mktp:_kwe56Hgs',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         entConstrs: [
           {
             '@id': 'mktp:_aS57dj',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsRootNodeShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsRootNodeShape',
             conditions: {
               '@id': 'mktp:_Sdf72d',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
             },
           },
           {
             '@id': 'mktp:_3Kjd6sF',
-            '@type': 'rm:EntConstr',
+            '@type': 'aldkg:EntConstr',
             schema: 'hs:ProductShape',
           },
         ],
@@ -41,166 +40,172 @@ export const archViewKinds = [
       // Lines
       {
         '@id': 'mktp:_js5Jdf',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         entConstrs: [
           {
             '@id': 'mktp:_Sdf73k',
-            '@type': 'rm:EntConstr',
-            schema: 'rm:UsedInDiagramAsArrowShape',
+            '@type': 'aldkg:EntConstr',
+            schema: 'aldkg:UsedInDiagramAsArrowShape',
             conditions: {
               '@id': 'mktp:_9kJgd8',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               subject: '?eIri1',
             },
           },
           {
             '@id': 'mktp:_p9Dsk6',
-            '@type': 'rm:CollConstr',
+            '@type': 'aldkg:CollConstr',
             schema: 'hs:SubcatInCatLinkShape',
           },
         ],
       },
     ],
     elements: [
-      /**
-       * Nodes
-       */
       {
-        '@id': 'rm:WindTurbineStencil', // stencil should be registered under this @id
-        type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
-        resultsScope: 'mktp:_kwe56Hgs',
-        // img, title, description are the fields from Cart stencil
-        img: '/wind.svg',
-        title: {
-          default: 'Ветрогенератор',
-          scope: 'subject/title',
-        },
-        description: {
-          scope: 'subject/description',
-        },
-        // style for the root DIV for the Cart stencil
-        style: {
-          borderRight: '4px solid #582dcf',
-          boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
-          // child embedding should be disabled here
-        },
-        paletteOrder: 0, // sorting order for stencils palette
-      },
-      {
-        '@id': 'rm:HeaterStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil',
-        resultsScope: 'mktp:_kwe56Hgs',
-        img: '/heater.svg',
-        title: {
-          default: 'Нагреватель',
-          scope: 'subject/title',
-        },
-        description: {
-          scope: 'subject/description',
-        },
-        style: {
-          borderRight: '4px solid #832dcf',
-          boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
-          // child embedding should be disabled here
-        },
-        paletteOrder: 1,
-      },
-      {
-        '@id': 'rm:HouseStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil',
-        resultsScope: 'mktp:_kwe56Hgs',
-        img: '/house.svg',
-        title: {
-          default: 'Дом',
-          scope: 'subject/title',
-        },
-        description: {
-          scope: 'subject/description',
-        },
-        style: {
-          borderRight: '4px solid #b42dcf',
-          boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
-          // child embedding should be disabled here
-        },
-        paletteOrder: 2,
-      },
-      {
-        '@id': 'rm:SubstationStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil',
-        resultsScope: 'mktp:_kwe56Hgs',
-        img: '/substation.svg',
-        title: {
-          default: 'Подстанция',
-          scope: 'subject/title',
-        },
-        description: {
-          scope: 'subject/description',
-        },
-        style: {
-          borderRight: '4px solid #b42dcf',
-          boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
-          // child embedding should be disabled here
-        },
-        paletteOrder: 3,
-      },
-      {
-        '@id': 'rm:GeneratorStencil',
-        type: 'DiagramNode',
-        protoStencil: 'rm:SvgStencil',
-        resultsScope: 'mktp:_kwe56Hgs',
-        img: '/generator.svg',
-        title: {
-          default: 'Генератор',
-          scope: 'subject/title',
-        },
-        description: {
-          scope: 'subject/description',
-        },
-        style: {
-          borderRight: '4px solid #b42dcf',
-          boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
-          // child embedding should be disabled here
-        },
-        paletteOrder: 4,
-      },
-      /**
-       * Edges (arrows)
-       */
-      {
-        '@id': 'rm:LineStencil',
-        type: 'DiagramEdge',
-        protoStencil: 'rm:CardStencil',
-        resultsScope: 'mktp:_js5Jdf',
-        title: 'Линия',
-        description: 'Линия',
-        paletteOrder: 5,
-        // styles for targetMarker
-        line: {
-          targetMarker: null,
-        },
-      },
-      {
-        '@id': 'rm:DoubleLineStencil',
-        type: 'DiagramEdge',
-        protoStencil: 'rm:CardStencil',
-        resultsScope: 'mktp:_js5Jdf',
-        title: 'Двойная линия',
-        description: 'Двойная линия',
-        paletteOrder: 6,
-        shape: 'double-edge',
-        line: {
-          strokeWidth: 4,
-          stroke: 'white',
-          targetMarker: null,
-        },
-        outline: {
-          stroke: 'black',
-          strokeWidth: 6,
-        },
+        '@id': 'mktp:_hd86jd',
+        '@type': 'aldkg:DiagramEditorVKElement',
+        elements: [
+          /**
+           * Nodes
+           */
+          {
+            '@id': 'rm:WindTurbineStencil', // stencil should be registered under this @id
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:SvgStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
+            resultsScope: 'mktp:_kwe56Hgs',
+            // img, title, description are the fields from Cart stencil
+            img: '/wind.svg',
+            title: {
+              default: 'Ветрогенератор',
+              scope: 'subject/title',
+            },
+            description: {
+              scope: 'subject/description',
+            },
+            // style for the root DIV for the Cart stencil
+            style: {
+              borderRight: '4px solid #582dcf',
+              boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
+              // child embedding should be disabled here
+            },
+            paletteOrder: 0, // sorting order for stencils palette
+          },
+          {
+            '@id': 'rm:HeaterStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:SvgStencil',
+            resultsScope: 'mktp:_kwe56Hgs',
+            img: '/heater.svg',
+            title: {
+              default: 'Нагреватель',
+              scope: 'subject/title',
+            },
+            description: {
+              scope: 'subject/description',
+            },
+            style: {
+              borderRight: '4px solid #832dcf',
+              boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
+              // child embedding should be disabled here
+            },
+            paletteOrder: 1,
+          },
+          {
+            '@id': 'rm:HouseStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:SvgStencil',
+            resultsScope: 'mktp:_kwe56Hgs',
+            img: '/house.svg',
+            title: {
+              default: 'Дом',
+              scope: 'subject/title',
+            },
+            description: {
+              scope: 'subject/description',
+            },
+            style: {
+              borderRight: '4px solid #b42dcf',
+              boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
+              // child embedding should be disabled here
+            },
+            paletteOrder: 2,
+          },
+          {
+            '@id': 'rm:SubstationStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:SvgStencil',
+            resultsScope: 'mktp:_kwe56Hgs',
+            img: '/substation.svg',
+            title: {
+              default: 'Подстанция',
+              scope: 'subject/title',
+            },
+            description: {
+              scope: 'subject/description',
+            },
+            style: {
+              borderRight: '4px solid #b42dcf',
+              boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
+              // child embedding should be disabled here
+            },
+            paletteOrder: 3,
+          },
+          {
+            '@id': 'rm:GeneratorStencil',
+            '@type': 'aldkg:DiagramNodeVKElement',
+            protoStencil: 'aldkg:SvgStencil',
+            resultsScope: 'mktp:_kwe56Hgs',
+            img: '/generator.svg',
+            title: {
+              default: 'Генератор',
+              scope: 'subject/title',
+            },
+            description: {
+              scope: 'subject/description',
+            },
+            style: {
+              borderRight: '4px solid #b42dcf',
+              boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.4)',
+              // child embedding should be disabled here
+            },
+            paletteOrder: 4,
+          },
+          /**
+           * Edges (arrows)
+           */
+          {
+            '@id': 'rm:LineStencil',
+            '@type': 'aldkg:DiagramEdgeVKElement',
+            protoStencil: 'aldkg:CardStencil',
+            resultsScope: 'mktp:_js5Jdf',
+            title: 'Линия',
+            description: 'Линия',
+            paletteOrder: 5,
+            // styles for targetMarker
+            line: {
+              targetMarker: null,
+            },
+          },
+          {
+            '@id': 'rm:DoubleLineStencil',
+            '@type': 'aldkg:DiagramEdgeVKElement',
+            protoStencil: 'aldkg:CardStencil',
+            resultsScope: 'mktp:_js5Jdf',
+            title: 'Двойная линия',
+            description: 'Двойная линия',
+            paletteOrder: 6,
+            shape: 'double-edge',
+            line: {
+              strokeWidth: 4,
+              stroke: 'white',
+              targetMarker: null,
+            },
+            outline: {
+              stroke: 'black',
+              strokeWidth: 6,
+            },
+          },
+        ],
       },
     ],
   },
@@ -212,38 +217,22 @@ export const archViewKinds = [
 export const archViewDescrs = [
   {
     '@id': 'mktp:_kg67Sdfl',
-    '@type': 'rm:View',
-    title: 'Архитектура смартгрида',
-    description: 'Архитектура смартгрида',
+    '@type': 'aldkg:ViewDescr',
     viewKind: 'mktp:_8g34sKh',
-    type: 'DiagramEditor', // control type
-    elements: [],
-    options: {
-      gridOptions: {
-        type: 'mesh',
-        size: 10,
-        color: '#e5e5e5',
-        thickness: 1,
-        colorSecond: '#d0d0d0',
-        thicknessSecond: 1,
-        factor: 4,
-        bgColor: 'transparent',
-      },
-    },
     collsConstrs: [
       // Categories (coll constr, inherited from ViewKind, parent references in '@parent' fields, which are our extension of JSON-LD)
       {
         '@id': 'mktp:_8Df89f',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'mktp:_kwe56Hgs', // parent CollConstr, used @ prefix to avoid collisions with domain props (our extension of JSON-LD)
         entConstrs: [
           {
             '@id': 'mktp:_94Sdfh5',
-            '@type': 'rm:EntConstr',
+            '@type': 'aldkg:EntConstr',
             '@parent': 'mktp:_aS57dj', // parent EntConstr, used @ prefix to avoid collisions with domain props (our extension of JSON-LD)
             conditions: {
               '@id': 'mktp:_2Yud6',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               '@parent': 'mktp:_Sdf72d', // parent Condition, used @ prefix to avoid collisions with conditions (our extension of JSON-LD)
               object: 'mktp:_kg67Sdfl', // all the inheritance thing just to add this field!!!
             },
@@ -253,21 +242,42 @@ export const archViewDescrs = [
       // SubcatInCatLink (coll constr, inherited from ViewKind)
       {
         '@id': 'mktp:_od8S6f',
-        '@type': 'rm:CollConstr',
+        '@type': 'aldkg:CollConstr',
         '@parent': 'mktp:_js5Jdf',
         entConstrs: [
           {
             '@id': 'mktp:_2Yd7G',
-            '@type': 'rm:EntConstr',
+            '@type': 'aldkg:EntConstr',
             '@parent': 'mktp:_Sdf73k',
             conditions: {
               '@id': 'mktp:_kd7DQmd',
-              '@type': 'rm:EntConstrCondition',
+              '@type': 'aldkg:EntConstrCondition',
               '@parent': 'mktp:_9kJgd8',
               object: 'mktp:_kg67Sdfl',
             },
           },
         ],
+      },
+    ],
+    elements: [
+      {
+        '@id': 'mktp:_34jdf89',
+        '@type': 'aldkg:DiagramEditorVDE', // control type
+        '@parent': 'mktp:_hd86jd',
+        title: 'Архитектура смартгрида',
+        description: 'Архитектура смартгрида',
+        options: {
+          gridOptions: {
+            type: 'mesh',
+            size: 10,
+            color: '#e5e5e5',
+            thickness: 1,
+            colorSecond: '#d0d0d0',
+            thicknessSecond: 1,
+            factor: 4,
+            bgColor: 'transparent',
+          },
+        },
       },
     ],
   },
@@ -280,7 +290,7 @@ export const archViewDescrs = [
 export const viewDataRootArchNodes = [
   {
     '@id': 'mktp:diagramNode1',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 100,
     y: 160,
     z: 0,
@@ -299,7 +309,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode2',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 300,
     y: 160,
     z: 0,
@@ -318,7 +328,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode3',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 500,
     y: 160,
     z: 0,
@@ -337,7 +347,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode4',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 100,
     y: 360,
     z: 0,
@@ -356,7 +366,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode5',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 300,
     y: 360,
     z: 0,
@@ -375,7 +385,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode6',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 500,
     y: 360,
     z: 0,
@@ -394,7 +404,7 @@ export const viewDataRootArchNodes = [
   },
   {
     '@id': 'mktp:diagramNode7',
-    '@type': 'rm:UsedInDiagramAsRootNode',
+    '@type': 'aldkg:UsedInDiagramAsRootNode',
     x: 100,
     y: 560,
     z: 0,
@@ -419,7 +429,7 @@ export const viewDataRootArchNodes = [
 export const viewDataArchArrows = [
   {
     '@id': 'mktp:diagramArrow0',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -436,7 +446,7 @@ export const viewDataArchArrows = [
   },
   {
     '@id': 'mktp:diagramArrow1',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -453,7 +463,7 @@ export const viewDataArchArrows = [
   },
   {
     '@id': 'mktp:diagramArrow2',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -470,7 +480,7 @@ export const viewDataArchArrows = [
   },
   {
     '@id': 'mktp:diagramArrow3',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -487,7 +497,7 @@ export const viewDataArchArrows = [
   },
   {
     '@id': 'mktp:diagramArrow4',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
@@ -504,7 +514,7 @@ export const viewDataArchArrows = [
   },
   {
     '@id': 'mktp:diagramArrow5',
-    '@type': 'rm:UsedInDiagramAsArrow',
+    '@type': 'aldkg:UsedInDiagramAsArrow',
     x: 10,
     y: 10,
     z: 2,
