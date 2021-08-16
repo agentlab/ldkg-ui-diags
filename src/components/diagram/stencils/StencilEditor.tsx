@@ -3,9 +3,16 @@ import { stencils } from './';
 import { observer } from 'mobx-react-lite';
 import get from 'lodash-es/get';
 
+export interface StencilProps {
+  nodeData: any;
+  style?: React.CSSProperties;
+  setEditing: (state: boolean) => void;
+  onSave: (data: any) => void;
+  [key: string]: any;
+}
 export const StencilEditor = ({ options }: any) =>
   observer<any>(({ nodeData, ...props }: any) => {
-    const Renderer = stencils[options.protoStencil];
+    const Renderer: React.FC<StencilProps> = stencils[options.protoStencil];
     const newProps = createNewStencilProps(options, nodeData);
     return <Renderer nodeData={nodeData} {...props} {...newProps}></Renderer>;
   });

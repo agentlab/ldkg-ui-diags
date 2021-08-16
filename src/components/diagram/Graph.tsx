@@ -13,8 +13,24 @@ import { GraphConfigPanel } from '../editor/ConfigPanel/ConfigPanel';
 import styles from '../../Editor.module.css';
 import { ConnectorTool } from './ConnectorTool';
 
-export const Graph = (props: any) => {
-  const { view } = props;
+export interface GraphProps {
+  view: any;
+  viewKind: any;
+  viewKindStencils: any;
+  dataSource: any;
+  onSelect: (id: string | string[]) => void;
+  stencilPanel: any;
+  viewDescrObs: any;
+}
+export const Graph = ({
+  view,
+  viewKind,
+  viewKindStencils,
+  dataSource,
+  onSelect,
+  stencilPanel,
+  viewDescrObs,
+}: GraphProps): JSX.Element => {
   const options = view.options || {};
   const { store } = useContext(MstContext);
   const [graph, setGraph] = React.useState<any>(null);
@@ -38,14 +54,14 @@ export const Graph = (props: any) => {
       height,
       width,
       refContainer,
-      viewKindStencils: props.viewKindStencils,
+      viewKindStencils: viewKindStencils,
       minimapContainer,
       edgeConnectorRef,
       store,
     });
-    createGrid({ graph, view: props.view });
+    createGrid({ graph, view });
     addYogaSolver({ graph });
-    addNewData({ graph, data: props.dataSource, viewKindStencils: props.viewKindStencils, store });
+    addNewData({ graph, data: dataSource, viewKindStencils, store });
     setGraph(graph);
     const resizeFn = () => {
       const { width, height } = getContainerSize();
@@ -54,7 +70,7 @@ export const Graph = (props: any) => {
     resizeFn();
     graph.selection.widget.collection.on('updated', (e) => {
       const nodeIds = graph.selection.widget.collection.cells.map((c) => c.id);
-      props.onSelect(nodeIds);
+      onSelect(nodeIds);
     });
     graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
@@ -65,7 +81,6 @@ export const Graph = (props: any) => {
     };
   }, []);
   const createEdges = () => {
-    const viewKindStencils = props.viewKindStencils;
     const edges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
       if (viewKindStencils[e].type === 'DiagramEdge') {
         const edge = {
@@ -102,7 +117,6 @@ export const Graph = (props: any) => {
   }, [edgeConnector]);
 
   React.useEffect(() => {
-    const viewKindStencils = props.viewKindStencils;
     const newEdges = Object.keys(viewKindStencils).reduce((acc: any, e: any) => {
       if (viewKindStencils[e].type === 'DiagramEdge') {
         const edge = {
@@ -133,18 +147,18 @@ export const Graph = (props: any) => {
       return acc;
     }, []);
     setEdges(newEdges);
-  }, [props.viewKindStencils]);
+  }, [viewKindStencils]);
   return (
     <React.Fragment>
       <div className={styles.wrap}>
-        {props.view.title && options.title !== false && (
+        {view.title && options.title !== false && (
           <div className={styles.header}>
-            <span>{props.view.title}</span>
+            <span>{view.title}</span>
           </div>
         )}
         <div className={styles.content}>
           <div id='stencil' className={styles.sider}>
-            <Stencil graph={graph} viewKindStencils={props.stencilPanel} />
+            <Stencil graph={graph} viewKindStencils={stencilPanel} />
             <ConnectorTool edges={edges} onSelect={onEdgeSelect} />
           </div>
           <div className={styles.panel} ref={refWrap}>
@@ -163,9 +177,7 @@ export const Graph = (props: any) => {
             </div>
           </div>
           <div style={{ position: 'relative' }}>
-            {options.configPanel === false ? null : (
-              <GraphConfigPanel view={props.view} viewDescrObs={props.viewDescrObs} />
-            )}
+            {options.configPanel === false ? null : <GraphConfigPanel view={view} viewDescrObs={viewDescrObs} />}
             {options.minimap === false ? null : <Minimap minimapContainer={minimapContainer} />}
           </div>
         </div>

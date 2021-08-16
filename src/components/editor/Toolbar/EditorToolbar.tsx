@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Toolbar } from '@antv/x6-react-components';
-import { DataUri } from '@antv/x6';
+import { DataUri, Graph } from '@antv/x6';
 import {
   ClearOutlined,
   SaveOutlined,
@@ -18,7 +18,18 @@ import styles from '../../../Editor.module.css';
 const Item = Toolbar.Item;
 const Group = Toolbar.Group;
 
-export const GraphToolbar = ({ graph, enable }) => {
+export interface GraphToolbarProps {
+  graph: Graph;
+  enable: boolean;
+}
+
+export interface ToolbarProps {
+  handleClick: (e: any) => void;
+  canUndo: boolean;
+  canRedo: boolean;
+}
+
+export const GraphToolbar = ({ graph, enable }: GraphToolbarProps): JSX.Element => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -135,10 +146,12 @@ export const GraphToolbar = ({ graph, enable }) => {
     <div className={styles.toolbar}>
       <EditorToolbar handleClick={handleClick} canUndo={canUndo} canRedo={canRedo} />
     </div>
-  ) : null;
+  ) : (
+    <></>
+  );
 };
 
-const EditorToolbar = ({ handleClick, canUndo, canRedo }) => {
+const EditorToolbar = ({ handleClick, canUndo, canRedo }: ToolbarProps): JSX.Element => {
   return (
     <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
       <Group>
