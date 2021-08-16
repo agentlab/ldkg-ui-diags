@@ -22,7 +22,7 @@ export interface GraphProps {
   stencilPanel: any;
   viewDescrObs: any;
 }
-export const Graph: React.FC<GraphProps> = ({
+export const Graph = ({
   view,
   viewKind,
   viewKindStencils,
@@ -30,7 +30,7 @@ export const Graph: React.FC<GraphProps> = ({
   onSelect,
   stencilPanel,
   viewDescrObs,
-}) => {
+}: GraphProps): JSX.Element => {
   const options = view.options || {};
   const { store } = useContext(MstContext);
   const [graph, setGraph] = React.useState<any>(null);

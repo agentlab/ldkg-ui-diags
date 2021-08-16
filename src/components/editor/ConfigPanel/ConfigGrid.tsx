@@ -15,7 +15,7 @@ export interface ConfigGridProps {
   view: any;
   onChange: (data: any) => void;
 }
-const ConfigGrid = observer<ConfigGridProps>(({ view, onChange }) => {
+const ConfigGrid = observer<ConfigGridProps>(({ view, onChange }): JSX.Element => {
   const attrs = view.options?.gridOptions || {};
 
   const onChangeState = onChange || (() => null);

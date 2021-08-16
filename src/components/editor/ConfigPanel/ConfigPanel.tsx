@@ -15,7 +15,7 @@ export interface ConfigPanelProps {
   onChange: (data: any) => void;
 }
 
-export const GraphConfigPanel: React.FC<GraphConfigPanelProps> = ({ view, viewDescrObs }: any) => {
+export const GraphConfigPanel = ({ view, viewDescrObs }: GraphConfigPanelProps): JSX.Element => {
   const onChange = (val) => {
     if (viewDescrObs) {
       const viewDescr = cloneDeep(view);
@@ -34,7 +34,7 @@ export const GraphConfigPanel: React.FC<GraphConfigPanelProps> = ({ view, viewDe
   );
 };
 
-const ConfigPanel: React.FC<ConfigPanelProps> = ({ view, onChange }) => (
+const ConfigPanel = ({ view, onChange }: ConfigPanelProps): JSX.Element => (
   <div className={panelStyles.config}>
     <ConfigGrid view={view} onChange={onChange} />
   </div>

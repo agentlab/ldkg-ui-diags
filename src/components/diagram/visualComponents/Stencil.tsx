@@ -11,7 +11,7 @@ export interface StencilProps {
   graph: Graph;
   viewKindStencils: any;
 }
-export const Stencil: React.FC<StencilProps> = ({ graph, viewKindStencils }: any) => {
+export const Stencil = ({ graph, viewKindStencils }: StencilProps): JSX.Element => {
   const refContainer = React.useRef<any>();
   useEffect(() => {
     if (graph) {

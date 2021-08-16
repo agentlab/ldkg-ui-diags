@@ -31,8 +31,8 @@ export interface NodeField {
   editing: boolean;
   setEditing: (state: boolean) => void;
 }
-export const NodeField: React.FC<NodeField> = React.memo(
-  ({ data = {}, text, style, setEditing, nodeData, onSave }: any) => {
+export const NodeField = React.memo<NodeField>(
+  ({ data = {}, text, style, setEditing, nodeData, onSave }: any): JSX.Element => {
     const ref = React.createRef<any>();
     useEffect(() => {
       if (data.editing) {
@@ -69,14 +69,16 @@ export const NodeField: React.FC<NodeField> = React.memo(
   },
 );
 
-export const NodeFieldWrap = observer<StencilProps>(({ data = {}, text, editingData, setEditing }: any) => {
-  const editing = editingData.get(data['@id']);
-  if (!editingData.has(data['@id'])) {
-    setEditing(false);
-    return null;
-  }
-  return <NodeField data={data} text={text} editing={editing} setEditing={setEditing} />;
-});
+export const NodeFieldWrap = observer<StencilProps>(
+  ({ data = {}, text, editingData, setEditing }: any): JSX.Element => {
+    const editing = editingData.get(data['@id']);
+    if (!editingData.has(data['@id'])) {
+      setEditing(false);
+      return <></>;
+    }
+    return <NodeField data={data} text={text} editing={editing} setEditing={setEditing} />;
+  },
+);
 export interface EditableCellToolOptions extends ToolsView.ToolItem.Options {
   x: number;
   y: number;
