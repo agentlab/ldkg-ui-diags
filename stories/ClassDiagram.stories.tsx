@@ -14,7 +14,7 @@ import {
 } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
-import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/models/MstDiagramEditorSchemas';
+import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/stores/MstDiagramEditorSchemas';
 import { classViewKinds, classViewDescrs, classModelInitialState } from '../src/stores/viewClass';
 
 import '../src/index.css';

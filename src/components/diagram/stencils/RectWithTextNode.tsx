@@ -5,6 +5,7 @@ import { Input } from 'antd';
 import { useEffect } from 'react';
 import { StencilProps } from './StencilEditor';
 import './cell.css';
+import { JsObject } from '@agentlab/sparql-jsld-client';
 
 const fieldStyle: React.CSSProperties = {
   display: 'flex',
@@ -26,14 +27,17 @@ const fieldStyle: React.CSSProperties = {
   backgroundColor: 'white',
 };
 
-export interface NodeField {
+export interface RectWithTextNodeProps {
   data: any;
-  text: string;
-  editing: boolean;
-  setEditing: (state: boolean) => void;
+  text?: string;
+  editing?: boolean;
+  setEditing?: (state: boolean) => void;
+  style?: JsObject;
+  nodeData?: any;
+  onSave?: (param) => void;
 }
-export const NodeField = React.memo<NodeField>(
-  ({ data = {}, text, style, setEditing, nodeData, onSave }: any): JSX.Element => {
+export const RectWithTextNode = React.memo<RectWithTextNodeProps>(
+  ({ data = {}, style = {}, setEditing, nodeData, onSave = () => {} }): JSX.Element => {
     const ref = React.createRef<any>();
     useEffect(() => {
       if (data.editing) {
@@ -77,7 +81,7 @@ export const NodeFieldWrap = observer<StencilProps>(
       setEditing(false);
       return <></>;
     }
-    return <NodeField data={data} text={text} editing={editing} setEditing={setEditing} />;
+    return <RectWithTextNode data={data} text={text} editing={editing} setEditing={setEditing} />;
   },
 );
 export interface EditableCellToolOptions extends ToolsView.ToolItem.Options {

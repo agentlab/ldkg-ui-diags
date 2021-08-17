@@ -14,7 +14,7 @@ import {
 } from '@agentlab/ldkg-ui-react';
 
 import { GraphEditor } from '../src/components/GraphEditor';
-import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/models/MstDiagramEditorSchemas';
+import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/stores/MstDiagramEditorSchemas';
 import { archModelInitialState, archViewDescrs, archViewKinds } from '../src/stores/ViewArch';
 
 import '../src/index.css';

@@ -161,7 +161,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:CategoryStencil', // stencil should be registered under this @id
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:CardStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
+            protoStencil: 'aldkg:CardNode', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
             resultsScope: 'mktp:_kwe56Hgs',
             // img, title, description are the fields from Cart stencil
             img: {
@@ -187,7 +187,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:ProductStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_58DfdH',
             img: {
               fallback:
@@ -211,7 +211,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:ProductCardStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_lf68D7',
             img: {
               fallback:
@@ -238,7 +238,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:SubcategoryArrowStencil',
             '@type': 'aldkg:DiagramEdgeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_js5Jdf',
             title: 'подкатегория',
             description: 'Подкатегория в категории',
@@ -257,7 +257,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:CardToCategoryArrowStencil',
             '@type': 'aldkg:DiagramEdgeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_fS67d',
             title: 'в категории',
             description: 'Карточка товара состоит в категории',
@@ -275,7 +275,7 @@ export const mktpViewKinds = [
           {
             '@id': 'mktp:CardToProductArrowStencil',
             '@type': 'aldkg:DiagramEdgeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_ld98Sdg',
             title: 'похожесть',
             description: 'Карточка похожего товара объединена по сходству в один товар',

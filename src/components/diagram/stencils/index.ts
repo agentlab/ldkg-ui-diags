@@ -1,16 +1,16 @@
-import { NodeShape } from './NodeShape';
-import { NodeField } from './NodeField';
+import { TitledRectNode } from './TitledRectNode';
+import { RectWithTextNode } from './RectWithTextNode';
 import { DefaultLabel } from './DefaultLabel';
-import { Default } from './Default';
-import { Card } from './Card';
-import { SvgStencil } from './SvgStencil';
+import { DefaultNode } from './DefaultNode';
+import { CardNode } from './CardNode';
+import { SvgNode } from './SvgNode';
 
 export const stencils = {
-  'aldkg:RectWithText': NodeField,
-  'aldkg:TitledRectNodeStencil': NodeShape,
-  'aldkg:CardStencil': Card,
-  'aldkg:SvgStencil': SvgStencil,
-  default: Default,
-  defaultLabel: DefaultLabel,
+  'aldkg:RectWithTextNode': RectWithTextNode,
+  'aldkg:TitledRectNode': TitledRectNode,
+  'aldkg:CardNode': CardNode,
+  'aldkg:SvgNode': SvgNode,
+  'aldkg:DefaultNode': DefaultNode,
+  'aldkg:DefaultLabel': DefaultLabel,
   'aldkg:DefaultEdgeStencil': {},
 };

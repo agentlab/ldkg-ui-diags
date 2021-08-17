@@ -48,7 +48,7 @@ const inputStyle: React.CSSProperties = {
   },
 );*/
 
-export const NodeShape = React.memo(
+export const TitledRectNode = React.memo(
   ({ children = () => null, data = {}, text, setEditing, style, nodeData, onSave }: any) => {
     const label = data.label || nodeData?.subject?.title || text;
     return (

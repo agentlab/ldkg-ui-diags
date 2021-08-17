@@ -23,7 +23,7 @@ export const classViewKinds = [
           {
             '@id': 'aldkg:ClassNodeStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:TitledRectNodeStencil',
+            protoStencil: 'aldkg:TitledRectNode',
             title: 'Class',
             resultsScope: 'rm:RootNodes_CollConstr',
             style: {
@@ -44,7 +44,7 @@ export const classViewKinds = [
               {
                 '@id': 'rm:NodeStencilTitle',
                 '@type': 'aldkg:DiagramNodeVKElement',
-                protoStencil: 'aldkg:RectWithText',
+                protoStencil: 'aldkg:RectWithTextNode',
                 title: 'General',
                 height: 25,
                 style: {
@@ -65,7 +65,7 @@ export const classViewKinds = [
               {
                 '@id': 'aldkg:GeneralCompartmentNodeStencil',
                 '@type': 'aldkg:DiagramNodeVKElement',
-                protoStencil: 'aldkg:TitledRectNodeStencil',
+                protoStencil: 'aldkg:TitledRectNode',
                 title: 'General',
                 height: 60,
                 style: {
@@ -86,7 +86,7 @@ export const classViewKinds = [
                   {
                     // без scope рендерит весь элемент
                     type: 'DiagramNode',
-                    protoStencil: 'aldkg:RectWithText',
+                    protoStencil: 'aldkg:RectWithTextNode',
                     layout: {
                       horizontal: 'match_parent',
                     },
@@ -97,7 +97,7 @@ export const classViewKinds = [
               {
                 '@id': 'aldkg:PropertiesCompartmentNodeStencil',
                 '@type': 'aldkg:DiagramNodeVKElement',
-                protoStencil: 'aldkg:TitledRectNodeStencil',
+                protoStencil: 'aldkg:TitledRectNode',
                 title: 'Properties',
                 height: 60,
                 //scope: 'property',  // without scope
@@ -130,7 +130,7 @@ export const classViewKinds = [
           {
             '@id': 'aldkg:PropertyNodeStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:RectWithText',
+            protoStencil: 'aldkg:RectWithTextNode',
             resultsScope: 'rm:ChildNodes_CollConstr',
             layout: {
               vertical: 'wrap_content',

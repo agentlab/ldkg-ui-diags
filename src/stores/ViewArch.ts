@@ -71,7 +71,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:WindTurbineStencil', // stencil should be registered under this @id
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:SvgStencil', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
+            protoStencil: 'aldkg:SvgNode', //reference to the base stencil which should be customized additionally with 'style' and registered under the different id from @id property
             resultsScope: 'mktp:_kwe56Hgs',
             // img, title, description are the fields from Cart stencil
             img: '/wind.svg',
@@ -93,7 +93,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:HeaterStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:SvgStencil',
+            protoStencil: 'aldkg:SvgNode',
             resultsScope: 'mktp:_kwe56Hgs',
             img: '/heater.svg',
             title: {
@@ -113,7 +113,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:HouseStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:SvgStencil',
+            protoStencil: 'aldkg:SvgNode',
             resultsScope: 'mktp:_kwe56Hgs',
             img: '/house.svg',
             title: {
@@ -133,7 +133,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:SubstationStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:SvgStencil',
+            protoStencil: 'aldkg:SvgNode',
             resultsScope: 'mktp:_kwe56Hgs',
             img: '/substation.svg',
             title: {
@@ -153,7 +153,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:GeneratorStencil',
             '@type': 'aldkg:DiagramNodeVKElement',
-            protoStencil: 'aldkg:SvgStencil',
+            protoStencil: 'aldkg:SvgNode',
             resultsScope: 'mktp:_kwe56Hgs',
             img: '/generator.svg',
             title: {
@@ -176,7 +176,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:LineStencil',
             '@type': 'aldkg:DiagramEdgeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_js5Jdf',
             title: 'Линия',
             description: 'Линия',
@@ -189,7 +189,7 @@ export const archViewKinds = [
           {
             '@id': 'rm:DoubleLineStencil',
             '@type': 'aldkg:DiagramEdgeVKElement',
-            protoStencil: 'aldkg:CardStencil',
+            protoStencil: 'aldkg:CardNode',
             resultsScope: 'mktp:_js5Jdf',
             title: 'Двойная линия',
             description: 'Двойная линия',
