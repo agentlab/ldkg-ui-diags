@@ -10,7 +10,7 @@ export interface GraphEditorProps {
   viewDescrCollId: string;
   viewDescrId: string;
   viewKindCollId: string;
-  onSelect: () => void;
+  onSelect?: () => void;
 }
 export const GraphEditor = observer<GraphEditorProps>(
   ({ viewDescrCollId, viewDescrId, viewKindCollId, onSelect = () => null }) => {
@@ -32,15 +32,16 @@ export const GraphEditor = observer<GraphEditorProps>(
       return <Spin />;
     }
 
-    const collWithViewKindsObs = store.getColl(viewKindCollId);
-    if (!collWithViewKindsObs) {
-      console.log('!collWithViewKindsObs', viewKindCollId);
-      return <Spin />;
-    }
-    const viewKindId = viewDescrObs.viewKind;
-    const viewKindObs = collWithViewKindsObs.dataByIri(viewKindId);
+    //const collWithViewKindsObs = store.getColl(viewKindCollId);
+    //if (!collWithViewKindsObs) {
+    //  console.log('!collWithViewKindsObs', viewKindCollId);
+    //  return <Spin />;
+    //}
+    //const viewKindId = viewDescrObs.viewKind;
+    //const viewKindObs = collWithViewKindsObs.dataByIri(viewKindId);
+    const viewKindObs = viewDescrObs.viewKind;
     if (!viewKindObs) {
-      console.log('!viewKindObs', viewKindId);
+      console.log('!viewKindObs for viewDescr', getSnapshot(viewDescrObs));
       return <Spin />;
     }
     const viewKind: any = getSnapshot(viewKindObs);
@@ -51,13 +52,13 @@ export const GraphEditor = observer<GraphEditorProps>(
         if (e.elements) {
           regStencils(stencils, e.elements);
         }
-        if (e.type === 'DiagramNode') {
+        if (e['@type'] === 'aldkg:DiagramNodeVKElement') {
           stencils[e['@id']] = e;
         }
       });
     };
     const stencilPanel: any = {};
-    const viewKindStencils = viewKind?.elements.reduce((acc, e) => {
+    const viewKindStencils = viewKind?.elements[0]?.elements.reduce((acc, e) => {
       if (e.elements) {
         regStencils(acc, e.elements);
       }
@@ -66,20 +67,28 @@ export const GraphEditor = observer<GraphEditorProps>(
       return acc;
     }, {});
 
-    const dataSource = viewKind?.elements.reduce((acc, e) => {
-      const dataUri = view.collsConstrs.filter((el) => el['@parent'] === e.resultsScope);
-      const graphData = store.getColl(dataUri[0]);
-      acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
+    const dataSource = viewKind?.elements[0]?.elements.reduce((acc, e) => {
+      if (e.resultsScope) {
+        const dataUri = view.collsConstrs.filter((el) => el['@parent'] === e.resultsScope);
+        if (dataUri.length > 0) {
+          const graphData = store.getColl(dataUri[0]);
+          acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
+        } else {
+          console.log('No data for element', e);
+        }
+      }
       return acc;
     }, {});
 
+    //console.log('Graph Data', { dataSource, viewKindStencils });
+
     return (
       <Graph
-        view={view}
-        viewDescrObs={viewDescrObs}
+        view={view?.elements[0]}
+        viewDescrObs={viewDescrObs?.elements[0]}
         viewKindStencils={viewKindStencils}
         stencilPanel={stencilPanel}
-        viewKind={viewKind}
+        viewKind={viewKind?.elements[0]}
         dataSource={dataSource}
         onSelect={onSelect}
       />

@@ -15,12 +15,12 @@ const embed = (parent, type) => {
 
 const addComplexRoot = () => {
   const rootId = uuidv4();
-  let root = event(rootId, 'rm:ClassNodeStencil');
+  let root = event(rootId, 'aldkg:ClassNodeStencil');
   const c1 = handleGraphEvent(root, 'add');
   const c2 = [...Array(2)].map(() => {
-    let [comp, c2] = embed(root, 'rm:PropertiesCompartmentNodeStencil');
+    let [comp, c2] = embed(root, 'aldkg:PropertiesCompartmentNodeStencil');
     const c3 = [...Array(3)].map(() => {
-      let [, c3] = embed(comp, 'rm:PropertyNodeStencil');
+      let [, c3] = embed(comp, 'aldkg:PropertyNodeStencil');
       return c3;
     });
     return union([c2, union(c3)]);
@@ -62,7 +62,7 @@ const perfTestMove = (length) => {
 const perfTestAddSimpleRoot = (length) => {
   const round = () => {
     const start = now();
-    const root = event(uuidv4(), 'rm:ClassNodeStencil');
+    const root = event(uuidv4(), 'aldkg:ClassNodeStencil');
     const changed = handleGraphEvent(root, 'add');
     updateVariables(changed);
     const end = now();
@@ -75,13 +75,13 @@ const perfTestAddSimpleRoot = (length) => {
 };
 
 const perfTestAddChildren = (length) => {
-  let root = event(uuidv4(), 'rm:ClassNodeStencil');
+  let root = event(uuidv4(), 'aldkg:ClassNodeStencil');
   const c1 = handleGraphEvent(root, 'add');
   updateVariables(c1);
 
   const round = () => {
     const start = now();
-    let [, changed] = embed(root, 'rm:PropertyNodeStencil');
+    let [, changed] = embed(root, 'aldkg:PropertyNodeStencil');
     updateVariables(changed);
     const end = now();
     return end - start;
@@ -113,7 +113,7 @@ const perfTestAddSimpleRootX6 = (length) => {
           width: 100,
           x: 10,
           y: 10,
-          shape: 'rm:ClassNodeStencil',
+          shape: 'aldkg:ClassNodeStencil',
         },
       ],
     });

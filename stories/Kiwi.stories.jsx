@@ -22,12 +22,12 @@ const embed = (parent, type, solver) => {
 
 const addComplexRoot = (solver) => {
   const rootId = uuidv4();
-  let root = event(rootId, 'rm:ClassNodeStencil');
+  let root = event(rootId, 'aldkg:ClassNodeStencil');
   const c1 = handleGraphEvent(root, 'add', solver, graphMock);
   const c2 = [...Array(2)].map(() => {
-    let [comp, c2] = embed(root, 'rm:PropertiesCompartmentNodeStencil', solver);
+    let [comp, c2] = embed(root, 'aldkg:PropertiesCompartmentNodeStencil', solver);
     const c3 = [...Array(3)].map(() => {
-      let [, c3] = embed(comp, 'rm:PropertyNodeStencil', solver);
+      let [, c3] = embed(comp, 'aldkg:PropertyNodeStencil', solver);
       return c3;
     });
     return union([c2, union(c3)]);
@@ -72,7 +72,7 @@ const perfTestAddSimpleRoot = (length) => {
   const solver = new kiwi.Solver();
   const round = () => {
     const start = now();
-    const root = event(uuidv4(), 'rm:ClassNodeStencil');
+    const root = event(uuidv4(), 'aldkg:ClassNodeStencil');
     const changed = handleGraphEvent(root, 'add', solver, graphMock);
     updateVariables(changed, solver);
     const end = now();
@@ -86,13 +86,13 @@ const perfTestAddSimpleRoot = (length) => {
 
 const perfTestAddChildren = (length) => {
   const solver = new kiwi.Solver();
-  let root = event(uuidv4(), 'rm:ClassNodeStencil');
+  let root = event(uuidv4(), 'aldkg:ClassNodeStencil');
   const c1 = handleGraphEvent(root, 'add', solver, graphMock);
   updateVariables(c1, solver);
 
   const round = () => {
     const start = now();
-    let [, changed] = embed(root, 'rm:PropertyNodeStencil', solver);
+    let [, changed] = embed(root, 'aldkg:PropertyNodeStencil', solver);
     updateVariables(changed, solver);
     const end = now();
     return end - start;
@@ -124,7 +124,7 @@ const perfTestAddSimpleRootX6 = (length) => {
           width: 100,
           x: 10,
           y: 10,
-          shape: 'rm:ClassNodeStencil',
+          shape: 'aldkg:ClassNodeStencil',
         },
       ],
     });

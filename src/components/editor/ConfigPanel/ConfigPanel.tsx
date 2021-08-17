@@ -1,8 +1,8 @@
-import React from 'react';
-
-import ConfigGrid from './ConfigGrid';
 import cloneDeep from 'lodash-es/cloneDeep';
+import React from 'react';
 import { applySnapshot } from 'mobx-state-tree';
+
+import { ConfigGrid } from './ConfigGrid';
 import editorStyles from '../../../Editor.module.css';
 import panelStyles from './ConfigPanel.module.css';
 
@@ -34,10 +34,8 @@ export const GraphConfigPanel = ({ view, viewDescrObs }: GraphConfigPanelProps):
   );
 };
 
-const ConfigPanel = ({ view, onChange }: ConfigPanelProps): JSX.Element => (
+export const ConfigPanel = ({ view, onChange }: ConfigPanelProps): JSX.Element => (
   <div className={panelStyles.config}>
     <ConfigGrid view={view} onChange={onChange} />
   </div>
 );
-
-export default ConfigPanel;

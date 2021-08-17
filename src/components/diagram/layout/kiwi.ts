@@ -11,28 +11,28 @@ const nodeConfig: {
     padding: { top: number; bottom: number; left: number; right: number };
   };
 } = {
-  'rm:PropertyNodeStencil': {
+  'aldkg:PropertyNodeStencil': {
     top: kiwi.Strength.weak,
     left: kiwi.Strength.weak,
     width: kiwi.Strength.weak,
     height: kiwi.Strength.strong,
     padding: { top: 0, bottom: 0, left: 0, right: 0 },
   },
-  'rm:GeneralCompartmentNodeStencil': {
+  'aldkg:GeneralCompartmentNodeStencil': {
     top: kiwi.Strength.medium,
     left: kiwi.Strength.medium,
     width: kiwi.Strength.weak,
     height: kiwi.Strength.weak,
     padding: { top: 20, bottom: 3, left: 3, right: 3 },
   },
-  'rm:PropertiesCompartmentNodeStencil': {
+  'aldkg:PropertiesCompartmentNodeStencil': {
     top: kiwi.Strength.medium,
     left: kiwi.Strength.medium,
     width: kiwi.Strength.weak,
     height: kiwi.Strength.weak,
     padding: { top: 20, bottom: 3, left: 3, right: 3 },
   },
-  'rm:ClassNodeStencil': {
+  'aldkg:ClassNodeStencil': {
     top: kiwi.Strength.strong,
     left: kiwi.Strength.strong,
     width: kiwi.Strength.strong,

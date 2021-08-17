@@ -151,7 +151,7 @@ export const GraphToolbar = ({ graph, enable }: GraphToolbarProps): JSX.Element 
   );
 };
 
-const EditorToolbar = ({ handleClick, canUndo, canRedo }: ToolbarProps): JSX.Element => {
+export const EditorToolbar = ({ handleClick, canUndo, canRedo }: ToolbarProps): JSX.Element => {
   return (
     <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
       <Group>
@@ -176,5 +176,3 @@ const EditorToolbar = ({ handleClick, canUndo, canRedo }: ToolbarProps): JSX.Ele
     </Toolbar>
   );
 };
-
-export default EditorToolbar;

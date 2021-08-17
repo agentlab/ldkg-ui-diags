@@ -1,6 +1,7 @@
 import React from 'react';
 import { Graph, Edge } from '@antv/x6';
 import ReactDOM from 'react-dom';
+
 import { stencils } from './stencils';
 
 const defOnSelect = (itemIdx: number) => console.log('Selected edge: ', itemIdx);
@@ -52,7 +53,7 @@ export const ConnectorTool = ({ edges, onSelect = defOnSelect }: ConnectorToolPr
       onEdgeLabelRendered: (args) => {
         const { selectors, label } = args;
         const edge: any = args.edge;
-        const Renderer = stencils['defaultLabel'];
+        const Renderer = stencils['aldkg:DefaultLabel'];
         const content = selectors.foContent as HTMLDivElement;
         if (content) {
           ReactDOM.render(

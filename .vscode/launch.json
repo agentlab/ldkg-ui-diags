@@ -7,8 +7,8 @@
         {
             "type": "pwa-chrome",
             "request": "launch",
-            "name": "Storybook1 in Chrome",
-            "url": "http://localhost:6006/?path=/story/grapheditor-archdiagram--local-data",
+            "name": "Storybook in Chrome",
+            "url": "http://localhost:6006/?path=/story/grapheditor-cardsdiagramremote--remote-data",
             "webRoot": "${workspaceFolder}",
         },
     ]

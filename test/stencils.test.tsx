@@ -2,47 +2,34 @@
 import React from 'react';
 import { act, render } from '@testing-library/react';
 
-import { Compartment } from '../src/components/diagram/stencils/Compartment';
-import { NodeField } from '../src/components/diagram/stencils/NodeField';
-import { NodeShape } from '../src/components/diagram/stencils/NodeShape';
-import { Default } from '../src/components/diagram/stencils/Default';
-import { Card } from '../src/components/diagram/stencils/Card';
+import { RectWithTextNode } from '../src/components/diagram/stencils/RectWithTextNode';
+import { TitledRectNode } from '../src/components/diagram/stencils/TitledRectNode';
+import { DefaultNode } from '../src/components/diagram/stencils/DefaultNode';
+import { CardNode } from '../src/components/diagram/stencils/CardNode';
 
 describe('Stencils', () => {
-  it('renders Compartment without crashing', async () => {
-    await act(async () => {
-      render(<Compartment text='Test' />);
-    });
-  }, 500);
-
-  it('renders Compartment with empty title without crashing', async () => {
-    await act(async () => {
-      render(<Compartment text='' />);
-    });
-  }, 500);
-
   it('renders NodeField without crashing', async () => {
     await act(async () => {
-      render(<NodeField data={{ label: 'Test' }} />);
+      render(<RectWithTextNode data={{ label: 'Test' }} />);
     });
   }, 500);
 
   it('renders NodeShape without crashing', async () => {
     await act(async () => {
-      render(<NodeShape data={{ label: 'Test' }} />);
+      render(<TitledRectNode data={{ label: 'Test' }} />);
     });
   }, 500);
 
   it('renders Default without crashing', async () => {
     await act(async () => {
-      render(<Default data={{ label: 'Test' }} />);
+      render(<DefaultNode data={{ label: 'Test' }} />);
     });
   }, 500);
 
   it('renders Card without crashing', async () => {
     await act(async () => {
       render(
-        <Card
+        <CardNode
           nodeData={{
             subject: {
               imageUrl: null,
