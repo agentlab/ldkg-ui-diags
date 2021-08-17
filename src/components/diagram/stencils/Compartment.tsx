@@ -1,7 +1,7 @@
 import React from 'react';
 import { StencilProps } from './StencilEditor';
 
-export const Compartment: React.FC<StencilProps> = ({ /*node,*/ text }) => {
+export const Compartment = ({ /*node,*/ text }: StencilProps): JSX.Element => {
   return (
     <div
       style={{

@@ -17,7 +17,7 @@ const defaultStyle: React.CSSProperties = {
   textOverflow: 'ellipsis',
 };
 
-export const DefaultLabel: React.FC<any> = (props: any) => {
+export const DefaultLabel = (props: any): JSX.Element => {
   const [editing, setEditing] = useState(false);
   const [curLabel, setCurLabel] = useState(props.label);
   const { parent, onSave, editable = true } = props;

@@ -107,7 +107,7 @@ export const updateVariables = (changedNodes, solver) => {
   }
 };
 
-export const propagateUpdates = (rootNode: any, graph: any) => {
+export const propagateUpdates = (rootNode: any, graph: any): Set<Node> => {
   let changedNodes = new Set<Node>([rootNode]);
   const current = rootNode;
   if (!current || !current._children) {

@@ -29,14 +29,14 @@ export interface ToolbarProps {
   canRedo: boolean;
 }
 
-export const GraphToolbar: React.FC<GraphToolbarProps> = ({ graph, enable }) => {
+export const GraphToolbar = ({ graph, enable }: GraphToolbarProps): JSX.Element => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
   const copy = useCallback(() => {
     const cells = graph.getSelectedCells();
     if (cells.length) {
-      graph.copy(cells);
+      graph.copy(cells, { deep: true });
     }
     return false;
   }, [graph]);
@@ -73,13 +73,13 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({ graph, enable }) => 
         setCanRedo(history.canRedo());
       });
 
-      graph.bindKey('meta+z', () => {
+      graph.bindKey('ctrl+z', () => {
         if (history.canUndo()) {
           history.undo();
         }
         return false;
       });
-      graph.bindKey('meta+shift+z', () => {
+      graph.bindKey('ctrl+y', () => {
         if (history.canRedo()) {
           history.redo();
         }
@@ -146,10 +146,12 @@ export const GraphToolbar: React.FC<GraphToolbarProps> = ({ graph, enable }) => 
     <div className={styles.toolbar}>
       <EditorToolbar handleClick={handleClick} canUndo={canUndo} canRedo={canRedo} />
     </div>
-  ) : null;
+  ) : (
+    <></>
+  );
 };
 
-const EditorToolbar: React.FC<ToolbarProps> = ({ handleClick, canUndo, canRedo }) => {
+const EditorToolbar = ({ handleClick, canUndo, canRedo }: ToolbarProps): JSX.Element => {
   return (
     <Toolbar hoverEffect={true} size='small' onClick={handleClick}>
       <Group>

@@ -10,7 +10,7 @@ export interface ConnectorToolProps {
   onSelect: (itemIdx: number) => void;
 }
 
-export const ConnectorTool: React.FC<ConnectorToolProps> = ({ edges, onSelect = defOnSelect }) => {
+export const ConnectorTool = ({ edges, onSelect = defOnSelect }: ConnectorToolProps): JSX.Element => {
   const refContainer = React.useRef<HTMLDivElement | null>(null);
   const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
   const [graph, setGraph] = React.useState<Graph | null>(null);
