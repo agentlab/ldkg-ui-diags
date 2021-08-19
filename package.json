@@ -63,6 +63,8 @@
     "@antv/x6-react-components": "^1.1.13",
     "@antv/x6-react-shape": "^1.4.5",
     "@types/styled-components": "^5.1.12",
+    "@antv/hierarchy": "^0.6.8",
+    "@antv/layout": "^0.1.18",
     "ahooks": "^2.10.9",
     "immutable": "^4.0.0-rc.14",
     "kiwi.js": "^1.1.2",
