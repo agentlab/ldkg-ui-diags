@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Graph, Cell } from '@antv/x6';
 import { useClickAway } from 'ahooks';
-import { Menu } from 'antd';
-import { PlusOutlined, MinusOutlined, CopyOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import './context-menu.css';
-import { className } from '@antv/x6/lib/registry/highlighter/class';
+import { layoutMenu } from './layout-menu';
 
 type MenuType = 'node' | 'edge' | 'graph';
 interface Props {
@@ -72,15 +71,18 @@ export const FloatingContextMenu: React.FC<Props> = ({ graph }) => {
 };
 
 const NodeContextMenu = ({ data, graph, onEndOperation }: any) => {
+  const [sideMenuVisible, setSideMenuVisible] = useState(false);
+  const [visibility, setVisibility] = useState<'visible' | 'hidden'>('visible');
   const cells = graph.getSelectedCells();
   const containerRef = React.useRef<HTMLDivElement>(null as any);
 
   useClickAway(() => {
-    onEndOperation();
+    if (!sideMenuVisible) {
+      onEndOperation();
+    }
   }, containerRef);
   const increaseZIndex = () => {
     cells.forEach((cell: Cell) => {
-      console.log('CELL', cell);
       cell.setProp('zIndex', (cell.zIndex || 0) + 1);
     });
     onEndOperation();
@@ -91,9 +93,22 @@ const NodeContextMenu = ({ data, graph, onEndOperation }: any) => {
     });
     onEndOperation();
   };
+
+  const onMenuClick = () => {
+    setSideMenuVisible(true);
+    setVisibility('hidden');
+  };
   return cells.length > 0 ? (
     <div ref={containerRef} style={{ position: 'relative' }}>
-      <ul className='popup' style={{ top: data.y, left: data.x, zIndex: 99, position: 'absolute' }}>
+      <ul
+        className='popup'
+        style={{
+          top: data.e.clientY,
+          left: data.e.clientX,
+          zIndex: 99,
+          position: 'fixed',
+          visibility,
+        }}>
         <li onClick={increaseZIndex}>
           <PlusOutlined />
           На слой выше
@@ -102,6 +117,26 @@ const NodeContextMenu = ({ data, graph, onEndOperation }: any) => {
           <MinusOutlined />
           На слой ниже
         </li>
+        {cells.length > 1
+          ? Object.values(layoutMenu).map((MenuItem, index) => (
+              <MenuItem
+                key={index}
+                graph={graph}
+                execute={(data) => {
+                  (data.nodes || []).forEach((node) => {
+                    const cell = graph.getCellById(node.id);
+                    (cell as any).setPosition(node.x, node.y, {
+                      ignore: true,
+                    });
+                    graph.trigger('node:moved', { node: cell });
+                  });
+                }}
+                cells={cells.filter((cell) => !cell.parent)}
+                onClick={onMenuClick}
+                onEndOperation={onEndOperation}
+              />
+            ))
+          : null}
       </ul>
     </div>
   ) : null;

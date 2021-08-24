@@ -266,7 +266,7 @@ export class Stencil extends View {
       this.popup.style.visibility = 'visible';
       const id = e.node.id;
       const targetNode = graph.getCellById(id.slice(id.indexOf(':') + 1)) as Node;
-      if (!this.popupGraph.hasCell(targetNode.id)) {
+      if (targetNode && !this.popupGraph.hasCell(targetNode.id)) {
         this.popupGraph.model.resetCells([]);
         this.showPopup(e.e, targetNode, graph);
       }
