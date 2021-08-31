@@ -141,13 +141,14 @@ export const Graph = ({
                 Load More
               </Button>*/}
               <ZoomToolbar graph={graph} />
-              <FloatingContextMenu graph={graph} />
+
               <div
                 id='container'
                 style={{ position: 'absolute', top: 0, left: 0 }}
                 ref={refContainer}
                 className='x6-graph'
               />
+              <FloatingContextMenu graph={graph} />
             </div>
           </div>
           <div style={{ position: 'relative' }}>
