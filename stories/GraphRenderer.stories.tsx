@@ -15,7 +15,6 @@ import {
   antdLayoutRenderers,
 } from '@agentlab/ldkg-ui-react';
 
-import { GraphEditor } from '../src/components/GraphEditor';
 import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/stores/MstDiagramEditorSchemas';
 import { graphRenderer } from '../src/components/graphRenderer';
 
@@ -25,7 +24,6 @@ import '../src/App.css';
 /**
  * Mktp Cards ViewKinds
  */
-const renderers = [...antdLayoutRenderers, ...graphRenderer];
 const mktpViewKinds = [
   {
     '@id': 'mktp:_8g34sKh',
@@ -201,6 +199,9 @@ const mktpViewKinds = [
             '@id': 'mktp:_45hfg93',
             '@type': 'aldkg:DiagramEditorVKElement',
             elements: [
+              /**
+               * Nodes
+               */
               {
                 '@id': 'mktp:CategoryStencil', // stencil should be registered under this @id
                 '@type': 'aldkg:DiagramNodeVKElement',
@@ -275,6 +276,9 @@ const mktpViewKinds = [
                 },
                 paletteOrder: 2,
               },
+              /**
+               * Edges (arrows)
+               */
               {
                 '@id': 'mktp:SubcategoryArrowStencil',
                 '@type': 'aldkg:DiagramEdgeVKElement',
@@ -527,7 +531,7 @@ const additionalColls: CollState[] = [
     opt: {
       updPeriod: undefined,
       lastSynced: moment.now(),
-      resolveCollConstrs: false, // disable data loading from the server for viewKinds.collConstrs
+      //resolveCollConstrs: false, // disable data loading from the server for viewKinds.collConstrs
     },
   },
   // ViewDescrs Collection
@@ -543,6 +547,8 @@ const additionalColls: CollState[] = [
   },
 ];
 
+const renderers = [...antdLayoutRenderers, ...graphRenderer];
+
 export default {
   title: 'GraphEditor/GraphRenderer',
   component: Form,
@@ -550,7 +556,6 @@ export default {
 
 const Template: Story<any> = (args: any) => {
   registerMstViewKindSchema('aldkg:DiagramNodeVKElement', MstDiagramNodeVKElement);
-  registerMstViewKindSchema('aldkg:DiagramEdgeVKElement', MstDiagramEdgeVKElement);
   registerMstViewKindSchema('aldkg:DiagramEdgeVKElement', MstDiagramEdgeVKElement);
 
   const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
