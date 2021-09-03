@@ -444,6 +444,7 @@ export const nodeFromData = ({ data, shape, Renderer, onSave = () => null, setEd
   layoutProp: data.layout || {},
   style: data.style,
   shape: shape,
+  subject: data.subject,
   attrs: data.attrs,
   label: data.label || data?.subject?.title || `${data?.subject?.name}: ${data?.subject?.datatype}`,
   zIndex: data.zIndex,

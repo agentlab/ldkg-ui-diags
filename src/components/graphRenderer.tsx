@@ -60,17 +60,13 @@ export const GraphRenderer: React.FC<RenderProps> = observer((props) => {
     }
     return acc;
   }, {});
-
   const scope = viewKindElement.resultsScope;
   const withConnections = options.connections;
   const onChange = (data: any) => {
-    store.setSelectedData(scope, data);
-    withConnections &&
-      options.connections.forEach((e: any) => {
-        const condition: any = {};
-        condition[e.by] = data[0];
-        store.editCondition(e.to, condition, scope, e.by, data);
-      });
+    if (data) {
+      store.setSelectedData(scope, data);
+      withConnections && store.editConn(withConnections, data[0]);
+    }
   };
 
   return (

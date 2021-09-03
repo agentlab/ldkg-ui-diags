@@ -12,6 +12,8 @@ import {
   viewKindCollConstr,
   viewDescrCollConstr,
   Form,
+  antdCells,
+  antdControlRenderers,
   antdLayoutRenderers,
 } from '@agentlab/ldkg-ui-react';
 
@@ -20,6 +22,7 @@ import { graphRenderer } from '../src/components/graphRenderer';
 
 import '../src/index.css';
 import '../src/App.css';
+import 'antd/dist/antd.less';
 
 /**
  * Mktp Cards ViewKinds
@@ -30,23 +33,17 @@ const mktpViewKinds = [
     '@type': 'aldkg:ViewKind',
     collsConstrs: [
       {
-        '@id': 'mktp:_kwe56Hgs1',
+        '@id': 'mktp:ProductCards_in_Category_Coll',
         '@type': 'aldkg:CollConstr',
         entConstrs: [
           {
-            '@id': 'mktp:_aS57dj1',
+            '@id': 'mktp:ProductCards_in_Category_Coll_Ent0',
             '@type': 'aldkg:EntConstr',
-            schema: 'aldkg:UsedInDiagramAsRootNodeShape',
+            schema: 'hs:ProductCardShape',
             conditions: {
-              '@id': 'mktp:_Sdf72d1',
-              '@type': 'aldkg:EntConstrCondition',
-              subject: '?eIri1',
+              '@id': 'mktp:ProductCards_in_Category_Coll_Ent0_con',
+              '@_id': 'https://www.wildberries.ru/catalog/16170086/detail.aspx',
             },
-          },
-          {
-            '@id': 'mktp:_3Kjd6sF1',
-            '@type': 'aldkg:EntConstr',
-            schema: 'hs:CategoryShape',
           },
         ],
       },
@@ -198,6 +195,9 @@ const mktpViewKinds = [
           {
             '@id': 'mktp:_45hfg93',
             '@type': 'aldkg:DiagramEditorVKElement',
+            options: {
+              connections: [{ to: 'mktp:ProductCards_in_Category_Coll_Ent0_con', by: '@_id' }],
+            },
             elements: [
               /**
                * Nodes
@@ -338,9 +338,20 @@ const mktpViewKinds = [
             ],
           },
           {
-            '@id': 'mktp:_kwe56Hgs1',
-            '@type': 'test',
-            resultsScope: 'mktp:_kwe56Hgs1',
+            '@id': 'rm:_83hd7f',
+            '@type': 'aldkg:FormLayout',
+            elements: [
+              {
+                '@id': 'rm:_17Gj78',
+                '@type': 'aldkg:Control',
+                resultsScope: 'mktp:ProductCards_in_Category_Coll/@id',
+              },
+              {
+                '@id': 'rm:_17Gj78',
+                '@type': 'aldkg:Control',
+                resultsScope: 'mktp:ProductCards_in_Category_Coll/brand',
+              },
+            ],
           },
         ],
       },
@@ -377,7 +388,7 @@ const mktpViewDescrs = [
         ],
       },
       // Form nodes
-      {
+      /*{
         '@id': 'mktp:_8Df89f1',
         '@type': 'aldkg:CollConstr',
         '@parent': 'mktp:_kwe56Hgs1', // parent CollConstr, used @ prefix to avoid collisions with domain props (our extension of JSON-LD)
@@ -385,7 +396,7 @@ const mktpViewDescrs = [
           {
             '@id': 'mktp:_94SdFh51',
             '@type': 'aldkg:EntConstr',
-            '@parent': 'mktp:_aS57dj1', // parent EntConstr, used @ prefix to avoid collisions with domain props (our extension of JSON-LD)
+            '@parent': 'mktp:_3Kjd6sF1', // parent EntConstr, used @ prefix to avoid collisions with domain props (our extension of JSON-LD)
             conditions: {
               '@id': 'mktp:_2Yud61',
               '@type': 'aldkg:EntConstrCondition',
@@ -394,7 +405,7 @@ const mktpViewDescrs = [
             },
           },
         ],
-      },
+      },*/
 
       // Products (coll constr, inherited from ViewKind)
       {
@@ -547,7 +558,7 @@ const additionalColls: CollState[] = [
   },
 ];
 
-const renderers = [...antdLayoutRenderers, ...graphRenderer];
+const renderers = [...antdLayoutRenderers, ...graphRenderer, ...antdControlRenderers];
 
 export default {
   title: 'GraphEditor/GraphRenderer',
