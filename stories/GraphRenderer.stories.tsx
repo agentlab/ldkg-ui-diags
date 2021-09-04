@@ -18,7 +18,7 @@ import {
 } from '@agentlab/ldkg-ui-react';
 
 import { MstDiagramNodeVKElement, MstDiagramEdgeVKElement } from '../src/stores/MstDiagramEditorSchemas';
-import { graphRenderer } from '../src/components/graphRenderer';
+import { graphRenderers } from '../src/components/graphRenderer';
 
 import '../src/index.css';
 import '../src/App.css';
@@ -558,7 +558,7 @@ const additionalColls: CollState[] = [
   },
 ];
 
-const renderers = [...antdLayoutRenderers, ...graphRenderer, ...antdControlRenderers];
+const renderers = [...antdLayoutRenderers, ...graphRenderers, ...antdControlRenderers];
 
 export default {
   title: 'GraphEditor/GraphRenderer',
@@ -566,8 +566,8 @@ export default {
 } as Meta;
 
 const Template: Story<any> = (args: any) => {
-  registerMstViewKindSchema('aldkg:DiagramNodeVKElement', MstDiagramNodeVKElement);
-  registerMstViewKindSchema('aldkg:DiagramEdgeVKElement', MstDiagramEdgeVKElement);
+  registerMstViewKindSchema(MstDiagramNodeVKElement);
+  registerMstViewKindSchema(MstDiagramEdgeVKElement);
 
   const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
   const rootStore = createUiModelFromState('mktp', client, rootModelInitialState, additionalColls);

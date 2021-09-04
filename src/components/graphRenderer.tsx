@@ -19,7 +19,7 @@ const Test = (props) => {
   return <div>TEST</div>;
 };
 
-export const GraphRenderer: React.FC<RenderProps> = observer((props) => {
+export const GraphRenderer = observer<RenderProps>((props) => {
   const { store } = useContext(MstContext);
   const { viewKind, viewDescr, form, enabled } = props;
   const [id, collIri, collIriOverride, inCollPath, viewKindElement, viewDescrElement] = processViewKindOverride(
@@ -82,7 +82,7 @@ export const GraphRenderer: React.FC<RenderProps> = observer((props) => {
   );
 });
 
-export const graphRenderer = [
+export const graphRenderers = [
   { tester: graphRendererTester, renderer: GraphRenderer },
   { tester: testTester, renderer: Test },
 ];

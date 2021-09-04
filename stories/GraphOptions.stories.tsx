@@ -53,12 +53,12 @@ const StoryEditor = ({ args }) => {
 };
 const Template: Story<any> = (args: any) => {
   //@ts-ignore
-  registerMstCollSchema('aldkg:ViewKind', MstViewKind);
+  registerMstCollSchema(MstViewKind);
   //@ts-ignore
-  registerMstCollSchema('aldkg:ViewDescr', MstViewDescr);
+  registerMstCollSchema(MstViewDescr);
 
-  registerMstViewKindSchema('aldkg:DiagramNodeVKElement', MstDiagramNodeVKElement);
-  registerMstViewKindSchema('aldkg:DiagramEdgeVKElement', MstDiagramEdgeVKElement);
+  registerMstViewKindSchema(MstDiagramNodeVKElement);
+  registerMstViewKindSchema(MstDiagramEdgeVKElement);
 
   const client = new SparqlClientImpl('https://rdf4j.agentlab.ru/rdf4j-server');
   //@ts-ignore
