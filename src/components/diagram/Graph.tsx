@@ -69,7 +69,9 @@ export const Graph = ({
     };
     resizeFn();
     graph.selection.widget.collection.on('updated', (e) => {
-      const nodeIds = graph.selection.widget.collection.cells.map((c) => c.id);
+      const nodeIds = graph.selection.widget.collection.cells.map((c) => {
+        return { id: c.id, ...c.store.data.subject };
+      });
       onSelect(nodeIds);
     });
     graph.enableRubberband();
