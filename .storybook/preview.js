@@ -1,3 +1,4 @@
+import 'antd/dist/antd.less';
 import 'cypress-storybook/react';
 
 // https://storybook.js.org/docs/react/writing-stories/parameters#global-parameters

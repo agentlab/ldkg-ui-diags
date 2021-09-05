@@ -22,7 +22,6 @@ import { graphRenderers } from '../src/components/graphRenderer';
 
 import '../src/index.css';
 import '../src/App.css';
-import 'antd/dist/antd.less';
 
 /**
  * Mktp Cards ViewKinds
