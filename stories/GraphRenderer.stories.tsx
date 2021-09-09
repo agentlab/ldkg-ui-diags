@@ -557,14 +557,13 @@ const additionalColls: CollState[] = [
   },
 ];
 
-const renderers = [...antdLayoutRenderers, ...graphRenderers, ...antdControlRenderers];
-
 export default {
   title: 'GraphEditor/GraphRenderer',
   component: Form,
 } as Meta;
 
 const Template: Story<any> = (args: any) => {
+  const renderers = [...antdLayoutRenderers, ...graphRenderers, ...antdControlRenderers];
   registerMstViewKindSchema(MstDiagramNodeVKElement);
   registerMstViewKindSchema(MstDiagramEdgeVKElement);
 
@@ -590,6 +589,4 @@ export const RemoteData = Template.bind({});
 RemoteData.args = {
   viewDescrCollId: viewDescrCollConstr['@id'],
   viewDescrId: mktpViewDescrs[0]['@id'],
-  viewKindCollId: viewKindCollConstr['@id'],
-  viewKindId: mktpViewKinds[0]['@id'],
 };
