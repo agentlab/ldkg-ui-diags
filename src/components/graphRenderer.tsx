@@ -30,7 +30,7 @@ export const GraphRenderer = observer<RenderProps>((props) => {
   console.log('GraphRenderer - start');
   // ensure that we render Graph only after all data is not empty
   let isAllNotEmpty = true;
-  const elements = findElementsRecursive(viewDescr, viewKindElement.elements, (params: any) => {
+  const elements = findElementsRecursive(viewDescr, viewKindElement.elements || [], (params: any) => {
     const collIriOverride = params[2]; ////[id, collIri, collIriOverride, inCollPath, viewKindElement, viewDescrElement]
     if (!store.getColl(collIriOverride) || store.getColl(collIriOverride)?.data.length <= 0) {
       isAllNotEmpty = false;
