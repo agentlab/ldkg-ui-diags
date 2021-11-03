@@ -11,6 +11,7 @@ import {
 import { getSnapshot } from 'mobx-state-tree';
 import { observer } from 'mobx-react-lite';
 import { Graph } from './diagram/Graph';
+import { Spin } from 'antd';
 
 export const graphRendererTester: RankedTester = rankWith(2, uiTypeIs('aldkg:DiagramEditorVKElement'));
 export const testTester: RankedTester = rankWith(2, uiTypeIs('test'));
@@ -26,63 +27,89 @@ export const GraphRenderer = observer<RenderProps>((props) => {
     props,
     store,
   );
+  console.log('GraphRenderer - start');
+  // ensure that we render Graph only after all data is not empty
+  let isAllNotEmpty = true;
+  const elements = findElementsRecursive(viewDescr, viewKindElement.elements || [], (params: any) => {
+    const collIriOverride = params[2]; ////[id, collIri, collIriOverride, inCollPath, viewKindElement, viewDescrElement]
+    if (!store.getColl(collIriOverride) || store.getColl(collIriOverride)?.data.length <= 0) {
+      isAllNotEmpty = false;
+      console.log('GraphRenderer - data - empty', collIriOverride);
+      return true;
+    }
+    return false;
+  });
 
-  const options = viewKindElement.options || {};
-  const regStencils = (stencils, arr) => {
-    arr.forEach((e) => {
+  if (!isAllNotEmpty) {
+    console.log('GraphRenderer - data != OK');
+    return <Spin />;
+  } else {
+    console.log('GraphRenderer - data = OK');
+    const options = viewKindElement.options || {};
+    const regStencils = (stencils, arr) => {
+      arr.forEach((e) => {
+        if (e.elements) {
+          regStencils(stencils, e.elements);
+        }
+        if (e['@type'] === 'aldkg:DiagramNodeVKElement') {
+          stencils[e['@id']] = e;
+        }
+      });
+    };
+    const stencilPanel: any = {};
+    const viewKindStencils = ((viewKindElement as any)?.elements || []).reduce((acc, e) => {
       if (e.elements) {
-        regStencils(stencils, e.elements);
+        regStencils(acc, e.elements);
       }
-      if (e['@type'] === 'aldkg:DiagramNodeVKElement') {
-        stencils[e['@id']] = e;
-      }
-    });
-  };
-  const stencilPanel: any = {};
-  const viewKindStencils = ((viewKindElement as any)?.elements || []).reduce((acc, e) => {
-    if (e.elements) {
-      regStencils(acc, e.elements);
-    }
-    acc[e['@id']] = e;
-    stencilPanel[e['@id']] = e;
-    return acc;
-  }, {});
+      acc[e['@id']] = e;
+      stencilPanel[e['@id']] = e;
+      return acc;
+    }, {});
 
-  const dataSource = ((viewKindElement as any)?.elements || []).reduce((acc, e) => {
-    if (e.resultsScope) {
-      const dataUri = (viewDescr as any).collsConstrs.filter((el) => compareByIri(el['@parent'], e.resultsScope));
-      if (dataUri.length > 0) {
-        const graphData = store.getColl(dataUri[0]);
-        acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
-      } else {
-        console.log('No data for element', e);
+    const dataSource = ((viewKindElement as any)?.elements || []).reduce((acc, e) => {
+      if (e.resultsScope) {
+        const dataUri = (viewDescr as any).collsConstrs.filter((el) => compareByIri(el['@parent'], e.resultsScope));
+        if (dataUri.length > 0) {
+          const graphData = store.getColl(dataUri[0]);
+          acc[e['@id']] = graphData?.data ? getSnapshot(graphData?.data) : [];
+        } else {
+          console.log('No data for element', e);
+        }
       }
-    }
-    return acc;
-  }, {});
-  const scope = viewKindElement.resultsScope;
-  const withConnections = options.connections;
-  const onChange = (data: any) => {
-    if (data) {
-      store.setSelectedData(scope, data);
-      withConnections && store.editConn(withConnections, data[0]);
-    }
-  };
+      return acc;
+    }, {});
+    const scope = viewKindElement.resultsScope;
+    const withConnections = options.connections;
+    const onSelect = (data: any) => {
+      if (data) {
+        store.setSelectedData(scope, data);
+        withConnections && store.editConn(withConnections, data[0]);
+      }
+    };
 
-  return (
-    <Graph
-      view={viewDescrElement}
-      viewDescrObs={viewDescrElement}
-      viewKindStencils={viewKindStencils}
-      stencilPanel={stencilPanel}
-      viewKind={viewKind?.elements[0]}
-      dataSource={dataSource}
-      onSelect={onChange}
-    />
-  );
+    return (
+      <Graph
+        view={viewDescrElement}
+        viewDescrObs={viewDescrElement}
+        viewKindStencils={viewKindStencils}
+        stencilPanel={stencilPanel}
+        viewKind={viewKind?.elements[0]}
+        dataSource={dataSource}
+        onSelect={onSelect}
+      />
+    );
+  }
 });
 
 export const graphRenderers = [
   { tester: graphRendererTester, renderer: GraphRenderer },
   { tester: testTester, renderer: Test },
 ];
+
+function findElementsRecursive(viewDescr, array: any[], condition: any): any[] {
+  const elements = array.map((a) => {
+    const params = processViewKindOverride({ viewKindElement: a, viewDescr }, undefined);
+    return [...(condition(params) ? [a] : []), ...findElementsRecursive(viewDescr, a.elements || [], condition).flat()];
+  });
+  return elements.flat();
+}

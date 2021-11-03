@@ -68,6 +68,9 @@ export const Graph = ({
       graph.resize(width, height);
     };
     resizeFn();
+    const resizeObserver = new ResizeObserver((entries) => {
+      resizeFn();
+    });
     graph.selection.widget.collection.on('updated', (e) => {
       const nodeIds = graph.selection.widget.collection.cells.map((c) => {
         return { id: c.id, ...c.store.data.subject };
@@ -76,10 +79,12 @@ export const Graph = ({
     });
     graph.enableRubberband();
     window.addEventListener('resize', resizeFn);
+    resizeObserver.observe(refWrap.current);
     // dispose attached HTML objects
     return () => {
       graph.dispose();
       window.removeEventListener('resize', resizeFn);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -143,7 +148,6 @@ export const Graph = ({
                 Load More
               </Button>*/}
               <ZoomToolbar graph={graph} />
-
               <div
                 id='container'
                 style={{ position: 'absolute', top: 0, left: 0 }}
